@@ -1,0 +1,34 @@
+Model name: River_Crossing, size 4
+{
+
+	State variable definitions:
+		farmer: Bool;
+		wolf: Bool;
+		goat: Bool;
+		cabbage: Bool;
+
+	State variable indics:
+		farmer: 0;
+		wolf: 1;
+		goat: 2;
+		cabbage: 3;
+
+	Initial state definition:
+		0;
+		0;
+		0;
+		0;
+
+	Transition relation definition:
+		(farmer=wolf): {0:=(!0); 1:=(!1); }
+		(farmer=goat): {0:=(!0); 2:=(!2); }
+		(farmer=cabbage): {0:=(!0); 3:=(!3); }
+		1: {0:=(!0); }
+
+	Atomic formulae definitions:
+		safe(s) := 0(((!((wolf=goat)&&(!(wolf=farmer))))&&(!((goat=cabbage)&&(!(goat=farmer))))));
+		okay(s) := 0(((((farmer=1)&&(wolf=1))&&(goat=1))&&(cabbage=1)));
+
+	Specifications:
+		find := (EU(x, y, safe(x), okay(y), ini);
+}

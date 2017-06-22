@@ -1,0 +1,5 @@
+1. term.c: finish replicate_expr function.*******************************************************************************finished.
+2. term.c: modify eval_with_state and eval_with_state_list functions.****************************************************finished.
+3. prover.h: eval next states.*******************************************************************************************finished.
+4. prover.h: prove function.
+5. state_set.h, state_set.c: modify the implementation of the AVL tree to a functional data structure.

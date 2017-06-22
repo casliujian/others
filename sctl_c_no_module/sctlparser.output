@@ -1,0 +1,4257 @@
+Terminals unused in grammar
+
+   Int
+   File_end
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    3 sub_modules: %empty
+    4            | sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    6 parameters_decl: %empty
+    7                | Id Colon expr_type
+    8                | Id Colon expr_type Comma parameters_decl
+
+    9 var_decl: Var LB3 var_decl_ RB3
+
+   10 var_decl_: Id Colon expr_type Semicolon
+   11          | Id Colon expr_type Semicolon var_decl_
+
+   12 symbol_decl: Define LB3 symbol_decl_ RB3
+
+   13 symbol_decl_: %empty
+   14             | Id Assigno expr Semicolon symbol_decl_
+
+   15 init_decl: Init LB3 init_decl_ RB3
+
+   16 init_decl_: Id Assigno expr Semicolon
+   17           | Id Assigno expr Semicolon init_decl_
+   18           | Id Assigno LB3 expr_list RB3 Semicolon
+   19           | Id Assigno LB3 expr_list RB3 Semicolon init_decl_
+   20           | Id Assigno Id LB1 expr_list RB1 Semicolon
+   21           | Id Assigno Id LB1 expr_list RB1 Semicolon init_decl_
+
+   22 trans_decl: Trans LB3 trans_decl_ RB3
+
+   23 trans_decl_: %empty
+   24            | expr Colon LB3 expr_pair_list RB3 Semicolon trans_decl_
+
+   25 atomic_decl: Atomic LB3 atomic_decl_ RB3
+
+   26 atomic_decl_: %empty
+   27             | Id LB1 bound_vars RB1 Assigno state_expr Semicolon atomic_decl_
+
+   28 spec_decl: Spec LB3 spec_decl_ RB3
+
+   29 spec_decl_: %empty
+   30           | Id Assigno fml Semicolon spec_decl_
+
+   31 fml: Top
+   32    | Bottom
+   33    | Id LB1 state_list RB1
+   34    | Neg fml
+   35    | fml And fml
+   36    | fml Or fml
+   37    | AX LB1 Id Comma fml Comma state RB1
+   38    | EX LB1 Id Comma fml Comma state RB1
+   39    | AF LB1 Id Comma fml Comma state RB1
+   40    | EG LB1 Id Comma fml Comma state RB1
+   41    | AR LB1 Id Comma Id Comma fml Comma fml Comma state RB1
+   42    | EU LB1 Id Comma Id Comma fml Comma fml Comma state RB1
+   43    | LB1 fml RB1
+
+   44 state_list: %empty
+   45           | state state_list
+
+   46 state: Id
+
+   47 expr_type: LB1 expr DotDot expr RB1
+   48          | Bool
+   49          | LB3 scalars RB3
+   50          | expr_type LB2 expr RB2
+   51          | Id
+
+   52 bound_vars: %empty
+   53           | Id
+   54           | Id Comma bound_vars
+
+   55 scalars: Scalar Id
+   56        | Scalar Id Comma scalars
+
+   57 expr_pair_list: %empty
+   58               | Id Assigno expr Semicolon expr_pair_list
+   59               | Id LB2 expr RB2 Assigno expr Semicolon expr_pair_list
+
+   60 expr_list: %empty
+   61          | expr
+   62          | expr Comma expr_list
+
+   63 expr: I
+   64     | B
+   65     | Id
+   66     | Id LB2 expr RB2
+   67     | nested_var
+   68     | Scalar Id
+   69     | Minus expr
+   70     | Nego expr
+   71     | expr Equal expr
+   72     | expr Non_equal expr
+   73     | expr Ando expr
+   74     | expr Oro expr
+   75     | expr Add expr
+   76     | expr Minus expr
+   77     | expr Mult expr
+   78     | expr Mod expr
+   79     | expr LT expr
+   80     | expr GT expr
+   81     | expr LE expr
+   82     | expr GE expr
+   83     | LB1 expr RB1
+
+   84 state_expr: Id LB1 expr RB1
+   85           | Minus state_expr
+   86           | Nego state_expr
+   87           | state_expr Equal state_expr
+   88           | state_expr Non_equal state_expr
+   89           | state_expr Ando state_expr
+   90           | state_expr Oro state_expr
+   91           | state_expr Add state_expr
+   92           | state_expr Minus state_expr
+   93           | state_expr Mult state_expr
+   94           | state_expr Mod state_expr
+   95           | state_expr LT state_expr
+   96           | state_expr GT state_expr
+   97           | state_expr LE state_expr
+   98           | state_expr GE state_expr
+   99           | LB1 state_expr RB1
+
+  100 nested_var: Id Dot Id
+  101           | Id Dot Id LB2 expr RB2
+  102           | Id LB2 expr RB2 Dot Id
+  103           | Id LB2 expr RB2 Dot Id LB2 expr RB2
+  104           | Id Dot nested_var
+  105           | Id LB2 expr RB2 Dot nested_var
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+Module (258) 4 5
+Model (259) 1 2
+Var (260) 9
+Define (261) 12
+Init (262) 15
+Trans (263) 22
+Atomic (264) 25
+Spec (265) 28
+Int (266)
+Bool (267) 48
+Top (268) 31
+Bottom (269) 32
+AX (270) 37
+EX (271) 38
+AF (272) 39
+EG (273) 40
+AR (274) 41
+EU (275) 42
+Neg (276) 34
+Colon (277) 7 8 10 11 24
+Semicolon (278) 10 11 14 16 17 18 19 20 21 24 27 30 58 59
+Comma (279) 8 37 38 39 40 41 42 54 56 62
+Dot (280) 100 101 102 103 104 105
+DotDot (281) 47
+LB1 (282) 1 2 4 5 20 21 27 33 37 38 39 40 41 42 43 47 83 84 99
+RB1 (283) 1 2 4 5 20 21 27 33 37 38 39 40 41 42 43 47 83 84 99
+LB2 (284) 50 59 66 101 102 103 105
+RB2 (285) 50 59 66 101 102 103 105
+LB3 (286) 1 2 4 5 9 12 15 18 19 22 24 25 28 49
+RB3 (287) 1 2 4 5 9 12 15 18 19 22 24 25 28 49
+Assigno (288) 14 16 17 18 19 20 21 27 30 58 59
+Scalar (289) 55 56 68
+Nego (290) 70 86
+Ando (291) 73 89
+Oro (292) 74 90
+Non_equal (293) 72 88
+Mod (294) 78 94
+And (295) 35
+Or (296) 36
+Equal (297) 71 87
+Add (298) 75 91
+Minus (299) 69 76 85 92
+Mult (300) 77 93
+LT (301) 79 95
+GT (302) 80 96
+LE (303) 81 97
+GE (304) 82 98
+File_end (305)
+Id (306) 1 2 4 5 7 8 10 11 14 16 17 18 19 20 21 27 30 33 37 38 39 40
+    41 42 46 51 53 54 55 56 58 59 65 66 68 84 100 101 102 103 104 105
+I (307) 63
+B (308) 64
+
+
+Nonterminals, with rules where they appear
+
+$accept (54)
+    on left: 0
+program (55)
+    on left: 1 2, on right: 0
+sub_modules (56)
+    on left: 3 4 5, on right: 1 2 4 5
+parameters_decl (57)
+    on left: 6 7 8, on right: 1 2 4 5 8
+var_decl (58)
+    on left: 9, on right: 1 2 4 5
+var_decl_ (59)
+    on left: 10 11, on right: 9 11
+symbol_decl (60)
+    on left: 12, on right: 2 5
+symbol_decl_ (61)
+    on left: 13 14, on right: 12 14
+init_decl (62)
+    on left: 15, on right: 1 2 4 5
+init_decl_ (63)
+    on left: 16 17 18 19 20 21, on right: 15 17 19 21
+trans_decl (64)
+    on left: 22, on right: 1 2 4 5
+trans_decl_ (65)
+    on left: 23 24, on right: 22 24
+atomic_decl (66)
+    on left: 25, on right: 1 2
+atomic_decl_ (67)
+    on left: 26 27, on right: 25 27
+spec_decl (68)
+    on left: 28, on right: 1 2
+spec_decl_ (69)
+    on left: 29 30, on right: 28 30
+fml (70)
+    on left: 31 32 33 34 35 36 37 38 39 40 41 42 43, on right: 30 34
+    35 36 37 38 39 40 41 42 43
+state_list (71)
+    on left: 44 45, on right: 33 45
+state (72)
+    on left: 46, on right: 37 38 39 40 41 42 45
+expr_type (73)
+    on left: 47 48 49 50 51, on right: 7 8 10 11 50
+bound_vars (74)
+    on left: 52 53 54, on right: 27 54
+scalars (75)
+    on left: 55 56, on right: 49 56
+expr_pair_list (76)
+    on left: 57 58 59, on right: 24 58 59
+expr_list (77)
+    on left: 60 61 62, on right: 18 19 20 21 62
+expr (78)
+    on left: 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80
+    81 82 83, on right: 14 16 17 24 47 50 58 59 61 62 66 69 70 71 72
+    73 74 75 76 77 78 79 80 81 82 83 84 101 102 103 105
+state_expr (79)
+    on left: 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99, on right:
+    27 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99
+nested_var (80)
+    on left: 100 101 102 103 104 105, on right: 67 104 105
+
+
+State 0
+
+    0 $accept: . program $end
+
+    $default  reduce using rule 3 (sub_modules)
+
+    program      go to state 1
+    sub_modules  go to state 2
+
+
+State 1
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 3
+
+
+State 2
+
+    1 program: sub_modules . Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules . Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+    4 sub_modules: sub_modules . Module Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules . Module Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    Module  shift, and go to state 4
+    Model   shift, and go to state 5
+
+
+State 3
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 4
+
+    4 sub_modules: sub_modules Module . Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules Module . Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    Id  shift, and go to state 6
+
+
+State 5
+
+    1 program: sub_modules Model . Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model . Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    Id  shift, and go to state 7
+
+
+State 6
+
+    4 sub_modules: sub_modules Module Id . LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules Module Id . LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    LB1  shift, and go to state 8
+
+
+State 7
+
+    1 program: sub_modules Model Id . LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id . LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    LB1  shift, and go to state 9
+
+
+State 8
+
+    4 sub_modules: sub_modules Module Id LB1 . parameters_decl RB1 LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules Module Id LB1 . parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    Id  shift, and go to state 10
+
+    $default  reduce using rule 6 (parameters_decl)
+
+    parameters_decl  go to state 11
+
+
+State 9
+
+    1 program: sub_modules Model Id LB1 . parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id LB1 . parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    Id  shift, and go to state 10
+
+    $default  reduce using rule 6 (parameters_decl)
+
+    parameters_decl  go to state 12
+
+
+State 10
+
+    7 parameters_decl: Id . Colon expr_type
+    8                | Id . Colon expr_type Comma parameters_decl
+
+    Colon  shift, and go to state 13
+
+
+State 11
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl . RB1 LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules Module Id LB1 parameters_decl . RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    RB1  shift, and go to state 14
+
+
+State 12
+
+    1 program: sub_modules Model Id LB1 parameters_decl . RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id LB1 parameters_decl . RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    RB1  shift, and go to state 15
+
+
+State 13
+
+    7 parameters_decl: Id Colon . expr_type
+    8                | Id Colon . expr_type Comma parameters_decl
+
+    Bool  shift, and go to state 16
+    LB1   shift, and go to state 17
+    LB3   shift, and go to state 18
+    Id    shift, and go to state 19
+
+    expr_type  go to state 20
+
+
+State 14
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 . LB3 var_decl init_decl trans_decl RB3
+    5            | sub_modules Module Id LB1 parameters_decl RB1 . LB3 var_decl symbol_decl init_decl trans_decl RB3
+
+    LB3  shift, and go to state 21
+
+
+State 15
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 . LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id LB1 parameters_decl RB1 . LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    LB3  shift, and go to state 22
+
+
+State 16
+
+   48 expr_type: Bool .
+
+    $default  reduce using rule 48 (expr_type)
+
+
+State 17
+
+   47 expr_type: LB1 . expr DotDot expr RB1
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 30
+    nested_var  go to state 31
+
+
+State 18
+
+   49 expr_type: LB3 . scalars RB3
+
+    Scalar  shift, and go to state 32
+
+    scalars  go to state 33
+
+
+State 19
+
+   51 expr_type: Id .
+
+    $default  reduce using rule 51 (expr_type)
+
+
+State 20
+
+    7 parameters_decl: Id Colon expr_type .
+    8                | Id Colon expr_type . Comma parameters_decl
+   50 expr_type: expr_type . LB2 expr RB2
+
+    Comma  shift, and go to state 34
+    LB2    shift, and go to state 35
+
+    $default  reduce using rule 7 (parameters_decl)
+
+
+State 21
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 . var_decl init_decl trans_decl RB3
+    5            | sub_modules Module Id LB1 parameters_decl RB1 LB3 . var_decl symbol_decl init_decl trans_decl RB3
+
+    Var  shift, and go to state 36
+
+    var_decl  go to state 37
+
+
+State 22
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 . var_decl init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id LB1 parameters_decl RB1 LB3 . var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    Var  shift, and go to state 36
+
+    var_decl  go to state 38
+
+
+State 23
+
+   83 expr: LB1 . expr RB1
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 39
+    nested_var  go to state 31
+
+
+State 24
+
+   68 expr: Scalar . Id
+
+    Id  shift, and go to state 40
+
+
+State 25
+
+   70 expr: Nego . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 41
+    nested_var  go to state 31
+
+
+State 26
+
+   69 expr: Minus . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 42
+    nested_var  go to state 31
+
+
+State 27
+
+   65 expr: Id .
+   66     | Id . LB2 expr RB2
+  100 nested_var: Id . Dot Id
+  101           | Id . Dot Id LB2 expr RB2
+  102           | Id . LB2 expr RB2 Dot Id
+  103           | Id . LB2 expr RB2 Dot Id LB2 expr RB2
+  104           | Id . Dot nested_var
+  105           | Id . LB2 expr RB2 Dot nested_var
+
+    Dot  shift, and go to state 43
+    LB2  shift, and go to state 44
+
+    $default  reduce using rule 65 (expr)
+
+
+State 28
+
+   63 expr: I .
+
+    $default  reduce using rule 63 (expr)
+
+
+State 29
+
+   64 expr: B .
+
+    $default  reduce using rule 64 (expr)
+
+
+State 30
+
+   47 expr_type: LB1 expr . DotDot expr RB1
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    DotDot     shift, and go to state 45
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 31
+
+   67 expr: nested_var .
+
+    $default  reduce using rule 67 (expr)
+
+
+State 32
+
+   55 scalars: Scalar . Id
+   56        | Scalar . Id Comma scalars
+
+    Id  shift, and go to state 58
+
+
+State 33
+
+   49 expr_type: LB3 scalars . RB3
+
+    RB3  shift, and go to state 59
+
+
+State 34
+
+    8 parameters_decl: Id Colon expr_type Comma . parameters_decl
+
+    Id  shift, and go to state 10
+
+    $default  reduce using rule 6 (parameters_decl)
+
+    parameters_decl  go to state 60
+
+
+State 35
+
+   50 expr_type: expr_type LB2 . expr RB2
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 61
+    nested_var  go to state 31
+
+
+State 36
+
+    9 var_decl: Var . LB3 var_decl_ RB3
+
+    LB3  shift, and go to state 62
+
+
+State 37
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl . init_decl trans_decl RB3
+    5            | sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl . symbol_decl init_decl trans_decl RB3
+
+    Define  shift, and go to state 63
+    Init    shift, and go to state 64
+
+    symbol_decl  go to state 65
+    init_decl    go to state 66
+
+
+State 38
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl . init_decl trans_decl atomic_decl spec_decl RB3
+    2        | sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl . symbol_decl init_decl trans_decl atomic_decl spec_decl RB3
+
+    Define  shift, and go to state 63
+    Init    shift, and go to state 64
+
+    symbol_decl  go to state 67
+    init_decl    go to state 68
+
+
+State 39
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+   83     | LB1 expr . RB1
+
+    RB1        shift, and go to state 69
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 40
+
+   68 expr: Scalar Id .
+
+    $default  reduce using rule 68 (expr)
+
+
+State 41
+
+   70 expr: Nego expr .
+   71     | expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    $default  reduce using rule 70 (expr)
+
+
+State 42
+
+   69 expr: Minus expr .
+   71     | expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando  shift, and go to state 46
+    Oro   shift, and go to state 47
+    Mod   shift, and go to state 49
+    Mult  shift, and go to state 53
+
+    Minus  error (nonassociative)
+
+    $default  reduce using rule 69 (expr)
+
+
+State 43
+
+  100 nested_var: Id Dot . Id
+  101           | Id Dot . Id LB2 expr RB2
+  104           | Id Dot . nested_var
+
+    Id  shift, and go to state 70
+
+    nested_var  go to state 71
+
+
+State 44
+
+   66 expr: Id LB2 . expr RB2
+  102 nested_var: Id LB2 . expr RB2 Dot Id
+  103           | Id LB2 . expr RB2 Dot Id LB2 expr RB2
+  105           | Id LB2 . expr RB2 Dot nested_var
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 72
+    nested_var  go to state 31
+
+
+State 45
+
+   47 expr_type: LB1 expr DotDot . expr RB1
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 73
+    nested_var  go to state 31
+
+
+State 46
+
+   73 expr: expr Ando . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 74
+    nested_var  go to state 31
+
+
+State 47
+
+   74 expr: expr Oro . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 75
+    nested_var  go to state 31
+
+
+State 48
+
+   72 expr: expr Non_equal . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 76
+    nested_var  go to state 31
+
+
+State 49
+
+   78 expr: expr Mod . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 77
+    nested_var  go to state 31
+
+
+State 50
+
+   71 expr: expr Equal . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 78
+    nested_var  go to state 31
+
+
+State 51
+
+   75 expr: expr Add . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 79
+    nested_var  go to state 31
+
+
+State 52
+
+   76 expr: expr Minus . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 80
+    nested_var  go to state 31
+
+
+State 53
+
+   77 expr: expr Mult . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 81
+    nested_var  go to state 31
+
+
+State 54
+
+   79 expr: expr LT . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 82
+    nested_var  go to state 31
+
+
+State 55
+
+   80 expr: expr GT . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 83
+    nested_var  go to state 31
+
+
+State 56
+
+   81 expr: expr LE . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 84
+    nested_var  go to state 31
+
+
+State 57
+
+   82 expr: expr GE . expr
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 85
+    nested_var  go to state 31
+
+
+State 58
+
+   55 scalars: Scalar Id .
+   56        | Scalar Id . Comma scalars
+
+    Comma  shift, and go to state 86
+
+    $default  reduce using rule 55 (scalars)
+
+
+State 59
+
+   49 expr_type: LB3 scalars RB3 .
+
+    $default  reduce using rule 49 (expr_type)
+
+
+State 60
+
+    8 parameters_decl: Id Colon expr_type Comma parameters_decl .
+
+    $default  reduce using rule 8 (parameters_decl)
+
+
+State 61
+
+   50 expr_type: expr_type LB2 expr . RB2
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    RB2        shift, and go to state 87
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 62
+
+    9 var_decl: Var LB3 . var_decl_ RB3
+
+    Id  shift, and go to state 88
+
+    var_decl_  go to state 89
+
+
+State 63
+
+   12 symbol_decl: Define . LB3 symbol_decl_ RB3
+
+    LB3  shift, and go to state 90
+
+
+State 64
+
+   15 init_decl: Init . LB3 init_decl_ RB3
+
+    LB3  shift, and go to state 91
+
+
+State 65
+
+    5 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl . init_decl trans_decl RB3
+
+    Init  shift, and go to state 64
+
+    init_decl  go to state 92
+
+
+State 66
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl init_decl . trans_decl RB3
+
+    Trans  shift, and go to state 93
+
+    trans_decl  go to state 94
+
+
+State 67
+
+    2 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl . init_decl trans_decl atomic_decl spec_decl RB3
+
+    Init  shift, and go to state 64
+
+    init_decl  go to state 95
+
+
+State 68
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl . trans_decl atomic_decl spec_decl RB3
+
+    Trans  shift, and go to state 93
+
+    trans_decl  go to state 96
+
+
+State 69
+
+   83 expr: LB1 expr RB1 .
+
+    $default  reduce using rule 83 (expr)
+
+
+State 70
+
+  100 nested_var: Id . Dot Id
+  100           | Id Dot Id .
+  101           | Id . Dot Id LB2 expr RB2
+  101           | Id Dot Id . LB2 expr RB2
+  102           | Id . LB2 expr RB2 Dot Id
+  103           | Id . LB2 expr RB2 Dot Id LB2 expr RB2
+  104           | Id . Dot nested_var
+  105           | Id . LB2 expr RB2 Dot nested_var
+
+    Dot  shift, and go to state 43
+    LB2  shift, and go to state 97
+
+    $default  reduce using rule 100 (nested_var)
+
+
+State 71
+
+  104 nested_var: Id Dot nested_var .
+
+    $default  reduce using rule 104 (nested_var)
+
+
+State 72
+
+   66 expr: Id LB2 expr . RB2
+   71     | expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+  102 nested_var: Id LB2 expr . RB2 Dot Id
+  103           | Id LB2 expr . RB2 Dot Id LB2 expr RB2
+  105           | Id LB2 expr . RB2 Dot nested_var
+
+    RB2        shift, and go to state 98
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 73
+
+   47 expr_type: LB1 expr DotDot expr . RB1
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    RB1        shift, and go to state 99
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 74
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   73     | expr Ando expr .
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Mod  shift, and go to state 49
+
+    $default  reduce using rule 73 (expr)
+
+
+State 75
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   74     | expr Oro expr .
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando  shift, and go to state 46
+    Mod   shift, and go to state 49
+
+    $default  reduce using rule 74 (expr)
+
+
+State 76
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   72     | expr Non_equal expr .
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando   shift, and go to state 46
+    Oro    shift, and go to state 47
+    Mod    shift, and go to state 49
+    Add    shift, and go to state 51
+    Minus  shift, and go to state 52
+    Mult   shift, and go to state 53
+
+    Non_equal  error (nonassociative)
+    Equal      error (nonassociative)
+
+    $default  reduce using rule 72 (expr)
+
+
+State 77
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   78     | expr Mod expr .
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Mod  shift, and go to state 49
+
+    $default  reduce using rule 78 (expr)
+
+
+State 78
+
+   71 expr: expr . Equal expr
+   71     | expr Equal expr .
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando   shift, and go to state 46
+    Oro    shift, and go to state 47
+    Mod    shift, and go to state 49
+    Add    shift, and go to state 51
+    Minus  shift, and go to state 52
+    Mult   shift, and go to state 53
+
+    Non_equal  error (nonassociative)
+    Equal      error (nonassociative)
+
+    $default  reduce using rule 71 (expr)
+
+
+State 79
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   75     | expr Add expr .
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando   shift, and go to state 46
+    Oro    shift, and go to state 47
+    Mod    shift, and go to state 49
+    Minus  shift, and go to state 52
+    Mult   shift, and go to state 53
+
+    Add  error (nonassociative)
+
+    $default  reduce using rule 75 (expr)
+
+
+State 80
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   76     | expr Minus expr .
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando  shift, and go to state 46
+    Oro   shift, and go to state 47
+    Mod   shift, and go to state 49
+    Mult  shift, and go to state 53
+
+    Minus  error (nonassociative)
+
+    $default  reduce using rule 76 (expr)
+
+
+State 81
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   77     | expr Mult expr .
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando  shift, and go to state 46
+    Oro   shift, and go to state 47
+    Mod   shift, and go to state 49
+
+    Mult  error (nonassociative)
+
+    $default  reduce using rule 77 (expr)
+
+
+State 82
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   79     | expr LT expr .
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 79 (expr)
+
+
+State 83
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   80     | expr GT expr .
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 80 (expr)
+
+
+State 84
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   81     | expr LE expr .
+   82     | expr . GE expr
+
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 81 (expr)
+
+
+State 85
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+   82     | expr GE expr .
+
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 82 (expr)
+
+
+State 86
+
+   56 scalars: Scalar Id Comma . scalars
+
+    Scalar  shift, and go to state 32
+
+    scalars  go to state 100
+
+
+State 87
+
+   50 expr_type: expr_type LB2 expr RB2 .
+
+    $default  reduce using rule 50 (expr_type)
+
+
+State 88
+
+   10 var_decl_: Id . Colon expr_type Semicolon
+   11          | Id . Colon expr_type Semicolon var_decl_
+
+    Colon  shift, and go to state 101
+
+
+State 89
+
+    9 var_decl: Var LB3 var_decl_ . RB3
+
+    RB3  shift, and go to state 102
+
+
+State 90
+
+   12 symbol_decl: Define LB3 . symbol_decl_ RB3
+
+    Id  shift, and go to state 103
+
+    $default  reduce using rule 13 (symbol_decl_)
+
+    symbol_decl_  go to state 104
+
+
+State 91
+
+   15 init_decl: Init LB3 . init_decl_ RB3
+
+    Id  shift, and go to state 105
+
+    init_decl_  go to state 106
+
+
+State 92
+
+    5 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl . trans_decl RB3
+
+    Trans  shift, and go to state 93
+
+    trans_decl  go to state 107
+
+
+State 93
+
+   22 trans_decl: Trans . LB3 trans_decl_ RB3
+
+    LB3  shift, and go to state 108
+
+
+State 94
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl . RB3
+
+    RB3  shift, and go to state 109
+
+
+State 95
+
+    2 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl . trans_decl atomic_decl spec_decl RB3
+
+    Trans  shift, and go to state 93
+
+    trans_decl  go to state 110
+
+
+State 96
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl . atomic_decl spec_decl RB3
+
+    Atomic  shift, and go to state 111
+
+    atomic_decl  go to state 112
+
+
+State 97
+
+  101 nested_var: Id Dot Id LB2 . expr RB2
+  102           | Id LB2 . expr RB2 Dot Id
+  103           | Id LB2 . expr RB2 Dot Id LB2 expr RB2
+  105           | Id LB2 . expr RB2 Dot nested_var
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 113
+    nested_var  go to state 31
+
+
+State 98
+
+   66 expr: Id LB2 expr RB2 .
+  102 nested_var: Id LB2 expr RB2 . Dot Id
+  103           | Id LB2 expr RB2 . Dot Id LB2 expr RB2
+  105           | Id LB2 expr RB2 . Dot nested_var
+
+    Dot  shift, and go to state 114
+
+    $default  reduce using rule 66 (expr)
+
+
+State 99
+
+   47 expr_type: LB1 expr DotDot expr RB1 .
+
+    $default  reduce using rule 47 (expr_type)
+
+
+State 100
+
+   56 scalars: Scalar Id Comma scalars .
+
+    $default  reduce using rule 56 (scalars)
+
+
+State 101
+
+   10 var_decl_: Id Colon . expr_type Semicolon
+   11          | Id Colon . expr_type Semicolon var_decl_
+
+    Bool  shift, and go to state 16
+    LB1   shift, and go to state 17
+    LB3   shift, and go to state 18
+    Id    shift, and go to state 19
+
+    expr_type  go to state 115
+
+
+State 102
+
+    9 var_decl: Var LB3 var_decl_ RB3 .
+
+    $default  reduce using rule 9 (var_decl)
+
+
+State 103
+
+   14 symbol_decl_: Id . Assigno expr Semicolon symbol_decl_
+
+    Assigno  shift, and go to state 116
+
+
+State 104
+
+   12 symbol_decl: Define LB3 symbol_decl_ . RB3
+
+    RB3  shift, and go to state 117
+
+
+State 105
+
+   16 init_decl_: Id . Assigno expr Semicolon
+   17           | Id . Assigno expr Semicolon init_decl_
+   18           | Id . Assigno LB3 expr_list RB3 Semicolon
+   19           | Id . Assigno LB3 expr_list RB3 Semicolon init_decl_
+   20           | Id . Assigno Id LB1 expr_list RB1 Semicolon
+   21           | Id . Assigno Id LB1 expr_list RB1 Semicolon init_decl_
+
+    Assigno  shift, and go to state 118
+
+
+State 106
+
+   15 init_decl: Init LB3 init_decl_ . RB3
+
+    RB3  shift, and go to state 119
+
+
+State 107
+
+    5 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl . RB3
+
+    RB3  shift, and go to state 120
+
+
+State 108
+
+   22 trans_decl: Trans LB3 . trans_decl_ RB3
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    $default  reduce using rule 23 (trans_decl_)
+
+    trans_decl_  go to state 121
+    expr         go to state 122
+    nested_var   go to state 31
+
+
+State 109
+
+    4 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl RB3 .
+
+    $default  reduce using rule 4 (sub_modules)
+
+
+State 110
+
+    2 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl . atomic_decl spec_decl RB3
+
+    Atomic  shift, and go to state 111
+
+    atomic_decl  go to state 123
+
+
+State 111
+
+   25 atomic_decl: Atomic . LB3 atomic_decl_ RB3
+
+    LB3  shift, and go to state 124
+
+
+State 112
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl . spec_decl RB3
+
+    Spec  shift, and go to state 125
+
+    spec_decl  go to state 126
+
+
+State 113
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+  101 nested_var: Id Dot Id LB2 expr . RB2
+  102           | Id LB2 expr . RB2 Dot Id
+  103           | Id LB2 expr . RB2 Dot Id LB2 expr RB2
+  105           | Id LB2 expr . RB2 Dot nested_var
+
+    RB2        shift, and go to state 127
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 114
+
+  102 nested_var: Id LB2 expr RB2 Dot . Id
+  103           | Id LB2 expr RB2 Dot . Id LB2 expr RB2
+  105           | Id LB2 expr RB2 Dot . nested_var
+
+    Id  shift, and go to state 128
+
+    nested_var  go to state 129
+
+
+State 115
+
+   10 var_decl_: Id Colon expr_type . Semicolon
+   11          | Id Colon expr_type . Semicolon var_decl_
+   50 expr_type: expr_type . LB2 expr RB2
+
+    Semicolon  shift, and go to state 130
+    LB2        shift, and go to state 35
+
+
+State 116
+
+   14 symbol_decl_: Id Assigno . expr Semicolon symbol_decl_
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 131
+    nested_var  go to state 31
+
+
+State 117
+
+   12 symbol_decl: Define LB3 symbol_decl_ RB3 .
+
+    $default  reduce using rule 12 (symbol_decl)
+
+
+State 118
+
+   16 init_decl_: Id Assigno . expr Semicolon
+   17           | Id Assigno . expr Semicolon init_decl_
+   18           | Id Assigno . LB3 expr_list RB3 Semicolon
+   19           | Id Assigno . LB3 expr_list RB3 Semicolon init_decl_
+   20           | Id Assigno . Id LB1 expr_list RB1 Semicolon
+   21           | Id Assigno . Id LB1 expr_list RB1 Semicolon init_decl_
+
+    LB1     shift, and go to state 23
+    LB3     shift, and go to state 132
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 133
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 134
+    nested_var  go to state 31
+
+
+State 119
+
+   15 init_decl: Init LB3 init_decl_ RB3 .
+
+    $default  reduce using rule 15 (init_decl)
+
+
+State 120
+
+    5 sub_modules: sub_modules Module Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl RB3 .
+
+    $default  reduce using rule 5 (sub_modules)
+
+
+State 121
+
+   22 trans_decl: Trans LB3 trans_decl_ . RB3
+
+    RB3  shift, and go to state 135
+
+
+State 122
+
+   24 trans_decl_: expr . Colon LB3 expr_pair_list RB3 Semicolon trans_decl_
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Colon      shift, and go to state 136
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 123
+
+    2 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl . spec_decl RB3
+
+    Spec  shift, and go to state 125
+
+    spec_decl  go to state 137
+
+
+State 124
+
+   25 atomic_decl: Atomic LB3 . atomic_decl_ RB3
+
+    Id  shift, and go to state 138
+
+    $default  reduce using rule 26 (atomic_decl_)
+
+    atomic_decl_  go to state 139
+
+
+State 125
+
+   28 spec_decl: Spec . LB3 spec_decl_ RB3
+
+    LB3  shift, and go to state 140
+
+
+State 126
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl . RB3
+
+    RB3  shift, and go to state 141
+
+
+State 127
+
+  101 nested_var: Id Dot Id LB2 expr RB2 .
+  102           | Id LB2 expr RB2 . Dot Id
+  103           | Id LB2 expr RB2 . Dot Id LB2 expr RB2
+  105           | Id LB2 expr RB2 . Dot nested_var
+
+    Dot  shift, and go to state 114
+
+    $default  reduce using rule 101 (nested_var)
+
+
+State 128
+
+  100 nested_var: Id . Dot Id
+  101           | Id . Dot Id LB2 expr RB2
+  102           | Id . LB2 expr RB2 Dot Id
+  102           | Id LB2 expr RB2 Dot Id .
+  103           | Id . LB2 expr RB2 Dot Id LB2 expr RB2
+  103           | Id LB2 expr RB2 Dot Id . LB2 expr RB2
+  104           | Id . Dot nested_var
+  105           | Id . LB2 expr RB2 Dot nested_var
+
+    Dot  shift, and go to state 43
+    LB2  shift, and go to state 142
+
+    $default  reduce using rule 102 (nested_var)
+
+
+State 129
+
+  105 nested_var: Id LB2 expr RB2 Dot nested_var .
+
+    $default  reduce using rule 105 (nested_var)
+
+
+State 130
+
+   10 var_decl_: Id Colon expr_type Semicolon .
+   11          | Id Colon expr_type Semicolon . var_decl_
+
+    Id  shift, and go to state 88
+
+    $default  reduce using rule 10 (var_decl_)
+
+    var_decl_  go to state 143
+
+
+State 131
+
+   14 symbol_decl_: Id Assigno expr . Semicolon symbol_decl_
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Semicolon  shift, and go to state 144
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 132
+
+   18 init_decl_: Id Assigno LB3 . expr_list RB3 Semicolon
+   19           | Id Assigno LB3 . expr_list RB3 Semicolon init_decl_
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    $default  reduce using rule 60 (expr_list)
+
+    expr_list   go to state 145
+    expr        go to state 146
+    nested_var  go to state 31
+
+
+State 133
+
+   20 init_decl_: Id Assigno Id . LB1 expr_list RB1 Semicolon
+   21           | Id Assigno Id . LB1 expr_list RB1 Semicolon init_decl_
+   65 expr: Id .
+   66     | Id . LB2 expr RB2
+  100 nested_var: Id . Dot Id
+  101           | Id . Dot Id LB2 expr RB2
+  102           | Id . LB2 expr RB2 Dot Id
+  103           | Id . LB2 expr RB2 Dot Id LB2 expr RB2
+  104           | Id . Dot nested_var
+  105           | Id . LB2 expr RB2 Dot nested_var
+
+    Dot  shift, and go to state 43
+    LB1  shift, and go to state 147
+    LB2  shift, and go to state 44
+
+    $default  reduce using rule 65 (expr)
+
+
+State 134
+
+   16 init_decl_: Id Assigno expr . Semicolon
+   17           | Id Assigno expr . Semicolon init_decl_
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Semicolon  shift, and go to state 148
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 135
+
+   22 trans_decl: Trans LB3 trans_decl_ RB3 .
+
+    $default  reduce using rule 22 (trans_decl)
+
+
+State 136
+
+   24 trans_decl_: expr Colon . LB3 expr_pair_list RB3 Semicolon trans_decl_
+
+    LB3  shift, and go to state 149
+
+
+State 137
+
+    2 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl . RB3
+
+    RB3  shift, and go to state 150
+
+
+State 138
+
+   27 atomic_decl_: Id . LB1 bound_vars RB1 Assigno state_expr Semicolon atomic_decl_
+
+    LB1  shift, and go to state 151
+
+
+State 139
+
+   25 atomic_decl: Atomic LB3 atomic_decl_ . RB3
+
+    RB3  shift, and go to state 152
+
+
+State 140
+
+   28 spec_decl: Spec LB3 . spec_decl_ RB3
+
+    Id  shift, and go to state 153
+
+    $default  reduce using rule 29 (spec_decl_)
+
+    spec_decl_  go to state 154
+
+
+State 141
+
+    1 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl init_decl trans_decl atomic_decl spec_decl RB3 .
+
+    $default  reduce using rule 1 (program)
+
+
+State 142
+
+  102 nested_var: Id LB2 . expr RB2 Dot Id
+  103           | Id LB2 . expr RB2 Dot Id LB2 expr RB2
+  103           | Id LB2 expr RB2 Dot Id LB2 . expr RB2
+  105           | Id LB2 . expr RB2 Dot nested_var
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 155
+    nested_var  go to state 31
+
+
+State 143
+
+   11 var_decl_: Id Colon expr_type Semicolon var_decl_ .
+
+    $default  reduce using rule 11 (var_decl_)
+
+
+State 144
+
+   14 symbol_decl_: Id Assigno expr Semicolon . symbol_decl_
+
+    Id  shift, and go to state 103
+
+    $default  reduce using rule 13 (symbol_decl_)
+
+    symbol_decl_  go to state 156
+
+
+State 145
+
+   18 init_decl_: Id Assigno LB3 expr_list . RB3 Semicolon
+   19           | Id Assigno LB3 expr_list . RB3 Semicolon init_decl_
+
+    RB3  shift, and go to state 157
+
+
+State 146
+
+   61 expr_list: expr .
+   62          | expr . Comma expr_list
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Comma      shift, and go to state 158
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+    $default  reduce using rule 61 (expr_list)
+
+
+State 147
+
+   20 init_decl_: Id Assigno Id LB1 . expr_list RB1 Semicolon
+   21           | Id Assigno Id LB1 . expr_list RB1 Semicolon init_decl_
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    $default  reduce using rule 60 (expr_list)
+
+    expr_list   go to state 159
+    expr        go to state 146
+    nested_var  go to state 31
+
+
+State 148
+
+   16 init_decl_: Id Assigno expr Semicolon .
+   17           | Id Assigno expr Semicolon . init_decl_
+
+    Id  shift, and go to state 105
+
+    $default  reduce using rule 16 (init_decl_)
+
+    init_decl_  go to state 160
+
+
+State 149
+
+   24 trans_decl_: expr Colon LB3 . expr_pair_list RB3 Semicolon trans_decl_
+
+    Id  shift, and go to state 161
+
+    $default  reduce using rule 57 (expr_pair_list)
+
+    expr_pair_list  go to state 162
+
+
+State 150
+
+    2 program: sub_modules Model Id LB1 parameters_decl RB1 LB3 var_decl symbol_decl init_decl trans_decl atomic_decl spec_decl RB3 .
+
+    $default  reduce using rule 2 (program)
+
+
+State 151
+
+   27 atomic_decl_: Id LB1 . bound_vars RB1 Assigno state_expr Semicolon atomic_decl_
+
+    Id  shift, and go to state 163
+
+    $default  reduce using rule 52 (bound_vars)
+
+    bound_vars  go to state 164
+
+
+State 152
+
+   25 atomic_decl: Atomic LB3 atomic_decl_ RB3 .
+
+    $default  reduce using rule 25 (atomic_decl)
+
+
+State 153
+
+   30 spec_decl_: Id . Assigno fml Semicolon spec_decl_
+
+    Assigno  shift, and go to state 165
+
+
+State 154
+
+   28 spec_decl: Spec LB3 spec_decl_ . RB3
+
+    RB3  shift, and go to state 166
+
+
+State 155
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+  102 nested_var: Id LB2 expr . RB2 Dot Id
+  103           | Id LB2 expr . RB2 Dot Id LB2 expr RB2
+  103           | Id LB2 expr RB2 Dot Id LB2 expr . RB2
+  105           | Id LB2 expr . RB2 Dot nested_var
+
+    RB2        shift, and go to state 167
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 156
+
+   14 symbol_decl_: Id Assigno expr Semicolon symbol_decl_ .
+
+    $default  reduce using rule 14 (symbol_decl_)
+
+
+State 157
+
+   18 init_decl_: Id Assigno LB3 expr_list RB3 . Semicolon
+   19           | Id Assigno LB3 expr_list RB3 . Semicolon init_decl_
+
+    Semicolon  shift, and go to state 168
+
+
+State 158
+
+   62 expr_list: expr Comma . expr_list
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    $default  reduce using rule 60 (expr_list)
+
+    expr_list   go to state 169
+    expr        go to state 146
+    nested_var  go to state 31
+
+
+State 159
+
+   20 init_decl_: Id Assigno Id LB1 expr_list . RB1 Semicolon
+   21           | Id Assigno Id LB1 expr_list . RB1 Semicolon init_decl_
+
+    RB1  shift, and go to state 170
+
+
+State 160
+
+   17 init_decl_: Id Assigno expr Semicolon init_decl_ .
+
+    $default  reduce using rule 17 (init_decl_)
+
+
+State 161
+
+   58 expr_pair_list: Id . Assigno expr Semicolon expr_pair_list
+   59               | Id . LB2 expr RB2 Assigno expr Semicolon expr_pair_list
+
+    LB2      shift, and go to state 171
+    Assigno  shift, and go to state 172
+
+
+State 162
+
+   24 trans_decl_: expr Colon LB3 expr_pair_list . RB3 Semicolon trans_decl_
+
+    RB3  shift, and go to state 173
+
+
+State 163
+
+   53 bound_vars: Id .
+   54           | Id . Comma bound_vars
+
+    Comma  shift, and go to state 174
+
+    $default  reduce using rule 53 (bound_vars)
+
+
+State 164
+
+   27 atomic_decl_: Id LB1 bound_vars . RB1 Assigno state_expr Semicolon atomic_decl_
+
+    RB1  shift, and go to state 175
+
+
+State 165
+
+   30 spec_decl_: Id Assigno . fml Semicolon spec_decl_
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 187
+
+
+State 166
+
+   28 spec_decl: Spec LB3 spec_decl_ RB3 .
+
+    $default  reduce using rule 28 (spec_decl)
+
+
+State 167
+
+  102 nested_var: Id LB2 expr RB2 . Dot Id
+  103           | Id LB2 expr RB2 . Dot Id LB2 expr RB2
+  103           | Id LB2 expr RB2 Dot Id LB2 expr RB2 .
+  105           | Id LB2 expr RB2 . Dot nested_var
+
+    Dot  shift, and go to state 114
+
+    $default  reduce using rule 103 (nested_var)
+
+
+State 168
+
+   18 init_decl_: Id Assigno LB3 expr_list RB3 Semicolon .
+   19           | Id Assigno LB3 expr_list RB3 Semicolon . init_decl_
+
+    Id  shift, and go to state 105
+
+    $default  reduce using rule 18 (init_decl_)
+
+    init_decl_  go to state 188
+
+
+State 169
+
+   62 expr_list: expr Comma expr_list .
+
+    $default  reduce using rule 62 (expr_list)
+
+
+State 170
+
+   20 init_decl_: Id Assigno Id LB1 expr_list RB1 . Semicolon
+   21           | Id Assigno Id LB1 expr_list RB1 . Semicolon init_decl_
+
+    Semicolon  shift, and go to state 189
+
+
+State 171
+
+   59 expr_pair_list: Id LB2 . expr RB2 Assigno expr Semicolon expr_pair_list
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 190
+    nested_var  go to state 31
+
+
+State 172
+
+   58 expr_pair_list: Id Assigno . expr Semicolon expr_pair_list
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 191
+    nested_var  go to state 31
+
+
+State 173
+
+   24 trans_decl_: expr Colon LB3 expr_pair_list RB3 . Semicolon trans_decl_
+
+    Semicolon  shift, and go to state 192
+
+
+State 174
+
+   54 bound_vars: Id Comma . bound_vars
+
+    Id  shift, and go to state 163
+
+    $default  reduce using rule 52 (bound_vars)
+
+    bound_vars  go to state 193
+
+
+State 175
+
+   27 atomic_decl_: Id LB1 bound_vars RB1 . Assigno state_expr Semicolon atomic_decl_
+
+    Assigno  shift, and go to state 194
+
+
+State 176
+
+   31 fml: Top .
+
+    $default  reduce using rule 31 (fml)
+
+
+State 177
+
+   32 fml: Bottom .
+
+    $default  reduce using rule 32 (fml)
+
+
+State 178
+
+   37 fml: AX . LB1 Id Comma fml Comma state RB1
+
+    LB1  shift, and go to state 195
+
+
+State 179
+
+   38 fml: EX . LB1 Id Comma fml Comma state RB1
+
+    LB1  shift, and go to state 196
+
+
+State 180
+
+   39 fml: AF . LB1 Id Comma fml Comma state RB1
+
+    LB1  shift, and go to state 197
+
+
+State 181
+
+   40 fml: EG . LB1 Id Comma fml Comma state RB1
+
+    LB1  shift, and go to state 198
+
+
+State 182
+
+   41 fml: AR . LB1 Id Comma Id Comma fml Comma fml Comma state RB1
+
+    LB1  shift, and go to state 199
+
+
+State 183
+
+   42 fml: EU . LB1 Id Comma Id Comma fml Comma fml Comma state RB1
+
+    LB1  shift, and go to state 200
+
+
+State 184
+
+   34 fml: Neg . fml
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 201
+
+
+State 185
+
+   43 fml: LB1 . fml RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 202
+
+
+State 186
+
+   33 fml: Id . LB1 state_list RB1
+
+    LB1  shift, and go to state 203
+
+
+State 187
+
+   30 spec_decl_: Id Assigno fml . Semicolon spec_decl_
+   35 fml: fml . And fml
+   36    | fml . Or fml
+
+    Semicolon  shift, and go to state 204
+    And        shift, and go to state 205
+    Or         shift, and go to state 206
+
+
+State 188
+
+   19 init_decl_: Id Assigno LB3 expr_list RB3 Semicolon init_decl_ .
+
+    $default  reduce using rule 19 (init_decl_)
+
+
+State 189
+
+   20 init_decl_: Id Assigno Id LB1 expr_list RB1 Semicolon .
+   21           | Id Assigno Id LB1 expr_list RB1 Semicolon . init_decl_
+
+    Id  shift, and go to state 105
+
+    $default  reduce using rule 20 (init_decl_)
+
+    init_decl_  go to state 207
+
+
+State 190
+
+   59 expr_pair_list: Id LB2 expr . RB2 Assigno expr Semicolon expr_pair_list
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    RB2        shift, and go to state 208
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 191
+
+   58 expr_pair_list: Id Assigno expr . Semicolon expr_pair_list
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Semicolon  shift, and go to state 209
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 192
+
+   24 trans_decl_: expr Colon LB3 expr_pair_list RB3 Semicolon . trans_decl_
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    $default  reduce using rule 23 (trans_decl_)
+
+    trans_decl_  go to state 210
+    expr         go to state 122
+    nested_var   go to state 31
+
+
+State 193
+
+   54 bound_vars: Id Comma bound_vars .
+
+    $default  reduce using rule 54 (bound_vars)
+
+
+State 194
+
+   27 atomic_decl_: Id LB1 bound_vars RB1 Assigno . state_expr Semicolon atomic_decl_
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 215
+
+
+State 195
+
+   37 fml: AX LB1 . Id Comma fml Comma state RB1
+
+    Id  shift, and go to state 216
+
+
+State 196
+
+   38 fml: EX LB1 . Id Comma fml Comma state RB1
+
+    Id  shift, and go to state 217
+
+
+State 197
+
+   39 fml: AF LB1 . Id Comma fml Comma state RB1
+
+    Id  shift, and go to state 218
+
+
+State 198
+
+   40 fml: EG LB1 . Id Comma fml Comma state RB1
+
+    Id  shift, and go to state 219
+
+
+State 199
+
+   41 fml: AR LB1 . Id Comma Id Comma fml Comma fml Comma state RB1
+
+    Id  shift, and go to state 220
+
+
+State 200
+
+   42 fml: EU LB1 . Id Comma Id Comma fml Comma fml Comma state RB1
+
+    Id  shift, and go to state 221
+
+
+State 201
+
+   34 fml: Neg fml .
+   35    | fml . And fml
+   36    | fml . Or fml
+
+    $default  reduce using rule 34 (fml)
+
+
+State 202
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   43    | LB1 fml . RB1
+
+    RB1  shift, and go to state 222
+    And  shift, and go to state 205
+    Or   shift, and go to state 206
+
+
+State 203
+
+   33 fml: Id LB1 . state_list RB1
+
+    Id  shift, and go to state 223
+
+    $default  reduce using rule 44 (state_list)
+
+    state_list  go to state 224
+    state       go to state 225
+
+
+State 204
+
+   30 spec_decl_: Id Assigno fml Semicolon . spec_decl_
+
+    Id  shift, and go to state 153
+
+    $default  reduce using rule 29 (spec_decl_)
+
+    spec_decl_  go to state 226
+
+
+State 205
+
+   35 fml: fml And . fml
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 227
+
+
+State 206
+
+   36 fml: fml Or . fml
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 228
+
+
+State 207
+
+   21 init_decl_: Id Assigno Id LB1 expr_list RB1 Semicolon init_decl_ .
+
+    $default  reduce using rule 21 (init_decl_)
+
+
+State 208
+
+   59 expr_pair_list: Id LB2 expr RB2 . Assigno expr Semicolon expr_pair_list
+
+    Assigno  shift, and go to state 229
+
+
+State 209
+
+   58 expr_pair_list: Id Assigno expr Semicolon . expr_pair_list
+
+    Id  shift, and go to state 161
+
+    $default  reduce using rule 57 (expr_pair_list)
+
+    expr_pair_list  go to state 230
+
+
+State 210
+
+   24 trans_decl_: expr Colon LB3 expr_pair_list RB3 Semicolon trans_decl_ .
+
+    $default  reduce using rule 24 (trans_decl_)
+
+
+State 211
+
+   99 state_expr: LB1 . state_expr RB1
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 231
+
+
+State 212
+
+   86 state_expr: Nego . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 232
+
+
+State 213
+
+   85 state_expr: Minus . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 233
+
+
+State 214
+
+   84 state_expr: Id . LB1 expr RB1
+
+    LB1  shift, and go to state 234
+
+
+State 215
+
+   27 atomic_decl_: Id LB1 bound_vars RB1 Assigno state_expr . Semicolon atomic_decl_
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Semicolon  shift, and go to state 235
+    Ando       shift, and go to state 236
+    Oro        shift, and go to state 237
+    Non_equal  shift, and go to state 238
+    Mod        shift, and go to state 239
+    Equal      shift, and go to state 240
+    Add        shift, and go to state 241
+    Minus      shift, and go to state 242
+    Mult       shift, and go to state 243
+    LT         shift, and go to state 244
+    GT         shift, and go to state 245
+    LE         shift, and go to state 246
+    GE         shift, and go to state 247
+
+
+State 216
+
+   37 fml: AX LB1 Id . Comma fml Comma state RB1
+
+    Comma  shift, and go to state 248
+
+
+State 217
+
+   38 fml: EX LB1 Id . Comma fml Comma state RB1
+
+    Comma  shift, and go to state 249
+
+
+State 218
+
+   39 fml: AF LB1 Id . Comma fml Comma state RB1
+
+    Comma  shift, and go to state 250
+
+
+State 219
+
+   40 fml: EG LB1 Id . Comma fml Comma state RB1
+
+    Comma  shift, and go to state 251
+
+
+State 220
+
+   41 fml: AR LB1 Id . Comma Id Comma fml Comma fml Comma state RB1
+
+    Comma  shift, and go to state 252
+
+
+State 221
+
+   42 fml: EU LB1 Id . Comma Id Comma fml Comma fml Comma state RB1
+
+    Comma  shift, and go to state 253
+
+
+State 222
+
+   43 fml: LB1 fml RB1 .
+
+    $default  reduce using rule 43 (fml)
+
+
+State 223
+
+   46 state: Id .
+
+    $default  reduce using rule 46 (state)
+
+
+State 224
+
+   33 fml: Id LB1 state_list . RB1
+
+    RB1  shift, and go to state 254
+
+
+State 225
+
+   45 state_list: state . state_list
+
+    Id  shift, and go to state 223
+
+    $default  reduce using rule 44 (state_list)
+
+    state_list  go to state 255
+    state       go to state 225
+
+
+State 226
+
+   30 spec_decl_: Id Assigno fml Semicolon spec_decl_ .
+
+    $default  reduce using rule 30 (spec_decl_)
+
+
+State 227
+
+   35 fml: fml . And fml
+   35    | fml And fml .
+   36    | fml . Or fml
+
+    $default  reduce using rule 35 (fml)
+
+
+State 228
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   36    | fml Or fml .
+
+    And  shift, and go to state 205
+
+    $default  reduce using rule 36 (fml)
+
+
+State 229
+
+   59 expr_pair_list: Id LB2 expr RB2 Assigno . expr Semicolon expr_pair_list
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 256
+    nested_var  go to state 31
+
+
+State 230
+
+   58 expr_pair_list: Id Assigno expr Semicolon expr_pair_list .
+
+    $default  reduce using rule 58 (expr_pair_list)
+
+
+State 231
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+   99           | LB1 state_expr . RB1
+
+    RB1        shift, and go to state 257
+    Ando       shift, and go to state 236
+    Oro        shift, and go to state 237
+    Non_equal  shift, and go to state 238
+    Mod        shift, and go to state 239
+    Equal      shift, and go to state 240
+    Add        shift, and go to state 241
+    Minus      shift, and go to state 242
+    Mult       shift, and go to state 243
+    LT         shift, and go to state 244
+    GT         shift, and go to state 245
+    LE         shift, and go to state 246
+    GE         shift, and go to state 247
+
+
+State 232
+
+   86 state_expr: Nego state_expr .
+   87           | state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    $default  reduce using rule 86 (state_expr)
+
+
+State 233
+
+   85 state_expr: Minus state_expr .
+   87           | state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando  shift, and go to state 236
+    Oro   shift, and go to state 237
+    Mod   shift, and go to state 239
+    Mult  shift, and go to state 243
+
+    Minus  error (nonassociative)
+
+    $default  reduce using rule 85 (state_expr)
+
+
+State 234
+
+   84 state_expr: Id LB1 . expr RB1
+
+    LB1     shift, and go to state 23
+    Scalar  shift, and go to state 24
+    Nego    shift, and go to state 25
+    Minus   shift, and go to state 26
+    Id      shift, and go to state 27
+    I       shift, and go to state 28
+    B       shift, and go to state 29
+
+    expr        go to state 258
+    nested_var  go to state 31
+
+
+State 235
+
+   27 atomic_decl_: Id LB1 bound_vars RB1 Assigno state_expr Semicolon . atomic_decl_
+
+    Id  shift, and go to state 138
+
+    $default  reduce using rule 26 (atomic_decl_)
+
+    atomic_decl_  go to state 259
+
+
+State 236
+
+   89 state_expr: state_expr Ando . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 260
+
+
+State 237
+
+   90 state_expr: state_expr Oro . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 261
+
+
+State 238
+
+   88 state_expr: state_expr Non_equal . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 262
+
+
+State 239
+
+   94 state_expr: state_expr Mod . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 263
+
+
+State 240
+
+   87 state_expr: state_expr Equal . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 264
+
+
+State 241
+
+   91 state_expr: state_expr Add . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 265
+
+
+State 242
+
+   92 state_expr: state_expr Minus . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 266
+
+
+State 243
+
+   93 state_expr: state_expr Mult . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 267
+
+
+State 244
+
+   95 state_expr: state_expr LT . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 268
+
+
+State 245
+
+   96 state_expr: state_expr GT . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 269
+
+
+State 246
+
+   97 state_expr: state_expr LE . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 270
+
+
+State 247
+
+   98 state_expr: state_expr GE . state_expr
+
+    LB1    shift, and go to state 211
+    Nego   shift, and go to state 212
+    Minus  shift, and go to state 213
+    Id     shift, and go to state 214
+
+    state_expr  go to state 271
+
+
+State 248
+
+   37 fml: AX LB1 Id Comma . fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 272
+
+
+State 249
+
+   38 fml: EX LB1 Id Comma . fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 273
+
+
+State 250
+
+   39 fml: AF LB1 Id Comma . fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 274
+
+
+State 251
+
+   40 fml: EG LB1 Id Comma . fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 275
+
+
+State 252
+
+   41 fml: AR LB1 Id Comma . Id Comma fml Comma fml Comma state RB1
+
+    Id  shift, and go to state 276
+
+
+State 253
+
+   42 fml: EU LB1 Id Comma . Id Comma fml Comma fml Comma state RB1
+
+    Id  shift, and go to state 277
+
+
+State 254
+
+   33 fml: Id LB1 state_list RB1 .
+
+    $default  reduce using rule 33 (fml)
+
+
+State 255
+
+   45 state_list: state state_list .
+
+    $default  reduce using rule 45 (state_list)
+
+
+State 256
+
+   59 expr_pair_list: Id LB2 expr RB2 Assigno expr . Semicolon expr_pair_list
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+
+    Semicolon  shift, and go to state 278
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 257
+
+   99 state_expr: LB1 state_expr RB1 .
+
+    $default  reduce using rule 99 (state_expr)
+
+
+State 258
+
+   71 expr: expr . Equal expr
+   72     | expr . Non_equal expr
+   73     | expr . Ando expr
+   74     | expr . Oro expr
+   75     | expr . Add expr
+   76     | expr . Minus expr
+   77     | expr . Mult expr
+   78     | expr . Mod expr
+   79     | expr . LT expr
+   80     | expr . GT expr
+   81     | expr . LE expr
+   82     | expr . GE expr
+   84 state_expr: Id LB1 expr . RB1
+
+    RB1        shift, and go to state 279
+    Ando       shift, and go to state 46
+    Oro        shift, and go to state 47
+    Non_equal  shift, and go to state 48
+    Mod        shift, and go to state 49
+    Equal      shift, and go to state 50
+    Add        shift, and go to state 51
+    Minus      shift, and go to state 52
+    Mult       shift, and go to state 53
+    LT         shift, and go to state 54
+    GT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GE         shift, and go to state 57
+
+
+State 259
+
+   27 atomic_decl_: Id LB1 bound_vars RB1 Assigno state_expr Semicolon atomic_decl_ .
+
+    $default  reduce using rule 27 (atomic_decl_)
+
+
+State 260
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   89           | state_expr Ando state_expr .
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Mod  shift, and go to state 239
+
+    $default  reduce using rule 89 (state_expr)
+
+
+State 261
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   90           | state_expr Oro state_expr .
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando  shift, and go to state 236
+    Mod   shift, and go to state 239
+
+    $default  reduce using rule 90 (state_expr)
+
+
+State 262
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   88           | state_expr Non_equal state_expr .
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando   shift, and go to state 236
+    Oro    shift, and go to state 237
+    Mod    shift, and go to state 239
+    Add    shift, and go to state 241
+    Minus  shift, and go to state 242
+    Mult   shift, and go to state 243
+
+    Non_equal  error (nonassociative)
+    Equal      error (nonassociative)
+
+    $default  reduce using rule 88 (state_expr)
+
+
+State 263
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   94           | state_expr Mod state_expr .
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Mod  shift, and go to state 239
+
+    $default  reduce using rule 94 (state_expr)
+
+
+State 264
+
+   87 state_expr: state_expr . Equal state_expr
+   87           | state_expr Equal state_expr .
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando   shift, and go to state 236
+    Oro    shift, and go to state 237
+    Mod    shift, and go to state 239
+    Add    shift, and go to state 241
+    Minus  shift, and go to state 242
+    Mult   shift, and go to state 243
+
+    Non_equal  error (nonassociative)
+    Equal      error (nonassociative)
+
+    $default  reduce using rule 87 (state_expr)
+
+
+State 265
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   91           | state_expr Add state_expr .
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando   shift, and go to state 236
+    Oro    shift, and go to state 237
+    Mod    shift, and go to state 239
+    Minus  shift, and go to state 242
+    Mult   shift, and go to state 243
+
+    Add  error (nonassociative)
+
+    $default  reduce using rule 91 (state_expr)
+
+
+State 266
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   92           | state_expr Minus state_expr .
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando  shift, and go to state 236
+    Oro   shift, and go to state 237
+    Mod   shift, and go to state 239
+    Mult  shift, and go to state 243
+
+    Minus  error (nonassociative)
+
+    $default  reduce using rule 92 (state_expr)
+
+
+State 267
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   93           | state_expr Mult state_expr .
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando  shift, and go to state 236
+    Oro   shift, and go to state 237
+    Mod   shift, and go to state 239
+
+    Mult  error (nonassociative)
+
+    $default  reduce using rule 93 (state_expr)
+
+
+State 268
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   95           | state_expr LT state_expr .
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando       shift, and go to state 236
+    Oro        shift, and go to state 237
+    Non_equal  shift, and go to state 238
+    Mod        shift, and go to state 239
+    Equal      shift, and go to state 240
+    Add        shift, and go to state 241
+    Minus      shift, and go to state 242
+    Mult       shift, and go to state 243
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 95 (state_expr)
+
+
+State 269
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   96           | state_expr GT state_expr .
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+
+    Ando       shift, and go to state 236
+    Oro        shift, and go to state 237
+    Non_equal  shift, and go to state 238
+    Mod        shift, and go to state 239
+    Equal      shift, and go to state 240
+    Add        shift, and go to state 241
+    Minus      shift, and go to state 242
+    Mult       shift, and go to state 243
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 96 (state_expr)
+
+
+State 270
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   97           | state_expr LE state_expr .
+   98           | state_expr . GE state_expr
+
+    Ando       shift, and go to state 236
+    Oro        shift, and go to state 237
+    Non_equal  shift, and go to state 238
+    Mod        shift, and go to state 239
+    Equal      shift, and go to state 240
+    Add        shift, and go to state 241
+    Minus      shift, and go to state 242
+    Mult       shift, and go to state 243
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 97 (state_expr)
+
+
+State 271
+
+   87 state_expr: state_expr . Equal state_expr
+   88           | state_expr . Non_equal state_expr
+   89           | state_expr . Ando state_expr
+   90           | state_expr . Oro state_expr
+   91           | state_expr . Add state_expr
+   92           | state_expr . Minus state_expr
+   93           | state_expr . Mult state_expr
+   94           | state_expr . Mod state_expr
+   95           | state_expr . LT state_expr
+   96           | state_expr . GT state_expr
+   97           | state_expr . LE state_expr
+   98           | state_expr . GE state_expr
+   98           | state_expr GE state_expr .
+
+    Ando       shift, and go to state 236
+    Oro        shift, and go to state 237
+    Non_equal  shift, and go to state 238
+    Mod        shift, and go to state 239
+    Equal      shift, and go to state 240
+    Add        shift, and go to state 241
+    Minus      shift, and go to state 242
+    Mult       shift, and go to state 243
+
+    LT  error (nonassociative)
+    GT  error (nonassociative)
+    LE  error (nonassociative)
+    GE  error (nonassociative)
+
+    $default  reduce using rule 98 (state_expr)
+
+
+State 272
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   37    | AX LB1 Id Comma fml . Comma state RB1
+
+    Comma  shift, and go to state 280
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 273
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   38    | EX LB1 Id Comma fml . Comma state RB1
+
+    Comma  shift, and go to state 281
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 274
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   39    | AF LB1 Id Comma fml . Comma state RB1
+
+    Comma  shift, and go to state 282
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 275
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   40    | EG LB1 Id Comma fml . Comma state RB1
+
+    Comma  shift, and go to state 283
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 276
+
+   41 fml: AR LB1 Id Comma Id . Comma fml Comma fml Comma state RB1
+
+    Comma  shift, and go to state 284
+
+
+State 277
+
+   42 fml: EU LB1 Id Comma Id . Comma fml Comma fml Comma state RB1
+
+    Comma  shift, and go to state 285
+
+
+State 278
+
+   59 expr_pair_list: Id LB2 expr RB2 Assigno expr Semicolon . expr_pair_list
+
+    Id  shift, and go to state 161
+
+    $default  reduce using rule 57 (expr_pair_list)
+
+    expr_pair_list  go to state 286
+
+
+State 279
+
+   84 state_expr: Id LB1 expr RB1 .
+
+    $default  reduce using rule 84 (state_expr)
+
+
+State 280
+
+   37 fml: AX LB1 Id Comma fml Comma . state RB1
+
+    Id  shift, and go to state 223
+
+    state  go to state 287
+
+
+State 281
+
+   38 fml: EX LB1 Id Comma fml Comma . state RB1
+
+    Id  shift, and go to state 223
+
+    state  go to state 288
+
+
+State 282
+
+   39 fml: AF LB1 Id Comma fml Comma . state RB1
+
+    Id  shift, and go to state 223
+
+    state  go to state 289
+
+
+State 283
+
+   40 fml: EG LB1 Id Comma fml Comma . state RB1
+
+    Id  shift, and go to state 223
+
+    state  go to state 290
+
+
+State 284
+
+   41 fml: AR LB1 Id Comma Id Comma . fml Comma fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 291
+
+
+State 285
+
+   42 fml: EU LB1 Id Comma Id Comma . fml Comma fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 292
+
+
+State 286
+
+   59 expr_pair_list: Id LB2 expr RB2 Assigno expr Semicolon expr_pair_list .
+
+    $default  reduce using rule 59 (expr_pair_list)
+
+
+State 287
+
+   37 fml: AX LB1 Id Comma fml Comma state . RB1
+
+    RB1  shift, and go to state 293
+
+
+State 288
+
+   38 fml: EX LB1 Id Comma fml Comma state . RB1
+
+    RB1  shift, and go to state 294
+
+
+State 289
+
+   39 fml: AF LB1 Id Comma fml Comma state . RB1
+
+    RB1  shift, and go to state 295
+
+
+State 290
+
+   40 fml: EG LB1 Id Comma fml Comma state . RB1
+
+    RB1  shift, and go to state 296
+
+
+State 291
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   41    | AR LB1 Id Comma Id Comma fml . Comma fml Comma state RB1
+
+    Comma  shift, and go to state 297
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 292
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   42    | EU LB1 Id Comma Id Comma fml . Comma fml Comma state RB1
+
+    Comma  shift, and go to state 298
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 293
+
+   37 fml: AX LB1 Id Comma fml Comma state RB1 .
+
+    $default  reduce using rule 37 (fml)
+
+
+State 294
+
+   38 fml: EX LB1 Id Comma fml Comma state RB1 .
+
+    $default  reduce using rule 38 (fml)
+
+
+State 295
+
+   39 fml: AF LB1 Id Comma fml Comma state RB1 .
+
+    $default  reduce using rule 39 (fml)
+
+
+State 296
+
+   40 fml: EG LB1 Id Comma fml Comma state RB1 .
+
+    $default  reduce using rule 40 (fml)
+
+
+State 297
+
+   41 fml: AR LB1 Id Comma Id Comma fml Comma . fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 299
+
+
+State 298
+
+   42 fml: EU LB1 Id Comma Id Comma fml Comma . fml Comma state RB1
+
+    Top     shift, and go to state 176
+    Bottom  shift, and go to state 177
+    AX      shift, and go to state 178
+    EX      shift, and go to state 179
+    AF      shift, and go to state 180
+    EG      shift, and go to state 181
+    AR      shift, and go to state 182
+    EU      shift, and go to state 183
+    Neg     shift, and go to state 184
+    LB1     shift, and go to state 185
+    Id      shift, and go to state 186
+
+    fml  go to state 300
+
+
+State 299
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   41    | AR LB1 Id Comma Id Comma fml Comma fml . Comma state RB1
+
+    Comma  shift, and go to state 301
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 300
+
+   35 fml: fml . And fml
+   36    | fml . Or fml
+   42    | EU LB1 Id Comma Id Comma fml Comma fml . Comma state RB1
+
+    Comma  shift, and go to state 302
+    And    shift, and go to state 205
+    Or     shift, and go to state 206
+
+
+State 301
+
+   41 fml: AR LB1 Id Comma Id Comma fml Comma fml Comma . state RB1
+
+    Id  shift, and go to state 223
+
+    state  go to state 303
+
+
+State 302
+
+   42 fml: EU LB1 Id Comma Id Comma fml Comma fml Comma . state RB1
+
+    Id  shift, and go to state 223
+
+    state  go to state 304
+
+
+State 303
+
+   41 fml: AR LB1 Id Comma Id Comma fml Comma fml Comma state . RB1
+
+    RB1  shift, and go to state 305
+
+
+State 304
+
+   42 fml: EU LB1 Id Comma Id Comma fml Comma fml Comma state . RB1
+
+    RB1  shift, and go to state 306
+
+
+State 305
+
+   41 fml: AR LB1 Id Comma Id Comma fml Comma fml Comma state RB1 .
+
+    $default  reduce using rule 41 (fml)
+
+
+State 306
+
+   42 fml: EU LB1 Id Comma Id Comma fml Comma fml Comma state RB1 .
+
+    $default  reduce using rule 42 (fml)
