@@ -132,6 +132,10 @@ expr ::=
       | expr ";" expr		(*expression with effect*)
       | expr "<-" expr		(*assignment*)
       | match_expr			(*pattern matching*)
+      | "let" pattern "=" expr "in" expr	(*let binding*)
+      | expr "with" "{" {iden "=" expr ";"}* iden "=" expr "}"
+      						(*a record with changed bindings*)
+      
 
 constant ::= ()
 		   | number
