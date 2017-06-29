@@ -36,8 +36,9 @@ Base types are listed as follows.
 
 1. `unit`: the unit type. `()` the only one constant of type `unit`. Besides, the type of commands is also `unit`;
 2. `int`: integer type, whose range depends on the implementation platform of the prover SCTLProV. For instance, if SCTLProV is implemented in 32-bit OCaml platform, then the range of the type `int` is [-2^31^, 2^31^-1]; 
-3. `int (int, int)`: integer type with range, whose range is specified explicitly. For instance, `int (-1, 9)` specifies the type whose value varies from the range [-1, 9];
-4. `bool`: boolean type, which consists two dinsguishable values: `true` and `false`;
+3. `float`: double precision (64 bits) floating-point type, following the IEEE 754 standard;
+4. `int (int, int)`: integer type with range, whose range is specified explicitly. For instance, `int (-1, 9)` specifies the type whose value varies from the range [-1, 9];
+5. `bool`: boolean type, which consists two dinsguishable values: `true` and `false`;
 
 ### 2.2.2 Compound types
 
@@ -132,7 +133,6 @@ expr ::=
       | expr ";" expr		(*expression with effect*)
       | expr "<-" expr		(*assignment*)
       | match_expr			(*pattern matching*)
-      | "let" pattern "=" expr "in" expr	(*let binding*)
       | expr "with" "{" {iden "=" expr ";"}* iden "=" expr "}"
       						(*a record with changed bindings*)
       
@@ -175,9 +175,9 @@ args ::= iden [":" type] {"," iden [":" type]}*
 The Kripke model is specified by the declaration as follows.
 
 ```
-kripke_def ::= "{"
+kripke_def ::= "Model" "{"
 				"init" "=" expr
-				"transition" "(" iden ")" "=" expr
+				"transition" iden "=" expr
                 {"property" iden "=" formula}+
 			"}"
 			
