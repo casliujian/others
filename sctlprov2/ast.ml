@@ -7,10 +7,10 @@ type location = {
 }
 type attribute = Mutable | Unmutable
 type ptyp = TInt | TFloat | TBool | TUnt 
-          | TAray of ptyp 
-          | TLst of ptyp
-          | TTuple of ptyp list
-          | TRecord of (string * ptyp) list
+          | TAray of ptyp option
+          | TLst of ptyp option
+          | TTuple of (ptyp option) list
+          | TRecord of (string * (ptyp option)) list
           | TUdt of string
           | TVar of int
 
@@ -50,15 +50,15 @@ and pexpr =
     | PIF of pexpr_loc * pexpr_loc * (pexpr_loc option)
     | PWhile of pexpr_loc * pexpr_loc
     | PFor of pexpr_loc * pexpr_loc * pexpr_loc * pexpr_loc
-    | PSeq of pexpr_loc * pexpr_loc
+    | PSeq of pexpr_loc list
     | PAssign of pexpr_loc * pexpr_loc
     | PMatch of pexpr_loc * ((ppattern_loc * pexpr_loc) list)
-    | PWith of pexpr * ((string * pexpr_loc) list)
+    | PWith of pexpr_loc * ((string * pexpr_loc) list)
     | PConstr of pconstr_loc
 and ppattern_loc = {
     ppat: ppattern;
     loc: location;
-    constrnt: pexpr_loc option; 
+    (*constrnt: pexpr_loc option; *)
 }
 and ppattern =
       PPat_Symbol of string
@@ -71,7 +71,7 @@ and ppattern =
     | PPat_Underline
     | PPat_Tuple of (ppattern_loc list)
     | PPat_Record of ((string * ppattern_loc) list)
-    | PPat_Constr of string * (ppattern_loc option)
+    | PPat_Constr of (string * (ppattern_loc option))
 and pconstr_loc = {
     pconstr: pconstr;
     loc: location;
@@ -96,7 +96,7 @@ and pformula_loc = {
     pfml: pformula;
     loc: location;
 }
-exception type_mismatch of pexpr_loc * ptyp * ptyp (*type_mismatch (type_has, type_expected)*)
+exception Type_mismatch of pexpr_loc * ptyp * ptyp (*type_mismatch (type_has, type_expected)*)
 type ast = 
     | PExpr_loc of pexpr_loc
     | PConstrs of pconstr_loc list
@@ -126,13 +126,13 @@ let mk_pexpr_loc pexpr ptyp loc_start loc_end = {
     };
     (*attri = attri;*)
 }
-let mk_ppat_loc ppat loc_start loc_end constrnt = {
+let mk_ppat_loc ppat loc_start loc_end = {
     ppat = ppat;
     loc = {
         loc_start = loc_start;
         loc_end = loc_end;
     };
-    constrnt = constrnt;
+    (*constrnt = constrnt;*)
 }
 let mk_pconstr_loc pconstr loc_start loc_end = {
     pconstr = pconstr;

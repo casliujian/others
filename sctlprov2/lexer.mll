@@ -10,6 +10,7 @@ let uiden = ['A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
 rule token = parse 
   | "import"    {Import}
   | "datatype"  {Datatype}
+  | "function"  {Function}
   | "match"     {Match}
   | "with"      {With}
   | "Model"     {Model}
