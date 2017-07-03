@@ -6,13 +6,27 @@ type location = {
     loc_end: position;
 }
 type attribute = Mutable | Unmutable
-type ptyp = TInt | TFloat | TBool | TUnt 
-          | TAray of ptyp option
-          | TLst of ptyp option
-          | TTuple of (ptyp option) list
-          | TRecord of (string * (ptyp option)) list
-          | TUdt of string
-          | TVar of int
+type ptyp = PTInt | PTFloat | PTBool | PTUnt 
+          | PTAray of ptyp option
+          | PTLst of ptyp option
+          | PTTuple of (ptyp option) list
+          | PTRecord of (string * (ptyp option)) list
+          | PTUdt of string
+          | PTVar of int
+
+type ptyp = PTInt | PTFloat | PTBool | PTUnt 
+          | PTAray of ptyp
+          | PTLst of ptyp
+          | PTTuple of (ptyp) list
+          | PTRecord of (string * (ptyp)) list
+          | PTConstrs of (string * (ptyp option)) list
+          | PTUdt of string
+          | PTVar of int
+and ptyp_constr = PTyp of ptyp | 
+and ptyp_loc = {
+    ptyp: ptyp;
+    loc: location;
+}
 
 type pexpr_loc = {
     pexpr: pexpr;
@@ -22,6 +36,8 @@ type pexpr_loc = {
 }
 and pexpr = 
       PSymbol of string
+    | PLocal_Val of string * pexpr_loc
+    | PLocal_Var of string * pexpr_loc
     | PDot of pexpr_loc * pexpr_loc
     | PInt of int
     | PFloat of float
@@ -99,7 +115,7 @@ and pformula_loc = {
 exception Type_mismatch of pexpr_loc * ptyp * ptyp (*type_mismatch (type_has, type_expected)*)
 type ast = 
     | PExpr_loc of pexpr_loc
-    | PConstrs of pconstr_loc list
+    | PConstrs of (string, ptyp_loc option) Hashtbl.t
     | PFunction of (ppattern_loc list) * pexpr_loc
     (*| PTyp of ptyp
     | PPattern of ppattern_loc*)
@@ -115,6 +131,7 @@ type pmodul = {
     fname: string;
     imported: string list;
     psymbol_tbl: psymbol_tbl;
+    pkripke_model: pkripke_model option;
 }
 
 let mk_pexpr_loc pexpr ptyp loc_start loc_end = {

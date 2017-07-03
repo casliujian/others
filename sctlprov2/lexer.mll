@@ -10,6 +10,12 @@ let uiden = ['A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
 rule token = parse 
   | "import"    {Import}
   | "datatype"  {Datatype}
+  | "int"       {TInt}
+  | "float"     {TFloat}
+  | "unit"      {TUnt}
+  | "bool"      {TBool}
+  | "array"     {TAray}
+  | "list"      {TLst}
   | "function"  {Function}
   | "match"     {Match}
   | "with"      {With}
@@ -40,6 +46,7 @@ rule token = parse
   | float as f    {Float (float_of_string f)}
   | iden as id  {Iden id}
   | uiden as ui {UIden ui}
+  | "*"         {Star}
   | "!"         {Negb}
   | "&&"        {Ando}
   | "||"        {Oro}

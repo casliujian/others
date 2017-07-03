@@ -76,4 +76,4 @@ exception Error
 
 (* The monolithic API. *)
 
-val program: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> ((string list) * psymbol_tbl * (pkripke_model option))
+val program: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> ((string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option))

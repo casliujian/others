@@ -2,7 +2,7 @@
     open Ast
 
     let imported = ref []
-    let symbol_tbl:psymbol_tbl = Hashtbl.create 1
+    let symbol_tbl:(Ast.psymbol_tbl) = Hashtbl.create 1
     let kripke_model = ref None
 %}
 %token <int>Int 
@@ -12,7 +12,7 @@
 %token LB1 RB1 LB2 RB2 LB3 RB3 Equal Non_Equal LT GT LE GE Comma Semicolon Dot DotDot Arrow EOF Add AddDot Minus MinusDot Mult MultDot
 %token Negb Ando Oro And Or Neg LArrow ColonColon Init Top Bottom AX EX AF EG AR EU True False Function
 
-%start <(string list) * psymbol_tbl * (pkripke_model option)>program
+%start <(string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option)>program
 
 /*%left Semicolon*/
 %left Or
@@ -84,9 +84,17 @@ args: pattern   {[$1]}
 constr_locs: option(Vertical) c = constr   {[mk_pconstr_loc c $startpos(c) $endpos(c)]}
         | cl = constr_locs Vertical c = constr   {cl @ [mk_pconstr_loc c $startpos(c) $endpos(c)]}
 ;
-constr: uid = UIden {PConstr_basic uid}
-    | uid = UIden e = expr {PConstr_compound (uid, e)}
+constr: uid = UIden {(uid, None)}
+    | uid = UIden t = typ {(uid, Some t)}
 ;
+
+typ: TInt {PTInt} 
+    | TBool {PTBool}
+    | TFloat {PTFloat}
+    | typ TAray {PTAray (Some $1)}
+    | typ TLst {PTLst (Some $1)}
+    | Iden  {PTUdt $1}
+    | LB1  RB1
 
 expr: expr_single {$1}
     | e = expr_single Semicolon el = separated_nonempty_list(Semicolon, expr_single)    {mk_pexpr_loc (PSeq (e::el)) None $startpos(e) $endpos(el)}
@@ -94,9 +102,9 @@ expr: expr_single {$1}
 
 expr_single: id = Iden {mk_pexpr_loc (PSymbol id) None $startpos(id) $endpos(id)}
     | Iden Dot expr_single     {mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) None $startpos($1) $endpos($1), $3)) None $startpos($1) $endpos($3)}
-    | i = Int   {mk_pexpr_loc (PInt i) (Some TInt) $startpos(i) $endpos(i)}
-    | f = Float {mk_pexpr_loc (PFloat f) (Some TFloat) $startpos(f) $endpos(f)}
-    | LB1 RB1   {mk_pexpr_loc PUnt (Some TUnt) $startpos($1) $endpos($2)}
+    | i = Int   {mk_pexpr_loc (PInt i) (Some PPTInt) $startpos(i) $endpos(i)}
+    | f = Float {mk_pexpr_loc (PFloat f) (Some PTFloat) $startpos(f) $endpos(f)}
+    | LB1 RB1   {mk_pexpr_loc PUnt (Some PTUnt) $startpos($1) $endpos($2)}
     | LB2 Vertical el = expr_single_list Vertical RB2   {
             let ea = Array.of_list el in
             if Array.length ea = 0 then
@@ -105,7 +113,7 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) None $startpos(id) $endpos(id)
                 let e0 = ea.(0) in
                 match e0.ptyp with
                 | None -> mk_pexpr_loc (PAray ea) None $startpos($1) $endpos($5)
-                | Some t -> mk_pexpr_loc (PAray ea) (Some (TAray (Some t))) $startpos($1) $endpos($5)
+                | Some t -> mk_pexpr_loc (PAray ea) (Some (PTAray (Some t))) $startpos($1) $endpos($5)
             end 
         }
     | LB2 el = expr_single_list RB2    {
@@ -115,197 +123,197 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) None $startpos(id) $endpos(id)
                 let e0 = List.hd el in
                 match e0.ptyp with
                 | None -> mk_pexpr_loc (PLst el) None $startpos($1) $endpos($3)
-                | Some t -> mk_pexpr_loc (PLst el) (Some (TLst (Some t))) $startpos($1) $endpos($3)
+                | Some t -> mk_pexpr_loc (PLst el) (Some (PTLst (Some t))) $startpos($1) $endpos($3)
             end
         }
-    | True  {mk_pexpr_loc (PBool true) (Some TBool) $startpos($1) $endpos($1)}
-    | False {mk_pexpr_loc (PBool false) (Some TBool) $startpos($1) $endpos($1)}
+    | True  {mk_pexpr_loc (PBool true) (Some PTBool) $startpos($1) $endpos($1)}
+    | False {mk_pexpr_loc (PBool false) (Some PTBool) $startpos($1) $endpos($1)}
     | LB1 e = expr Comma el = separated_nonempty_list(Comma, expr) RB1 {
             let elt = List.map (fun e -> e.ptyp) (e::el) in
-            mk_pexpr_loc (PTuple el) (Some (TTuple elt)) $startpos($1) $endpos($5)
+            mk_pexpr_loc (PTuple el) (Some (PTTuple elt)) $startpos($1) $endpos($5)
         }
     | LB3 str_el = str_expr_list RB3 {
             let str_elt = List.map (fun se -> (fst se, (snd se).ptyp)) str_el in
-            mk_pexpr_loc (PRecord str_el) (Some (TRecord str_elt)) $startpos($1) $endpos($3)
+            mk_pexpr_loc (PRecord str_el) (Some (PTRecord str_elt)) $startpos($1) $endpos($3)
         }
     | Negb e = expr_single     {
             match e.ptyp with
-            | None | Some TBool -> 
-                e.ptyp <- Some TBool; 
-                mk_pexpr_loc (PNegb e) (Some TBool) $startpos($1) $endpos(e)
-            | Some t -> raise (Type_mismatch (e, t, TBool))
+            | None | Some PTBool -> 
+                e.ptyp <- Some PTBool; 
+                mk_pexpr_loc (PNegb e) (Some PTBool) $startpos($1) $endpos(e)
+            | Some t -> raise (Type_mismatch (e, t, PTBool))
         }
     | e1 = expr_single Ando e2 = expr_single  {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TBool | Some TBool, None | Some TBool, Some TBool ->
-                e1.ptyp <- Some TBool;
-                e2.ptyp <- Some TBool;
-                mk_pexpr_loc (PAndo (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TBool)) 
-            | Some t, Some TBool -> raise (Type_mismatch (e1, t, TBool))
-            | None, Some t -> raise (Type_mismatch (e2, t, TBool))
-            | Some TBool, Some t -> raise (Type_mismatch (e2, t, TBool))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TBool))
+            | None, None | None, Some PTBool | Some PTBool, None | Some PTBool, Some PTBool ->
+                e1.ptyp <- Some PTBool;
+                e2.ptyp <- Some PTBool;
+                mk_pexpr_loc (PAndo (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTBool)) 
+            | Some t, Some PTBool -> raise (Type_mismatch (e1, t, PTBool))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTBool))
+            | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTBool))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))
         }
     | e1 = expr_single Oro e2 = expr_single  {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TBool | Some TBool, None | Some TBool, Some TBool ->
-                e1.ptyp <- Some TBool;
-                e2.ptyp <- Some TBool;
-                mk_pexpr_loc (POro (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TBool)) 
-            | Some t, Some TBool -> raise ((Type_mismatch (e1, t, TBool)))
-            | None, Some t -> raise (Type_mismatch (e2, t, TBool))
-            | Some TBool, Some t -> raise (Type_mismatch (e2, t, TBool))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TBool))
+            | None, None | None, Some PTBool | Some PTBool, None | Some PTBool, Some PTBool ->
+                e1.ptyp <- Some PTBool;
+                e2.ptyp <- Some PTBool;
+                mk_pexpr_loc (POro (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTBool)) 
+            | Some t, Some PTBool -> raise ((Type_mismatch (e1, t, PTBool)))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTBool))
+            | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTBool))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))
         }
     | Minus e = expr_single {
             match e.ptyp with
-            | None | Some TInt ->
-                e.ptyp <- Some TInt;
-                mk_pexpr_loc (PNegi e) (Some TInt) $startpos($1) $endpos(e)
-            | Some t -> raise (Type_mismatch (e, t, TInt))
+            | None | Some PTInt ->
+                e.ptyp <- Some PTInt;
+                mk_pexpr_loc (PNegi e) (Some PTInt) $startpos($1) $endpos(e)
+            | Some t -> raise (Type_mismatch (e, t, PTInt))
         }
     | e1 = expr_single Add e2 = expr_single {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TInt | Some TInt, None | Some TInt, Some TInt ->
-                e1.ptyp <- Some TInt;
-                e2.ptyp <- Some TInt;
-                mk_pexpr_loc (PAdd (e1, e2)) (Some TInt) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TInt)) 
-            | Some t, Some TInt -> raise (Type_mismatch (e1, t, TInt))
-            | None, Some t -> raise (Type_mismatch (e2, t, TInt))
-            | Some TInt, Some t -> raise (Type_mismatch (e2, t, TInt))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TInt))
+            | None, None | None, Some PTInt | Some PTInt, None | Some PTInt, Some PTInt ->
+                e1.ptyp <- Some PTInt;
+                e2.ptyp <- Some PTInt;
+                mk_pexpr_loc (PAdd (e1, e2)) (Some PTInt) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTInt)) 
+            | Some t, Some PTInt -> raise (Type_mismatch (e1, t, PTInt))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTInt))
+            | Some PTInt, Some t -> raise (Type_mismatch (e2, t, PTInt))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTInt))
         }
     | e1 = expr_single Minus e2 = expr_single {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TInt | Some TInt, None | Some TInt, Some TInt ->
-                e1.ptyp <- Some TInt;
-                e2.ptyp <- Some TInt;
-                mk_pexpr_loc (PMinus (e1, e2)) (Some TInt) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TInt)) 
-            | Some t, Some TInt -> raise (Type_mismatch (e1, t, TInt))
-            | None, Some t -> raise (Type_mismatch (e2, t, TInt))
-            | Some TInt, Some t -> raise (Type_mismatch (e2, t, TInt))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TInt))
+            | None, None | None, Some PTInt | Some PTInt, None | Some PTInt, Some PTInt ->
+                e1.ptyp <- Some PTInt;
+                e2.ptyp <- Some PTInt;
+                mk_pexpr_loc (PMinus (e1, e2)) (Some PTInt) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTInt)) 
+            | Some t, Some PTInt -> raise (Type_mismatch (e1, t, PTInt))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTInt))
+            | Some PTInt, Some t -> raise (Type_mismatch (e2, t, PTInt))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTInt))
         }
     | e1 = expr_single Mult e2 = expr_single {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TInt | Some TInt, None | Some TInt, Some TInt ->
-                e1.ptyp <- Some TInt;
-                e2.ptyp <- Some TInt;
-                mk_pexpr_loc (PMult (e1, e2)) (Some TInt) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TInt)) 
-            | Some t, Some TInt -> raise (Type_mismatch (e1, t, TInt))
-            | None, Some t -> raise (Type_mismatch (e2, t, TInt))
-            | Some TInt, Some t -> raise (Type_mismatch (e2, t, TInt))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TInt))
+            | None, None | None, Some PTInt | Some PTInt, None | Some PTInt, Some PTInt ->
+                e1.ptyp <- Some PTInt;
+                e2.ptyp <- Some PTInt;
+                mk_pexpr_loc (PMult (e1, e2)) (Some PTInt) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTInt)) 
+            | Some t, Some PTInt -> raise (Type_mismatch (e1, t, PTInt))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTInt))
+            | Some PTInt, Some t -> raise (Type_mismatch (e2, t, PTInt))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTInt))
         }
     | e1 = expr_single AddDot e2 = expr_single {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TFloat | Some TFloat, None | Some TFloat, Some TFloat ->
-                e1.ptyp <- Some TFloat;
-                e2.ptyp <- Some TFloat;
-                mk_pexpr_loc (PAddDot (e1, e2)) (Some TFloat) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TFloat))
-            | Some t, Some TFloat -> raise (Type_mismatch (e1, t, TFloat))
-            | None, Some t -> raise (Type_mismatch (e2, t, TFloat))
-            | Some TFloat, Some t -> raise (Type_mismatch (e2, t, TFloat))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TFloat))
+            | None, None | None, Some PTFloat | Some PTFloat, None | Some PTFloat, Some PTFloat ->
+                e1.ptyp <- Some PTFloat;
+                e2.ptyp <- Some PTFloat;
+                mk_pexpr_loc (PAddDot (e1, e2)) (Some PTFloat) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTFloat))
+            | Some t, Some PTFloat -> raise (Type_mismatch (e1, t, PTFloat))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTFloat))
+            | Some PTFloat, Some t -> raise (Type_mismatch (e2, t, PTFloat))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTFloat))
         }
     | e1 = expr_single MinusDot e2 = expr_single {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TFloat | Some TFloat, None | Some TFloat, Some TFloat ->
-                e1.ptyp <- Some TFloat;
-                e2.ptyp <- Some TFloat;
-                mk_pexpr_loc (PMinusDot (e1, e2)) (Some TFloat) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TFloat)) 
-            | Some t, Some TFloat -> raise (Type_mismatch (e1, t, TFloat))
-            | None, Some t -> raise (Type_mismatch (e2, t, TFloat))
-            | Some TFloat, Some t -> raise (Type_mismatch (e2, t, TFloat))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TFloat))
+            | None, None | None, Some PTFloat | Some PTFloat, None | Some PTFloat, Some PTFloat ->
+                e1.ptyp <- Some PTFloat;
+                e2.ptyp <- Some PTFloat;
+                mk_pexpr_loc (PMinusDot (e1, e2)) (Some PTFloat) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTFloat)) 
+            | Some t, Some PTFloat -> raise (Type_mismatch (e1, t, PTFloat))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTFloat))
+            | Some PTFloat, Some t -> raise (Type_mismatch (e2, t, PTFloat))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTFloat))
         }
     | e1 = expr_single MultDot e2 = expr_single {
             match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TFloat | Some TFloat, None | Some TFloat, Some TFloat ->
-                e1.ptyp <- Some TFloat;
-                e2.ptyp <- Some TFloat;
-                mk_pexpr_loc (PMultDot (e1, e2)) (Some TFloat) $startpos(e1) $endpos(e2)
-            | Some t, None -> raise (Type_mismatch (e1, t, TFloat))
-            | Some t, Some TFloat -> raise (Type_mismatch (e1, t, TFloat))
-            | None, Some t -> raise (Type_mismatch (e2, t, TFloat))
-            | Some TFloat, Some t -> raise (Type_mismatch (e2, t, TFloat))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TFloat))
+            | None, None | None, Some PTFloat | Some PTFloat, None | Some PTFloat, Some PTFloat ->
+                e1.ptyp <- Some PTFloat;
+                e2.ptyp <- Some PTFloat;
+                mk_pexpr_loc (PMultDot (e1, e2)) (Some PTFloat) $startpos(e1) $endpos(e2)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTFloat))
+            | Some t, Some PTFloat -> raise (Type_mismatch (e1, t, PTFloat))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTFloat))
+            | Some PTFloat, Some t -> raise (Type_mismatch (e2, t, PTFloat))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTFloat))
         }
-    | e1 = expr_single Equal e2 = expr_single {mk_pexpr_loc (PEqual (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)}
-    | e1 = expr_single Non_Equal e2 = expr_single {mk_pexpr_loc (PNon_Equal (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)}
-    | e1 = expr_single LT e2 = expr_single    {mk_pexpr_loc (PLT (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)}
-    | e1 = expr_single GT e2 = expr_single    {mk_pexpr_loc (PGT (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)}
-    | e1 = expr_single LE e2 = expr_single    {mk_pexpr_loc (PLE (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)}
-    | e1 = expr_single GE e2 = expr_single    {mk_pexpr_loc (PGE (e1, e2)) (Some TBool) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single Equal e2 = expr_single {mk_pexpr_loc (PEqual (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single Non_Equal e2 = expr_single {mk_pexpr_loc (PNon_Equal (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single LT e2 = expr_single    {mk_pexpr_loc (PLT (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single GT e2 = expr_single    {mk_pexpr_loc (PGT (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single LE e2 = expr_single    {mk_pexpr_loc (PLE (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single GE e2 = expr_single    {mk_pexpr_loc (PGE (e1, e2)) (Some PTBool) $startpos(e1) $endpos(e2)}
     | If e1 = expr_single Then e2 = expr oe = option(else_expr)   {
             match oe with
             | None -> begin
                     match e1.ptyp, e2.ptyp with
-                    | None, None | None, Some TUnt | Some TBool, Some TUnt | Some TBool, None -> 
-                        e1.ptyp <- Some TUnt;
-                        e2.ptyp <- Some TBool;
+                    | None, None | None, Some PTUnt | Some PTBool, Some PTUnt | Some PTBool, None -> 
+                        e1.ptyp <- Some PTUnt;
+                        e2.ptyp <- Some PTBool;
                         mk_pexpr_loc (PIF (e1, e2, None)) e2.ptyp $startpos($1) $endpos(oe)
-                    | Some t, None -> raise (Type_mismatch (e1, t, TBool))
-                    | Some t, Some TUnt -> raise (Type_mismatch (e1, t, TBool))
-                    | None, Some t -> raise (Type_mismatch (e2, t, TUnt))
-                    | Some TBool, Some t -> raise (Type_mismatch (e2, t, TUnt))
-                    | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TBool))
+                    | Some t, None -> raise (Type_mismatch (e1, t, PTBool))
+                    | Some t, Some PTUnt -> raise (Type_mismatch (e1, t, PTBool))
+                    | None, Some t -> raise (Type_mismatch (e2, t, PTUnt))
+                    | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTUnt))
+                    | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))
                 end
             | Some e3 -> begin
                     match e1.ptyp with
-                    | None | Some TBool -> 
-                        e1.ptyp <- Some TBool;
+                    | None | Some PTBool -> 
+                        e1.ptyp <- Some PTBool;
                         mk_pexpr_loc (PIF (e1, e2, oe)) e2.ptyp $startpos($1) $endpos(oe)
-                    | Some t -> raise (Type_mismatch (e1, t, TBool))
+                    | Some t -> raise (Type_mismatch (e1, t, PTBool))
                 end
         }
     | While e1 = expr_single Do e2 = expr Done {
              match e1.ptyp, e2.ptyp with
-            | None, None | None, Some TUnt | Some TBool, Some TUnt | Some TBool, None -> 
-                e1.ptyp <- Some TUnt;
-                e2.ptyp <- Some TBool;
-                mk_pexpr_loc (PWhile (e1, e2)) (Some TUnt) $startpos($1) $endpos($5)
-            | Some t, None -> raise (Type_mismatch (e1, t, TBool))
-            | Some t, Some TUnt -> raise (Type_mismatch (e1, t, TBool))
-            | None, Some t -> raise (Type_mismatch (e2, t, TUnt))
-            | Some TBool, Some t -> raise (Type_mismatch (e2, t, TUnt))
-            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, TBool))
+            | None, None | None, Some PTUnt | Some PTBool, Some PTUnt | Some PTBool, None -> 
+                e1.ptyp <- Some PTUnt;
+                e2.ptyp <- Some PTBool;
+                mk_pexpr_loc (PWhile (e1, e2)) (Some PTUnt) $startpos($1) $endpos($5)
+            | Some t, None -> raise (Type_mismatch (e1, t, PTBool))
+            | Some t, Some PTUnt -> raise (Type_mismatch (e1, t, PTBool))
+            | None, Some t -> raise (Type_mismatch (e2, t, PTUnt))
+            | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTUnt))
+            | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))
         }
     | For e1 = expr_single In LB2 e2 = expr_single DotDot e3 = expr_single RB2 Do e4 = expr Done {
             begin
                 match e1.ptyp with
-                | None | Some TBool -> e1.ptyp <- Some TBool
-                | Some t -> raise (Type_mismatch (e1, t, TBool))
+                | None | Some PTBool -> e1.ptyp <- Some PTBool
+                | Some t -> raise (Type_mismatch (e1, t, PTBool))
             end;
             begin
                 match e2.ptyp, e3.ptyp with
-                | None, None | Some TInt, None | None, Some TInt | Some TInt, Some TInt ->
-                    e2.ptyp <- Some TInt;
-                    e3.ptyp <- Some TInt
-                | Some t, None -> raise (Type_mismatch (e2, t, TInt))
-                | Some t, Some TInt -> raise (Type_mismatch (e2, t, TInt))
-                | None, Some t -> raise (Type_mismatch (e3, t, TInt))
-                | Some TInt, Some t -> raise (Type_mismatch (e3, t, TInt))
-                | Some t1, Some t2 -> raise (Type_mismatch (e2, t1, TInt))
+                | None, None | Some PTInt, None | None, Some PTInt | Some PTInt, Some PTInt ->
+                    e2.ptyp <- Some PTInt;
+                    e3.ptyp <- Some PTInt
+                | Some t, None -> raise (Type_mismatch (e2, t, PTInt))
+                | Some t, Some PTInt -> raise (Type_mismatch (e2, t, PTInt))
+                | None, Some t -> raise (Type_mismatch (e3, t, PTInt))
+                | Some PTInt, Some t -> raise (Type_mismatch (e3, t, PTInt))
+                | Some t1, Some t2 -> raise (Type_mismatch (e2, t1, PTInt))
             end;
             begin
                 match e4.ptyp with
-                | None | Some TUnt -> 
-                    e4.ptyp <- Some TUnt;
-                    mk_pexpr_loc (PFor (e1, e2, e3, e4)) (Some TUnt) $startpos($1) $endpos($11)
-                | Some t -> raise (Type_mismatch (e4, t, TUnt))
+                | None | Some PTUnt -> 
+                    e4.ptyp <- Some PTUnt;
+                    mk_pexpr_loc (PFor (e1, e2, e3, e4)) (Some PTUnt) $startpos($1) $endpos($11)
+                | Some t -> raise (Type_mismatch (e4, t, PTUnt))
             end
         }
     /*| e = expr Semicolon el = separated_nonempty_list(Semicolon, expr) {mk_pexpr_loc (PSeq (e::el)) None $startpos(e) $endpos(el)}*/
     /*| e1 = expr Semicolon e2 = expr   {mk_pexpr_loc (PSeq (e1, e2)) (e2.ptyp) $startpos(e1) $endpos(e2)}*/
-    | e1 = expr_single LArrow e2 = expr_single    {mk_pexpr_loc (PAssign (e1, e2)) (Some TUnt) $startpos(e1) $endpos(e2)}
+    | e1 = expr_single LArrow e2 = expr_single    {mk_pexpr_loc (PAssign (e1, e2)) (Some PTUnt) $startpos(e1) $endpos(e2)}
     | Match e1 = expr_single With pel = pattern_expr_list {mk_pexpr_loc (PMatch (e1, pel)) None $startpos($1) $endpos(pel)}
     | e1 = expr_single With LB3 str_el = str_expr_list RB3    {mk_pexpr_loc (PWith (e1, str_el)) e1.ptyp $startpos(e1) $endpos($5)}
     | uid = UIden {mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_basic uid) $startpos(uid) $endpos(uid))) None $startpos(uid) $endpos(uid)}
@@ -315,6 +323,8 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) None $startpos(id) $endpos(id)
             | None -> mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_basic uid) $startpos(uid) $endpos(eo))) None $startpos(uid) $endpos(eo)
             | Some e -> *)
         }
+    | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (Some PTUnt) $startpos($1) $endpos(e)}
+    | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (Some PTUnt) $startpos($1) $endpos(e)}
     | LB1 expr_single RB1  {$2}
 ;
 
