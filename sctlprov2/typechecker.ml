@@ -2,6 +2,8 @@ open Ast
 open Printf
 
 exception Unify_error of ptyp * ptyp
+exception Invalid_typepath of string
+exception Undefined_modul of string
 
 (*type dep = string * ((dep list) option)
 
@@ -14,6 +16,29 @@ let rec dep_of_pmodul pmname pmoduls =
     with Not_found -> eprintf "Error: module %s is not defined.\n" pmname; exit 1*)
 
 type env = (ptyp * ptyp) list
+
+let ptyp_from_path strs modul moduls = 
+    let find_ptyp_in_modul ptname m = 
+        try
+            let modul_exists = ref false in
+            let modul = Hashtbl.find moduls m in
+            modul_exists := true;
+            let kind_ast = Hashtbl.find modul.psymbol_tbl ptname in
+            match kind_ast with
+            | UDT, PTyp pt -> pt
+            | _ -> raise (Invalid_typepath str)
+        with Not_found -> 
+            if !modul_exists then 
+                raise (Invalid_typepath str)
+            else 
+                raise (Undefined_modul m) in
+    let strs = String.split_on_char '.' (String.trim str) in
+    if List.length strs > 2 || List.length strs = 0 then 
+        raise Invalid_typepath str
+    else
+        match strs with
+        | [ptname] -> find_ptyp_in_modul ptname modul
+        | [mname; ptname] -> find_ptyp_in_modul ptname mname
 
 let rec apply_env_to_ptyp env ptyp = 
     let rec find_key_binding bindings (PTVar key) = 
@@ -37,7 +62,7 @@ let rec apply_env_to_ptyp env ptyp =
             ) str_optyps)
     | PTVar vi -> find_key_binding env (PTVar vi)
 
-let rec unify ptyp_list = 
+let rec unify ptyp_list modul moduls = 
     match ptyp_list with
     | [] | [ptyp] -> []
     | ptyp1 :: ptyp2 :: ptyps -> begin
@@ -45,27 +70,71 @@ let rec unify ptyp_list =
             | PTInt, PTInt | PTFloat, PTFloat | PTBool, PTBool | PTUnt, PTUnt -> unify (ptyp2:: ptyps)
             | PTVar vi1, PTVar vi2 -> 
                 if vi1 = vi2 then 
-                    unify (ptyp2::ptyps)
-                else if vi1 > vi2 then
+                    unify (ptyp2::ptyps) modul moduls
+                else if vi1 < vi2 then
                     let env = [(PTVar vi2, PTVar vi1)] in
-                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)))
+                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
                 else 
                     let env = [(PTVar vi1, PTVar vi2)] in
-                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)))
+                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
             | pt, PTVar vi | PTVar vi, pt -> 
                 let env = [(PTVar vi, pt)] in
-                env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)))
+                env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
             | PTAray pt1, PTAray pt2 | PTLst pt1, PTLst pt2 -> 
-                let env = unify [pt1;pt2] in
-                env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)))
+                let env = unify [pt1;pt2] modul moduls in
+                env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
             | PTTuple pts1, PTTuple pts2 -> 
                 if List.length pts1 <> List.length pts2 then
                     raise (Unify_error (ptyp1, ptyp2))
                 else
-                    let env = List.fold_left (fun e (a1,a2) -> (unify [a1;a2]) @ e) [] (List.combine pts1 pts2) in
-                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)))
+                    let env = List.fold_left (fun e (a1,a2) -> (unify [a1;a2] modul moduls) @ e) [] (List.combine pts1 pts2) in
+                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
             | PTRecord str_pt_list1, PTRecord str_pt_list2 ->
-                
+                if List.length str_pt_list1 <> List.length str_pt_list2 then
+                    raise (Unify_error (ptyp1, ptyp2))
+                else 
+                    let rec find_ptyp str_pt_list str =
+                        match str_ptyp with
+                        | [] -> PTVar 0
+                        | (s,pt)::str_pt_list' -> if s = str then pt else find_ptyp str_pt_list' str in
+                    let env = List.fold_left (fun e (str, pt) ->
+                            let pt2 = find_ptyp str_pt_list2 str in
+                            if pt2 = PTVar 0 then 
+                                raise (Unify_error (ptyp1, ptyp2))
+                            else
+                                e @ (unify [pt;pt2] modul moduls)
+                        ) [] str_pt_list1 in
+                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
+            | PTConstrs str_opt_list1, PTConstrs str_opt_list2 -> 
+                if List.length str_opt_list1 <> List.length str_opt_list2 then
+                    raise (Unify_error (ptyp1, ptyp2))
+                else 
+                    let rec find_ptyp str_pt_list str =
+                        match str_ptyp with
+                        | [] -> Some (PTVar 0)
+                        | (s,pt)::str_pt_list' -> if s = str then pt else find_ptyp str_pt_list' str in
+                    let env = List.fold_left (fun e (str, opt) ->
+                            let opt2 = find_ptyp str_opt_list2 str in
+                            match opt, opt2 with
+                            | None, None -> e
+                            | None, Some _ | Some _, None -> raise (Unify_error (ptyp1, ptyp2))
+                            | Some PTVar 0, _ | _, Some PTVar 0 -> raise (Unify_error (ptyp1, ptyp2))
+                            | Some pt1, Some pt2 -> e @ (unify [pt1; pt2] modul moduls)
+                        ) [] str_opt_list1 in
+                    env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
+            | PTUdt (str, ptyp_list), _ -> 
+                (*let strs = String.split_on_char '.' (String.trim str) in*)
+                let ptyp = ptyp_from_path str modul moduls in
+                let index = ref (0) in
+                let ptyp_concrete = List.fold_left (fun pt pt1 -> descr index; replace_ptvar pt index pt1) ptyp ptyp_list in
+                unify (ptyp_concrete::ptyp2::ptyps) modul moduls
+            | _, PTUdt (str, ptyp_list) ->
+                (*let strs = String.split_on_char '.' (String.trim str) in*)
+                let ptyp = ptyp_from_path str modul moduls in
+                let index = ref (0) in
+                let ptyp_concrete = List.fold_left (fun pt pt1 -> descr index; replace_ptvar pt index pt1) ptyp ptyp_list in
+                unify (ptyp1::ptyp_concrete::ptyps) modul moduls
+            | _ -> raise (Unify_error (ptyp1,ptyp2))
         end
 
 
@@ -74,7 +143,18 @@ let rec check_dep pmname pmoduls =
         let pm = Hashtbl.find pmoduls pmname in
         List.iter (fun a -> check_dep a pmoduls) pm.imported
     with Not_found -> 
-            eprintf "Error: module %s is not defined.\n" pmname; 
-            exit 1
+        eprintf "Error: module %s is not defined.\n" pmname; 
+        exit 1
 
-let rec check_type 
+type type_context = ((string * ptyp) list) list
+
+let rec check_type pel env tctx modul moduls = 
+    match pel.pexpr with
+    | PSymbol str -> (env, tctx)
+    | PLocal_Val (str, pel1) | PLocal_Var (str, pel1) -> 
+        let env1, tctx1 = check_type pel1 env tctx modul moduls in
+        match tctx1 with
+        | [] -> (env1, [[(str, pel1.ptyp)]])
+        | c :: cs -> (env1, ((str, pel1.ptyp)::c) :: cs)
+    | PDot _ type should be represented as absolute path
+    

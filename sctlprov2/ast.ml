@@ -20,13 +20,28 @@ type ptyp = PTInt | PTFloat | PTBool | PTUnt
           | PTTuple of (ptyp) list
           | PTRecord of (string * (ptyp)) list
           | PTConstrs of (string * (ptyp option)) list
-          | PTUdt of string
+          | PTUdt of string * (ptyp list)
           | PTVar of int
 and ptyp_constr = PTyp of ptyp | 
 and ptyp_loc = {
     ptyp: ptyp;
     loc: location;
 }
+
+let rec replace_ptvar ptyp i pt = 
+    match ptyp with
+    | PTInt | PTFloat | PTBool | PTUnt -> ptyp
+    | PTVar j -> if i = j then pt else ptyp
+    | PTAray pt1 -> PTAray (replace_ptvar pt1 i pt)
+    | PTLst pt1 -> PTLst (replace_ptvar pt1 i pt)
+    | PTTuple pts -> PTTuple (List.map (fun a -> replace_ptvar a i pt) pts)
+    | PTRecord str_pts -> PTRecord (List.map (fun (str, pt1) -> (str, replace_ptvar pt1 i pt)) str_pts)
+    | PTConstrs str_opts -> 
+        PTConstrs (List.map (fun (str, opt) -> 
+            match opt with 
+            | None -> str, None 
+            | Some pt1 -> str, Some (replace_ptvar pt1 i pt)) str_opts)
+    | PTUdt (str, pts) -> PTUdt (str, List.map (fun pt1 -> replace_ptvar pt1 i pt) pts)
  
 type pexpr_loc = {
     pexpr: pexpr;
@@ -115,12 +130,12 @@ and pformula_loc = {
 exception Type_mismatch of pexpr_loc * ptyp * ptyp (*type_mismatch (type_has, type_expected)*)
 type ast = 
     | PExpr_loc of pexpr_loc
-    | PConstrs of (string, ptyp_loc option) Hashtbl.t
+    | PTyp of ptyp
     | PFunction of (ppattern_loc list) * pexpr_loc
     (*| PTyp of ptyp
     | PPattern of ppattern_loc*)
 
-type psymbol_kind = UDT | Alias | Val | Var | Function
+type psymbol_kind = UDT | Val | Var | Function
 type psymbol_tbl = (string, (psymbol_kind * ast)) Hashtbl.t
 type pkripke_model = {
     init: pexpr_loc;
