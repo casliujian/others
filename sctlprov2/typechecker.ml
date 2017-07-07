@@ -3,6 +3,7 @@ open Printf
 
 exception Unify_error of ptyp * ptyp
 exception Invalid_typepath of string
+exception Invalid_pexpr_loc of pexpr_loc 
 exception Undefined_modul of string
 
 (*type dep = string * ((dep list) option)
@@ -146,15 +147,51 @@ let rec check_dep pmname pmoduls =
         eprintf "Error: module %s is not defined.\n" pmname; 
         exit 1
 
+let expand_udt_path moduls = 
+    let rec add_type_prefix mname ptyp =
+        match ptyp with
+        | PTUdt (str, ptyps) -> 
+            let strs = String.split_on_char '.' str in begin
+                match strs with
+                | [] -> raise (Invalid_typepath str)
+                | [pname] -> PTUdt (mname^"."^str, List.map (fun pt -> add_type_prefix mname pt) ptyps)
+                | _ -> PTUdt (str, List.map (fun pt -> add_type_prefix mname pt) ptyps)     
+            end
+        | PTAray pt -> PTAray (add_type_prefix mname pt)
+        | PTLst pt -> PTAray (add_type_prefix mname pt)
+        | PTTuple pts -> PTTuple (List.map (fun pt -> add_type_prefix mname pt) pts)
+        | PTRecord str_pts -> PTRecord (List.map (fun (str1, pt) -> (str1, add_type_prefix mname pt)) str_pts)
+        | PTConstrs str_opts -> 
+            PTConstrs (List.map (fun (str1, opt) ->
+                match opt with
+                | None -> (str1, None)
+                | Some pt -> (str1, Some (add_type_prefix mname pt))
+            ) str_opts)
+        | _ -> ptyp in
+    Hashtbl.iter (fun mname modul ->
+        Hashtbl.iter (fun (str, (pkind, ast)) -> 
+            match ast with
+            | PExpr_loc pe -> pe.ptyp <- add_type_prefix mname pe.ptyp; PExpr_loc pe
+            | PTyp pt -> add_type_prefix mname pt
+            | PFunction (ppls, pe) -> pe.ptyp <- add_type_prefix mname pe; PFunction (ppls, pe)
+        ) modul.psymbol_tbl
+    ) moduls
+
 type type_context = ((string * ptyp) list) list
 
-let rec check_type pel env tctx modul moduls = 
+let rec calculate_type pel env tctx modul moduls = 
     match pel.pexpr with
     | PSymbol str -> (env, tctx)
     | PLocal_Val (str, pel1) | PLocal_Var (str, pel1) -> 
-        let env1, tctx1 = check_type pel1 env tctx modul moduls in
+        let env1, tctx1 = calculate_type pel1 env tctx modul moduls in
         match tctx1 with
         | [] -> (env1, [[(str, pel1.ptyp)]])
         | c :: cs -> (env1, ((str, pel1.ptyp)::c) :: cs)
-    | PDot _ type should be represented as absolute path
+    | PDot (pel1, pel2) -> 
+        let rec calculate_dot pel3 pel4 m ms = 
+            match pel3, pel4 with
+            | PSymbol str1, PSymbol str2 -> 
+                let fstchar = String.sub str1 0 1 in
+                if fstchar = String.uppercase_ascii fstchar then
+
     
