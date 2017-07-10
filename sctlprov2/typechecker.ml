@@ -3,8 +3,9 @@ open Printf
 
 exception Unify_error of ptyp * ptyp
 exception Invalid_typepath of string
-exception Invalid_pexpr_loc of pexpr_loc 
+exception Invalid_pexpr_loc of pexpr_loc * string
 exception Undefined_modul of string
+exception Undefined_idenfier of string
 
 (*type dep = string * ((dep list) option)
 
@@ -18,7 +19,7 @@ let rec dep_of_pmodul pmname pmoduls =
 
 type env = (ptyp * ptyp) list
 
-let ptyp_from_path strs modul moduls = 
+let ptyp_from_typepath strs modul moduls = 
     let find_ptyp_in_modul ptname m = 
         try
             let modul_exists = ref false in
@@ -125,13 +126,13 @@ let rec unify ptyp_list modul moduls =
                     env @ (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
             | PTUdt (str, ptyp_list), _ -> 
                 (*let strs = String.split_on_char '.' (String.trim str) in*)
-                let ptyp = ptyp_from_path str modul moduls in
+                let ptyp = ptyp_from_typepath str modul moduls in
                 let index = ref (0) in
                 let ptyp_concrete = List.fold_left (fun pt pt1 -> descr index; replace_ptvar pt index pt1) ptyp ptyp_list in
                 unify (ptyp_concrete::ptyp2::ptyps) modul moduls
             | _, PTUdt (str, ptyp_list) ->
                 (*let strs = String.split_on_char '.' (String.trim str) in*)
-                let ptyp = ptyp_from_path str modul moduls in
+                let ptyp = ptyp_from_typepath str modul moduls in
                 let index = ref (0) in
                 let ptyp_concrete = List.fold_left (fun pt pt1 -> descr index; replace_ptvar pt index pt1) ptyp ptyp_list in
                 unify (ptyp1::ptyp_concrete::ptyps) modul moduls
@@ -179,19 +180,121 @@ let expand_udt_path moduls =
 
 type type_context = ((string * ptyp) list) list
 
+let rec find_ptyp str_ptyps str1 = 
+    match str_ptyps with
+    | [] -> PTVar 0
+    | (str, ptyp) :: str_ptyps' -> if str1 = str then ptyp else find_ptyp str_ptyps' str1
+
+let rec type_of_var str tctx = 
+    match tctx with
+    | [] -> PTVar 0
+    | str_ptyps :: tctx' -> 
+        let pt = find_ptyp str_ptyps str in
+        if pt = PTVar 0 then
+            type_of_var str tctx'
+        else 
+            pt
+
+let rec merge_env env1 env2 =
+    match env1 with
+    | [] -> env2
+    | (pt1, pt2) :: env1' -> 
+        let pts = Pairs.find_all env2 pt1 in 
+        let rec find_ptyp pts pt = 
+            match pts with
+            | [] -> pt 
+            | pt3::pts' -> begin
+                    match pt,pt3 with
+                    | PTVar i, PTVar j -> find_ptyp pts' (PTVar (min i j))
+                    | _, PTVar j -> find_ptyp pts' pt
+                    | PTVar i, _ -> find_ptyp pts' pt3
+                    | _ ->  find_ptyp pts' pt
+                end in
+        (pt1, find_ptyp pts pt2)::(merge_env env1' (Pairs.remove_all env2 pt1))
+        
+
+
 let rec calculate_type pel env tctx modul moduls = 
     match pel.pexpr with
-    | PSymbol str -> (env, tctx)
+    | PSymbol str -> 
+        try
+            let pt = type_of_var str tctx in
+            if pt = PTVar 0 then begin
+                let m = Hashtbl.find moduls modul in
+                try
+                    match (Hashtbl.find m str) with
+                    | (Val, PExpr_loc pel1) -> pel.ptyp <- pel1.ptyp; (env, tctx)
+                    | (Var, PExpr_loc pel1) -> pel.ptyp <- pel1.ptyp; (env, tctx)
+                    | _ -> raise (Undefined_idenfier (modul^"."^str))
+                with Not_found -> raise (Undefined_idenfier (modul^"."^str))
+            end else begin
+                pel.ptyp <- pt;
+                (env, tctx)
+            end
+        with Not_found -> raise (Undefined_modul modul)
     | PLocal_Val (str, pel1) | PLocal_Var (str, pel1) -> 
-        let env1, tctx1 = calculate_type pel1 env tctx modul moduls in
-        match tctx1 with
-        | [] -> (env1, [[(str, pel1.ptyp)]])
-        | c :: cs -> (env1, ((str, pel1.ptyp)::c) :: cs)
+        let env1, tctx1 = calculate_type pel1 env tctx modul moduls in begin
+            match tctx1 with
+            | [] -> (env1, [[(str, pel1.ptyp)]])
+            | c :: cs -> (env1, ((str, pel1.ptyp)::c) :: cs)
+        end
     | PDot (pel1, pel2) -> 
-        let rec calculate_dot pel3 pel4 m ms = 
-            match pel3, pel4 with
+        (*let rec calculate_dot pel3 pel4 = *)
+        begin
+            match pel1, pel2 with
             | PSymbol str1, PSymbol str2 -> 
                 let fstchar = String.sub str1 0 1 in
-                if fstchar = String.uppercase_ascii fstchar then
+                if fstchar = String.uppercase_ascii fstchar then begin (*str1 is module name*)
+                    let env1, tctx1 = calculate_type pel2 env tctx str1 moduls in
+                    pel.ptyp <- pel2.ptyp;
+                    (env1, tctx1)
+                end else begin
+                    let _ = calculate_type pel1 env tctx modul moduls in
+                    let pt = pel1.ptyp in begin
+                        match pt with
+                        | PTRecord str_pts -> 
+                            let pt1 = find_ptyp str_pts str2 in
+                            if pt1 = PTVar 0 then
+                                raise (Invalid_pexpr_loc (pel1, "no binding of "^str2^" in the record."))
+                            else begin
+                                pel.ptyp <- pt1;
+                                (env, tctx)
+                            end
+                        | _ -> raise (Invalid_pexpr_loc (pel1, "not a record."))
+                    end
+                end
+            | _, PSymbol str2 ->
+                let _ = calculate_type pel1 env tctx modul moduls in
+                let pt = pel1.ptyp in begin
+                    match pt with
+                    | PTRecord str_pts -> 
+                        let pt1 = find_ptyp str_pts str2 in
+                        if pt1 = PTVar 0 then
+                            raise (Invalid_pexpr_loc (pel1, "no binding of "^str2^" in the record."))
+                        else begin
+                            pel.ptyp <- pt1;
+                            (env, tctx)
+                        end
+                    | _ -> raise (Invalid_pexpr_loc (pel1, "not a record."))
+                end
+            | _ -> raise (Invalid_pexpr_loc (pel,""))
+        end
+    | PInt i -> pel.ptyp <- PTInt; (env, tctx)
+    | PFloat f -> pel.ptyp <- PTFloat; (env, tctx)
+    | PUnt -> pel.ptyp <- PTUnt; (env, tctx)
+    | PAray pel_aray -> 
+        let env1 = unify (List.map (fun pel -> pel.ptyp) (Array.to_list pel_aray)) modul moduls in
+        let new_env = merge_env env1 env in
+        Array.iter (fun pel -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_aray;
+        pel.ptyp <- PTAray (pel_aray.(1).ptyp);
+        (new_env, tctx)
+    | PLst pel_list ->
+        let env1 = unify (List.map (fun pel -> pel.ptyp) pel_list) modul moduls in
+        let new_env = merge_env env1 env in
+        List.iter (fun pel -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_list;
+        pel.ptyp <- PTAray ((List.hd pel_list).ptyp);
+        (new_env, tctx)
+    | PBool b -> pel.ptyp <- PTBool; (env, tctx)
+    | PTuple pel_list -> 
 
     
