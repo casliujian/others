@@ -4,6 +4,16 @@
     let imported = ref []
     let symbol_tbl:(Ast.psymbol_tbl) = Hashtbl.create 1
     let kripke_model = ref None
+    let type_var = ref 0
+    let new_type_var () = 
+        incr type_var;
+        !type_var
+
+    let erase_type_args t args = 
+        let rec erase_ith_type_arg t args i = 
+        match args with
+        | [] -> t
+        | a::ags -> 
 %}
 %token <int>Int 
 %token <float>Float
@@ -41,7 +51,8 @@ imported:   {}
 ;
 
 declars:    {}
-    | Datatype id = Iden Equal cl = constr_locs   {Hashtbl.add symbol_tbl id (UDT, PConstrs cl)}
+    /*| Datatype id = Iden Equal cl = constr_locs   {Hashtbl.add symbol_tbl id (UDT, PConstrs cl)}*/
+    | Datatype id = Iden args = type_args Equal t = type {Hashtbl.add symbol_tbl id (UDT, erase_type_args t args)} 
     | Var id = Iden Equal e = expr_single  {Hashtbl.add symbol_tbl id (Var, PExpr_loc e)}
     | Val id = Iden Equal e = expr_single  {Hashtbl.add symbol_tbl id (Val, PExpr_loc e)}
     | Function id = Iden ags = args Equal e = expr {Hashtbl.add symbol_tbl id (Function, PFunction(ags, e))}

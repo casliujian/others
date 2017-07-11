@@ -42,6 +42,11 @@ let rec replace_ptvar ptyp i pt =
             | None -> str, None 
             | Some pt1 -> str, Some (replace_ptvar pt1 i pt)) str_opts)
     | PTUdt (str, pts) -> PTUdt (str, List.map (fun pt1 -> replace_ptvar pt1 i pt) pts)
+
+let rec replace_udt_with_ptvar ptyp str i = 
+    match ptyp with
+    | PTUdt (s, pts) -> if str=s then PTVar i else PTUdt (s, List.map (fun pt -> replace_udt_with_ptvar pt str i) pts)
+    | PTAray pt1 -> 
  
 type pexpr_loc = {
     pexpr: pexpr;
