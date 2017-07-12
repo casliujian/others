@@ -7,22 +7,14 @@ type location = {
 }
 type attribute = Mutable | Unmutable
 type ptyp = PTInt | PTFloat | PTBool | PTUnt 
-          | PTAray of ptyp option
-          | PTLst of ptyp option
-          | PTTuple of (ptyp option) list
-          | PTRecord of (string * (ptyp option)) list
-          | PTUdt of string
-          | PTVar of int
-
-type ptyp = PTInt | PTFloat | PTBool | PTUnt 
           | PTAray of ptyp
           | PTLst of ptyp
           | PTTuple of (ptyp) list
           | PTRecord of (string * (ptyp)) list
+          | PTArrow of ptyp * ptyp
           | PTConstrs of (string * (ptyp option)) list
           | PTUdt of string * (ptyp list)
           | PTVar of int
-and ptyp_constr = PTyp of ptyp | 
 and ptyp_loc = {
     ptyp: ptyp;
     loc: location;
@@ -42,11 +34,23 @@ let rec replace_ptvar ptyp i pt =
             | None -> str, None 
             | Some pt1 -> str, Some (replace_ptvar pt1 i pt)) str_opts)
     | PTUdt (str, pts) -> PTUdt (str, List.map (fun pt1 -> replace_ptvar pt1 i pt) pts)
+    | PTArrow (pt1, pt2) -> PTArrow (replace_ptvar pt1 i pt, replace_ptvar pt2 i pt)
 
 let rec replace_udt_with_ptvar ptyp str i = 
     match ptyp with
     | PTUdt (s, pts) -> if str=s then PTVar i else PTUdt (s, List.map (fun pt -> replace_udt_with_ptvar pt str i) pts)
-    | PTAray pt1 -> 
+    | PTAray pt1 -> PTAray (replace_udt_with_ptvar pt1 str i)
+    | PTLst pt1 -> PTLst (replace_udt_with_ptvar pt1 str i)
+    | PTTuple (pts) -> PTTuple (List.map (fun pt -> replace_udt_with_ptvar pt str i) pts)
+    | PTRecord str_pts -> PTRecord (List.map (fun (str, pt) -> (str, replace_udt_with_ptvar pt str i)) str_pts)
+    | PTConstrs str_opts ->
+        PTConstrs (List.map (fun (str, opt) ->
+            match opt with
+            | None -> (str, None)
+            | Some pt -> (str, Some (replace_udt_with_ptvar pt str i))
+        ) str_opts)
+    | PTArrow (pt1, pt2) -> PTArrow (replace_udt_with_ptvar pt1 str i, replace_udt_with_ptvar pt2 str i)
+    | _ -> ptyp
  
 type pexpr_loc = {
     pexpr: pexpr;
@@ -64,6 +68,7 @@ and pexpr =
     | PUnt
     | PAray of (pexpr_loc array)
     | PLst of (pexpr_loc list)
+    | PAray_Field of pexpr_loc * pexpr_loc
     | PBool of bool
     | PTuple of (pexpr_loc list)
     | PRecord of ((string * pexpr_loc) list)
@@ -71,6 +76,7 @@ and pexpr =
     | PAndo of pexpr_loc * pexpr_loc
     | POro of pexpr_loc * pexpr_loc
     | PNegi of pexpr_loc
+    | PNegf of pexpr_loc
     | PAdd of pexpr_loc * pexpr_loc
     | PAddDot of pexpr_loc * pexpr_loc
     | PMinus of pexpr_loc * pexpr_loc
@@ -85,12 +91,12 @@ and pexpr =
     | PGE of pexpr_loc * pexpr_loc
     | PIF of pexpr_loc * pexpr_loc * (pexpr_loc option)
     | PWhile of pexpr_loc * pexpr_loc
-    | PFor of pexpr_loc * pexpr_loc * pexpr_loc * pexpr_loc
+    | PFor of string * pexpr_loc * pexpr_loc * pexpr_loc
     | PSeq of pexpr_loc list
     | PAssign of pexpr_loc * pexpr_loc
     | PMatch of pexpr_loc * ((ppattern_loc * pexpr_loc) list)
     | PWith of pexpr_loc * ((string * pexpr_loc) list)
-    | PConstr of pconstr_loc
+    | PConstr of pconstr
 and ppattern_loc = {
     ppat: ppattern;
     loc: location;
@@ -108,10 +114,10 @@ and ppattern =
     | PPat_Tuple of (ppattern_loc list)
     | PPat_Record of ((string * ppattern_loc) list)
     | PPat_Constr of (string * (ppattern_loc option))
-and pconstr_loc = {
+(* and pconstr_loc = {
     pconstr: pconstr;
     loc: location;
-}
+} *)
 and pconstr = 
     | PConstr_basic of string
     | PConstr_compound of string * pexpr_loc
@@ -134,9 +140,9 @@ and pformula_loc = {
 }
 exception Type_mismatch of pexpr_loc * ptyp * ptyp (*type_mismatch (type_has, type_expected)*)
 type ast = 
-    | PExpr_loc of pexpr_loc
+    | PExpr_loc of ptyp * pexpr_loc
     | PTyp of ptyp
-    | PFunction of (ppattern_loc list) * pexpr_loc
+    | PFunction of ptyp * (ppattern_loc list) * pexpr_loc
     (*| PTyp of ptyp
     | PPattern of ppattern_loc*)
 
@@ -171,13 +177,13 @@ let mk_ppat_loc ppat loc_start loc_end = {
     };
     (*constrnt = constrnt;*)
 }
-let mk_pconstr_loc pconstr loc_start loc_end = {
+(* let mk_pconstr_loc pconstr loc_start loc_end = {
     pconstr = pconstr;
     loc = {
         loc_start = loc_start;
         loc_end = loc_end;
     };
-}
+} *)
 let mk_pformula_loc pfml loc_start loc_end = {
     pfml = pfml;
     loc = {
