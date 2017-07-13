@@ -398,6 +398,7 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
             | None -> mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_basic uid) $startpos(uid) $endpos(eo))) None $startpos(uid) $endpos(eo)
             | Some e -> *)
         }
+    | id = Iden el = list(expr_single) {mk_pexpr_loc (PApply (id, el)) (PTVar (new_type_var ())) $startpos($id) $endpos($el)}
     | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | e1 = expr_single LB2 e2 = expr_single RB2 {
@@ -434,18 +435,26 @@ pattern_expr_list: option(Vertical) pe = pattern_expr {[pe]}
 pattern_expr: pattern Arrow expr    {($1, $3)}
 ;
 
-pattern: id = Iden   {mk_ppat_loc (PPat_Symbol id) $startpos(id) $endpos(id)}
-    | i = Int   {mk_ppat_loc (PPat_Int i) $startpos(i) $endpos(i)}
-    | f = Float {mk_ppat_loc (PPat_Float f) $startpos(f) $endpos(f)}
-    | LB1 RB1   {mk_ppat_loc (PPat_Unt) $startpos($1) $endpos($2)}
-    | LB2 Vertical pl = pattern_list  Vertical RB2 {mk_ppat_loc (PPat_Aray (Array.of_list pl)) $startpos($1) $endpos($5)}
-    | LB2 pl = pattern_list RB2   {mk_ppat_loc (PPat_Lst pl) $startpos($1) $endpos($3)}
-    | p1 = pattern ColonColon p2 = pattern    {mk_ppat_loc (PPat_Lst_Cons (p1, p2)) $startpos(p1) $endpos(p2)}
-    | Underline     {mk_ppat_loc PPat_Underline $startpos($1) $endpos($1)}
-    | LB1 p = pattern Comma pl = separated_nonempty_list(Comma, pattern) RB1   {mk_ppat_loc (PPat_Tuple (p::pl)) $startpos($1) $endpos($5)}
-    | LB3 str_pl = str_pattern_list RB3   {mk_ppat_loc (PPat_Record str_pl) $startpos($1) $endpos($3)}
-    | uid = UIden {mk_ppat_loc (PPat_Constr (uid, None)) $startpos(uid) $endpos(uid)}
-    | uid = UIden p = pattern  {mk_ppat_loc (PPat_Constr (uid, Some p)) $startpos(uid) $endpos(p)}
+pattern: id = Iden   {mk_ppat_loc (PPat_Symbol id) (PTVar (new_type_var())) $startpos(id) $endpos(id)}
+    | i = Int   {mk_ppat_loc (PPat_Int i) PTInt $startpos(i) $endpos(i)}
+    | f = Float {mk_ppat_loc (PPat_Float f) PTFloat $startpos(f) $endpos(f)}
+    | LB1 RB1   {mk_ppat_loc (PPat_Unt) PTUnt $startpos($1) $endpos($2)}
+    | LB2 Vertical pl = pattern_list  Vertical RB2 {
+            match pl with
+            | [] -> mk_ppat_loc (PPat_Aray []) (PTAray (PTVar (new_type_var()))) $startpos($1) $endpos($5)
+            | p::pl' -> mk_ppat_loc (PPat_Aray (pl)) (PTAray p.ptyp) $startpos($1) $endpos($5)
+        }
+    | LB2 pl = pattern_list RB2   {
+            match pl with
+            | [] -> mk_ppat_loc (PPat_Lst []) (PTLst (PTVar (new_type_var()))) $startpos($1) $endpos($3)
+            | p::pl' -> mk_ppat_loc (PPat_Lst pl) (PTLst p.ptyp) $startpos($1) $endpos($3)
+        }
+    | p1 = pattern ColonColon p2 = pattern    {mk_ppat_loc (PPat_Lst_Cons (p1, p2)) (p2.ptyp) $startpos(p1) $endpos(p2)}
+    | Underline     {mk_ppat_loc PPat_Underline (PTVar (new_type_var())) $startpos($1) $endpos($1)}
+    | LB1 p = pattern Comma pl = separated_nonempty_list(Comma, pattern) RB1   {mk_ppat_loc (PPat_Tuple (p::pl)) (PTTuple (List.map (fun pat -> pat.ptyp) p::pl)) $startpos($1) $endpos($5)}
+    /* | LB3 str_pl = str_pattern_list RB3   {mk_ppat_loc (PPat_Record str_pl) $startpos($1) $endpos($3)} */
+    | uid = UIden {mk_ppat_loc (PPat_Constr (uid, None)) (PTVar (new_type_var())) $startpos(uid) $endpos(uid)}
+    | uid = UIden p = pattern  {mk_ppat_loc (PPat_Constr (uid, Some p)) (PTVar (new_type_var())) $startpos(uid) $endpos(p)}
     | LB1 pattern RB1   {$2}
 ;
 

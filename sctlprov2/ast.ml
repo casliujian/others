@@ -97,8 +97,10 @@ and pexpr =
     | PMatch of pexpr_loc * ((ppattern_loc * pexpr_loc) list)
     | PWith of pexpr_loc * ((string * pexpr_loc) list)
     | PConstr of pconstr
+    | PApply of string * pexpr_loc list
 and ppattern_loc = {
     ppat: ppattern;
+    mutable ptyp: ptyp;
     loc: location;
     (*constrnt: pexpr_loc option; *)
 }
@@ -107,12 +109,12 @@ and ppattern =
     | PPat_Int of int
     | PPat_Float of float
     | PPat_Unt
-    | PPat_Aray of (ppattern_loc array)
+    | PPat_Aray of (ppattern_loc list)
     | PPat_Lst of (ppattern_loc list)
     | PPat_Lst_Cons of ppattern_loc * ppattern_loc
     | PPat_Underline
     | PPat_Tuple of (ppattern_loc list)
-    | PPat_Record of ((string * ppattern_loc) list)
+    (* | PPat_Record of ((string * ppattern_loc) list) *)
     | PPat_Constr of (string * (ppattern_loc option))
 (* and pconstr_loc = {
     pconstr: pconstr;
@@ -169,8 +171,9 @@ let mk_pexpr_loc pexpr ptyp loc_start loc_end = {
     };
     (*attri = attri;*)
 }
-let mk_ppat_loc ppat loc_start loc_end = {
+let mk_ppat_loc ppat ptyp loc_start loc_end = {
     ppat = ppat;
+    ptyp = ptyp;
     loc = {
         loc_start = loc_start;
         loc_end = loc_end;
