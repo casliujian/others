@@ -162,7 +162,7 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
     | f = Float {mk_pexpr_loc (PFloat f) (PTFloat) $startpos(f) $endpos(f)}
     | LB1 RB1   {mk_pexpr_loc PUnt (PTUnt) $startpos($1) $endpos($2)}
     | LB2 Vertical el = expr_single_list Vertical RB2   {
-            let ea = Array.of_list el in
+            let ea = el in
             if Array.length ea = 0 then
                 mk_pexpr_loc (PAray ea) (PTAray (PTVar (new_type_var ()))) $startpos($1) $endpos($5)
             else begin

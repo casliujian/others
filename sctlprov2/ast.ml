@@ -66,7 +66,7 @@ and pexpr =
     | PInt of int
     | PFloat of float
     | PUnt
-    | PAray of (pexpr_loc array)
+    | PAray of (pexpr_loc list)
     | PLst of (pexpr_loc list)
     | PAray_Field of pexpr_loc * pexpr_loc
     | PBool of bool
