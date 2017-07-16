@@ -13,6 +13,12 @@ type token =
   | Transition
   | Top
   | Then
+  | TUnt
+  | TLst
+  | TInt
+  | TFloat
+  | TBool
+  | TAray
   | Semicolon
   | RB3
   | RB2
@@ -60,6 +66,7 @@ type token =
   | Datatype
   | Comma
   | ColonColon
+  | Colon
   | Bottom
   | Arrow
   | Ando

@@ -46,7 +46,7 @@ rule token = parse
   | float as f    {Float (float_of_string f)}
   | iden as id  {Iden id}
   | uiden as ui {UIden ui}
-  | "*"         {Star}
+  (* | "*"         {Star} *)
   | "!"         {Negb}
   | "&&"        {Ando}
   | "||"        {Oro}
@@ -78,6 +78,8 @@ rule token = parse
   | "+."        {AddDot}
   | "-"         {Minus}
   | "-."        {MinusDot}
+  | "*"         {Mult}
+  | "*."        {MultDot}
   | "\n"        {token lexbuf}
   | [' ' '\t' '\r']+  {token lexbuf}
   | "//"        {comment_oneline_c lexbuf}

@@ -54,7 +54,7 @@ let rec replace_udt_with_ptvar ptyp str i =
  
 type pexpr_loc = {
     pexpr: pexpr;
-    mutable ptyp: ptyp option;
+    mutable ptyp: ptyp;
     loc: location;
     (*attri: attribute;*)
 }

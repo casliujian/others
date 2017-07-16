@@ -10,7 +10,8 @@
         !type_var
 
     let erase_type_args t args = 
-        let erase_type_args_i pt i = 
+        let tmp_t = ref t in
+        let rec erase_type_args_i pt i = 
             match pt with
             | PTUdt (str, pts) -> 
                 let a = List.nth args i in
@@ -25,8 +26,9 @@
             | _ -> pt
         in
         for i = 0 to (List.length args) do
-            erase_type_args_i t i
-        done 
+            tmp_t := erase_type_args_i !tmp_t i
+        done;
+        !tmp_t
 %}
 %token <int>Int 
 %token <float>Float
@@ -34,6 +36,7 @@
 %token Import Datatype Vertical Val Var Match With Underline Model Transition Property If Then Else For In While Do Done
 %token LB1 RB1 LB2 RB2 LB3 RB3 Equal Non_Equal LT GT LE GE Comma Semicolon Dot DotDot Arrow EOF Add AddDot Minus MinusDot Mult MultDot
 %token Negb Ando Oro And Or Neg LArrow Colon ColonColon Init Top Bottom AX EX AF EG AR EU True False Function
+%token TLst TFloat TAray TInt TBool TUnt
 
 %start <(string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option)>program
 
@@ -49,8 +52,10 @@
 %right Negb
 %nonassoc LT LE GT GE
 %nonassoc Equal Non_Equal
-%left Add AddDot Minus MinusDot
+%left Add AddDot 
+%right Minus MinusDot
 %left Mult MultDot
+%right Arrow
 
 
 %%
@@ -65,7 +70,7 @@ imported:   {}
 
 declars:    {}
     /*| Datatype id = Iden Equal cl = constr_locs   {Hashtbl.add symbol_tbl id (UDT, PConstrs cl)}*/
-    | Datatype id = Iden args = list(Iden) Equal t = type {Hashtbl.add symbol_tbl id (UDT, erase_type_args t args)} 
+    | Datatype id = Iden args = list(Iden) Equal t = typ {Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args))} 
     | Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (PTVar (new_type_var ()), e))
@@ -78,7 +83,7 @@ declars:    {}
         }
     | Function id = Iden ags = args otf = option(type_of_expr) Equal e = expr {
         match otf with
-        | None -> Hashtbl.add symbol_tbl id (Function, PFunction(PTVar (new_type_var ()), args e))
+        | None -> Hashtbl.add symbol_tbl id (Function, PFunction(PTVar (new_type_var ()), ags, e))
         | Some pt -> Hashtbl.add symbol_tbl id (Function, PFunction(pt, ags, e))}
 ;
 
@@ -119,8 +124,10 @@ args: pattern   {[$1]}
     | args pattern  {$2 :: $1}
 ;*/
 
- constrs: option(Vertical) c = constr   {[c]}
+/* constrs: option(Vertical) c = constr   {[c]}
         | cl = constrs Vertical c = constr   {cl @ [c]}
+; */
+constrs: cl = nonempty_list(constr) {cl}
 ;
 constr: uid = UIden {(uid, None)}
     | uid = UIden t = typ {(uid, Some t)}
@@ -129,21 +136,25 @@ constr: uid = UIden {(uid, None)}
 typ: TInt {PTInt} 
     | TBool {PTBool}
     | TFloat {PTFloat}
-    | typ TAray {PTAray (Some $1)}
-    | typ TLst {PTLst (Some $1)}
+    | TUnt  {PTUnt}
+    | typ TAray {PTAray ($1)}
+    | typ TLst {PTLst ($1)}
     | Iden tl = list(typ) {PTUdt ($1, tl)}
     | constrs {PTConstrs $1}
-    | tuple_typ {PTTuple $1}
+    | LB1 tuple_typ RB1 {PTTuple $2}
     | record_typ {PTRecord $1}
-    | ptyp Arrow ptyp {PTArrow ($1, $3)}
+    | typ Arrow typ {PTArrow ($1, $3)}
     | LB1 t = typ RB1   {t}
 ;
 
-tuple_typ: ptyp Mult ptyp {[$1; $3]}
-    | ptyp Mult tuple_typ {$1 :: $3}
+tuple_typ: typ Comma typ {[$1; $3]}
+    | typ Comma tuple_typ {$1 :: $3}
 ;
 
-record_typ: LB3 str_pts = separated_nonempty_list(Semicolon, ptyp) RB3 {str_pts}
+record_typ: LB3 str_pts = separated_nonempty_list(Semicolon, str_typ) RB3 {str_pts}
+;
+
+str_typ: Iden Colon typ {($1, $3)}
 ;
 
 
@@ -158,16 +169,19 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
             let nt = PTVar (new_type_var ()) in
             mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) nt $startpos($1) $endpos($1), $3)) nt $startpos($1) $endpos($3)
         }
+    | UIden Dot e = expr_single {
+            mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) e.ptyp $startpos($1) $endpos($1), e)) e.ptyp $startpos($1) $endpos(e)
+        }
     | i = Int   {mk_pexpr_loc (PInt i) (PTInt) $startpos(i) $endpos(i)}
     | f = Float {mk_pexpr_loc (PFloat f) (PTFloat) $startpos(f) $endpos(f)}
     | LB1 RB1   {mk_pexpr_loc PUnt (PTUnt) $startpos($1) $endpos($2)}
     | LB2 Vertical el = expr_single_list Vertical RB2   {
             let ea = el in
-            if Array.length ea = 0 then
+            if List.length ea = 0 then
                 mk_pexpr_loc (PAray ea) (PTAray (PTVar (new_type_var ()))) $startpos($1) $endpos($5)
             else begin
-                let e0 = ea.(0) in
-                mk_pexpr_loc (PAray ea) (PTAray e0) $startpos($1) $endpos($5)
+                let e0 = List.hd ea in
+                mk_pexpr_loc (PAray ea) (PTAray e0.ptyp) $startpos($1) $endpos($5)
                 (*match e0.ptyp with
                 | None -> mk_pexpr_loc (PAray ea) None $startpos($1) $endpos($5)
                 | Some t -> mk_pexpr_loc (PAray ea) (Some (PTAray (Some t))) $startpos($1) $endpos($5) *)
@@ -178,7 +192,7 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
                 mk_pexpr_loc (PLst el) (PTLst (PTVar (new_type_var ()))) $startpos($1) $endpos($3)
             else begin
                 let e0 = List.hd el in
-                mk_pexpr_loc (PLst el) (PTLst e0) $startpos($1) $endpos($3)
+                mk_pexpr_loc (PLst el) (PTLst e0.ptyp) $startpos($1) $endpos($3)
                 (*match e0.ptyp with
                 | None -> mk_pexpr_loc (PLst el) None $startpos($1) $endpos($3)
                 | Some t -> mk_pexpr_loc (PLst el) (Some (PTLst (Some t))) $startpos($1) $endpos($3)*)
@@ -187,12 +201,12 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
     | True  {mk_pexpr_loc (PBool true) (PTBool) $startpos($1) $endpos($1)}
     | False {mk_pexpr_loc (PBool false) (PTBool) $startpos($1) $endpos($1)}
     | LB1 e = expr Comma el = separated_nonempty_list(Comma, expr) RB1 {
-            let elt = List.map (fun e -> e.ptyp) (e::el) in
+            let elt = List.map (fun (e:pexpr_loc) -> e.ptyp) (e::el) in
             mk_pexpr_loc (PTuple el) ((PTTuple elt)) $startpos($1) $endpos($5)
         }
     | LB3 str_el = str_expr_list RB3 {
-            let str_elt = List.map (fun se -> (fst se, (snd se).ptyp)) str_el in
-            mk_pexpr_loc (PRecord str_el) (PTRecord str_elt)) $startpos($1) $endpos($3)
+            let str_elt = List.map (fun (str, (pel:pexpr_loc)) -> (str, pel.ptyp)) str_el in
+            mk_pexpr_loc (PRecord str_el) (PTRecord str_elt) $startpos($1) $endpos($3)
         }
     | Negb e = expr_single     {
             mk_pexpr_loc (PNegb e) (PTBool) $startpos($1) $endpos(e)
@@ -391,21 +405,24 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
     | e1 = expr_single LArrow e2 = expr_single    {mk_pexpr_loc (PAssign (e1, e2)) (PTUnt) $startpos(e1) $endpos(e2)}
     | Match e1 = expr_single With pel = pattern_expr_list {mk_pexpr_loc (PMatch (e1, pel)) (PTVar (new_type_var ())) $startpos($1) $endpos(pel)}
     | e1 = expr_single With LB3 str_el = str_expr_list RB3    {mk_pexpr_loc (PWith (e1, str_el)) e1.ptyp $startpos(e1) $endpos($5)}
-    | uid = UIden {mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_basic uid) $startpos(uid) $endpos(uid))) (PTVar (new_type_var ())) $startpos(uid) $endpos(uid)}
+    | uid = UIden {mk_pexpr_loc (PConstr ((PConstr_basic uid))) (PTVar (new_type_var ())) $startpos(uid) $endpos(uid)}
     | uid = UIden e = expr_single {
-            mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_compound (uid, e)) $startpos(uid) $endpos(e))) (PTVar (new_type_var ())) $startpos(uid) $endpos(e)
+            mk_pexpr_loc (PConstr ((PConstr_compound (uid, e)))) (PTVar (new_type_var ())) $startpos(uid) $endpos(e)
             (*match eo with
             | None -> mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_basic uid) $startpos(uid) $endpos(eo))) None $startpos(uid) $endpos(eo)
             | Some e -> *)
         }
-    | id = Iden el = list(expr_single) {mk_pexpr_loc (PApply (id, el)) (PTVar (new_type_var ())) $startpos($id) $endpos($el)}
+    | id = Iden el = nonempty_list(expr_single) {
+            mk_pexpr_loc (PApply (id, el)) (PTVar (new_type_var ())) $startpos(id) $endpos(el)
+        }
     | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | e1 = expr_single LB2 e2 = expr_single RB2 {
-        let et1 = e1.ptyp in
+        let e:Ast.pexpr_loc = e1 in
+        let et1 = e.ptyp in
         match et1 with
-        | PTAray pt -> mk_pexpr_loc (PAray_Field (e1, e2) pt $startpos(e1) $endpos($4))
-        | PTVar _ -> mk_pexpr_loc (PTAray_Field (e1, e2) (PTVar (new_type_var ())) $startpos(e1) $endpos($4))
+        | PTAray pt -> mk_pexpr_loc (PAray_Field (e1, e2)) pt $startpos(e1) $endpos($4)
+        | PTVar _ -> mk_pexpr_loc (PAray_Field (e1, e2)) (PTVar (new_type_var ())) $startpos(e1) $endpos($4)
         | _ -> raise (Type_mismatch (e1, et1, (PTAray (PTVar (new_type_var())))))        
         }
     | LB1 expr_single RB1  {$2}
@@ -451,7 +468,7 @@ pattern: id = Iden   {mk_ppat_loc (PPat_Symbol id) (PTVar (new_type_var())) $sta
         }
     | p1 = pattern ColonColon p2 = pattern    {mk_ppat_loc (PPat_Lst_Cons (p1, p2)) (p2.ptyp) $startpos(p1) $endpos(p2)}
     | Underline     {mk_ppat_loc PPat_Underline (PTVar (new_type_var())) $startpos($1) $endpos($1)}
-    | LB1 p = pattern Comma pl = separated_nonempty_list(Comma, pattern) RB1   {mk_ppat_loc (PPat_Tuple (p::pl)) (PTTuple (List.map (fun pat -> pat.ptyp) p::pl)) $startpos($1) $endpos($5)}
+    | LB1 p = pattern Comma pl = separated_nonempty_list(Comma, pattern) RB1   {mk_ppat_loc (PPat_Tuple (p::pl)) (PTTuple (List.map (fun pat -> pat.ptyp) (p::pl))) $startpos($1) $endpos($5)}
     /* | LB3 str_pl = str_pattern_list RB3   {mk_ppat_loc (PPat_Record str_pl) $startpos($1) $endpos($3)} */
     | uid = UIden {mk_ppat_loc (PPat_Constr (uid, None)) (PTVar (new_type_var())) $startpos(uid) $endpos(uid)}
     | uid = UIden p = pattern  {mk_ppat_loc (PPat_Constr (uid, Some p)) (PTVar (new_type_var())) $startpos(uid) $endpos(p)}
