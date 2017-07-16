@@ -67,21 +67,24 @@ program: imported declars EOF  {!imported, symbol_tbl, None}
 imported:   {}
     | imported Import UIden {imported := $3 :: !imported}
 ;
-
+ /* %inline declars: list(declare) {}
+;      */
 declars:    {}
     /*| Datatype id = Iden Equal cl = constr_locs   {Hashtbl.add symbol_tbl id (UDT, PConstrs cl)}*/
-    | Datatype id = Iden args = list(Iden) Equal t = typ {Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args))} 
-    | Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+    | declars Datatype id = Iden args = list(Iden) Equal t = typ  {
+        Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args)); 
+        print_endline ("declared udt "^id)} 
+    | declars Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (pt, e))
         }
-    | Val id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+    | declars Val id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (pt, e))
         }
-    | Function id = Iden ags = args otf = option(type_of_expr) Equal e = expr {
+    | declars Function id = Iden ags = args otf = option(type_of_expr) Equal e = expr  {
         match otf with
         | None -> Hashtbl.add symbol_tbl id (Function, PFunction(PTVar (new_type_var ()), ags, e))
         | Some pt -> Hashtbl.add symbol_tbl id (Function, PFunction(pt, ags, e))}
@@ -126,10 +129,15 @@ args: pattern   {[$1]}
 
 /* constrs: option(Vertical) c = constr   {[c]}
         | cl = constrs Vertical c = constr   {cl @ [c]}
-; */
-constrs: cl = nonempty_list(constr) {cl}
+;  */
+
+constrs: c = constr {[c]}
+    | constr Vertical constrs {$1 :: $3}
 ;
-constr: uid = UIden {(uid, None)}
+
+/* constrs: cl = separated_nonempty_list(Vertical, constr) {cl}
+; */
+constr: uid = UIden {print_endline ("found constr "^uid); (uid, None)}
     | uid = UIden t = typ {(uid, Some t)}
 ; 
 
@@ -480,10 +488,10 @@ pattern_list:   {[]}
     | pattern Semicolon pattern_list {$1 :: $3}
 ;
 
-str_pattern_list:    {[]}
+/* str_pattern_list:    {[]}
     | Iden Equal pattern Semicolon  {[($1, $3)]}
     | str_pattern_list Iden Equal pattern Semicolon {($2, $4) :: $1}
-;
+; */
 /*spl = separated_list(Semicolon, str_pattern) {spl}
 ;*/
 

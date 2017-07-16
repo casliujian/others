@@ -6,6 +6,7 @@ let integer = ['0'-'9']+
 let float = ['0'-'9'] '.' ['0'-'9']*
 let iden = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
 let uiden = ['A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
+let nl = '\r' | '\n' | "\r\n"
 
 rule token = parse 
   | "import"    {Import}
@@ -46,7 +47,6 @@ rule token = parse
   | float as f    {Float (float_of_string f)}
   | iden as id  {Iden id}
   | uiden as ui {UIden ui}
-  (* | "*"         {Star} *)
   | "!"         {Negb}
   | "&&"        {Ando}
   | "||"        {Oro}
@@ -80,8 +80,8 @@ rule token = parse
   | "-."        {MinusDot}
   | "*"         {Mult}
   | "*."        {MultDot}
-  | "\n"        {token lexbuf}
-  | [' ' '\t' '\r']+  {token lexbuf}
+  | nl        {Lexing.new_line lexbuf; token lexbuf}
+  | [' ' '\t']+  {token lexbuf}
   | "//"        {comment_oneline_c lexbuf}
   | "/*"        {comment_multiline_c lexbuf}
   | "(*"        {comment_ocaml lexbuf}

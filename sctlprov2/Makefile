@@ -8,6 +8,7 @@ all:
 	ocamlc -c lexer.ml
 	ocamlc -I utils -c utils.cma typechecker.ml
 	ocamlc -c main.ml
+	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser.cmo lexer.cmo typechecker.cmo main.cmo
 
 lib:
 	make -C utils all
