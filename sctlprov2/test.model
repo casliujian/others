@@ -5,7 +5,7 @@ val x = 10
 var y = 20
 var z = 4
 
-day_of_z z = 
+function day_of_z z : int -> day = 
     match z with
     | 1 -> Monday
     | 2 -> Tuesday
@@ -15,7 +15,7 @@ day_of_z z =
     | 6 -> Saturday
     | _ -> Sunday
 
-is_sunday d = 
+function is_sunday d : day -> bool= 
     d = Sunday
 
 Model {
