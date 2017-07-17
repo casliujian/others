@@ -19,6 +19,7 @@ type token =
   | TFloat
   | TBool
   | TAray
+  | State
   | Semicolon
   | RB3
   | RB2
@@ -26,6 +27,7 @@ type token =
   | Property
   | Oro
   | Or
+  | Of
   | Non_Equal
   | Negb
   | Neg
@@ -84,3 +86,5 @@ exception Error
 (* The monolithic API. *)
 
 val program: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> ((string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option))
+
+val debug: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (unit)

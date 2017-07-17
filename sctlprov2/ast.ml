@@ -151,7 +151,6 @@ type ast =
 type psymbol_kind = UDT | Val | Var | Function
 type psymbol_tbl = (string, (psymbol_kind * ast)) Hashtbl.t
 type pkripke_model = {
-    init: pexpr_loc;
     transition: (ppattern_loc * pexpr_loc);
     properties: (string * pformula_loc) list;
 }

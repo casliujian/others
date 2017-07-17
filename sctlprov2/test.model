@@ -1,5 +1,10 @@
+import Dummy
 (*datatype t1 = int*)
-datatype t2 = Constructor1
+datatype t2 = int
+datatype t3 = {
+        x : int;
+        y : bool;
+    }
 datatype day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
 
 val x = 10
@@ -20,8 +25,12 @@ function is_sunday d : day -> bool=
     d = Sunday
 
 Model {
-    init = 1
+    state s = 1
     transition s = 
-        if s < 7 then s+1 else 1
-    property reach_sunday = AF (x, is_sunday(day_of_z x), init)
+        if s < 7 then 
+            s+1 
+        else 
+            1
+    property dummy = is_sunday (day_of_z s)
+    property reach_sunday = AF (x, is_sunday (day_of_z x), s)
 }

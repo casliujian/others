@@ -79,20 +79,22 @@
 
 %%
 
-program: imported declars EOF  {!imported, symbol_tbl, None} 
+program: declars EOF    {[], symbol_tbl, None}
+    | declars kripke EOF {[], symbol_tbl, !kripke_model}
+    | imported declars EOF  {!imported, symbol_tbl, None} 
     | imported declars kripke EOF  {!imported, symbol_tbl, !kripke_model}
 ;
 
-imported:   {}
+imported:  Import UIden  {imported := $2 :: !imported}
     | imported Import UIden {imported := $3 :: !imported}
 ;
  /* %inline declars: list(declare) {}
 ;      */
 declars:    {}
     /*| Datatype id = Iden Equal cl = constr_locs   {Hashtbl.add symbol_tbl id (UDT, PConstrs cl)}*/
-    | declars Datatype Iden type_args Equal typ  {
-        Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args $6 $4)); 
-        print_endline ("declared udt "^id)} 
+    | declars Datatype Iden type_args Equal type_def  {
+        Hashtbl.add symbol_tbl $3 (UDT, PTyp (erase_type_args $6 $4)); 
+        print_endline ("declared udt "^$3)} 
     | declars Var Iden Equal expr_single  {
             Hashtbl.add symbol_tbl $3 (Var, PExpr_loc (PTVar (new_type_var ()), $5))
         }
@@ -112,7 +114,7 @@ declars:    {}
         Hashtbl.add symbol_tbl $3 (Function, PFunction($5, $4, $7))}
 ;
 
-type_args: {}
+type_args: {[]}
   | Iden type_args {$1 :: $2}
 ;
 
@@ -164,6 +166,10 @@ list_expr: {[]}
   | expr_single list_expr {$1::$2}
 ;
 
+type_def: typ {$1}
+    | constrs {PTConstrs $1}
+;    
+
 constrs: constr {[$1]}
     | constr Vertical constrs {$1 :: $3}
 ;
@@ -171,7 +177,7 @@ constrs: constr {[$1]}
 /* constrs: cl = separated_nonempty_list(Vertical, constr) {cl}
 ; */
 constr: UIden {print_endline ("found constr "^$1); ($1, None)}
-    | UIden typ {($1, Some $2)}
+    | UIden typ {print_endline ("found constr with args "^$1); ($1, Some $2)}
 ; 
 
 typ: TInt {PTInt} 
@@ -182,7 +188,7 @@ typ: TInt {PTInt}
     | TLst typ {PTLst ($2)}
     | Iden {PTUdt ($1, [])}
     | Iden udt_args {PTUdt ($1, $2)}
-    | constrs {PTConstrs $1}
+    /* | constrs {PTConstrs $1} */
     | LB1 tuple_typ RB1 {PTTuple $2}
     | record_typ {PTRecord $1}
     | typ Arrow typ {PTArrow ($1, $3)}
@@ -205,7 +211,7 @@ tuple_typ: typ Comma typ {[$1; $3]}
     | typ Comma tuple_typ {$1 :: $3}
 ;
 
-record_typ: LB3 str_typs RB3 {str_pts}
+record_typ: LB3 str_typs RB3 {$2}
 ;
 
 str_typs: str_typ {[$1]}
@@ -222,7 +228,7 @@ expr: expr_single {$1}
         }
 ;
 
-expr_seq: expr_single Semicolon expr_single {$1; $3}
+expr_seq: expr_single Semicolon expr_single {[$1; $3]}
   | expr_single Semicolon expr_seq  {$1 :: $3}
 ;
 
@@ -232,7 +238,7 @@ expr_single: Iden {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) (rhs_star
             mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) nt (rhs_start_pos 1) (rhs_end_pos 1), $3)) nt (rhs_start_pos 1) (rhs_end_pos 3)
         }
     | UIden Dot expr_single {
-            mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) e.ptyp (rhs_start_pos 1) (rhs_end_pos 1), $3)) $3.ptyp (rhs_start_pos 1) (rhs_end_pos 3)
+            mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) $3.ptyp (rhs_start_pos 1) (rhs_end_pos 1), $3)) $3.ptyp (rhs_start_pos 1) (rhs_end_pos 3)
         }
     | Int   {mk_pexpr_loc (PInt $1) (PTInt) (rhs_start_pos 1) (rhs_end_pos 1)}
     | Float {mk_pexpr_loc (PFloat $1) (PTFloat) (rhs_start_pos 1) (rhs_end_pos 1)}
@@ -262,7 +268,7 @@ expr_single: Iden {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) (rhs_star
         }
     | True  {mk_pexpr_loc (PBool true) (PTBool) (rhs_start_pos 1) (rhs_end_pos 1)}
     | False {mk_pexpr_loc (PBool false) (PTBool) (rhs_start_pos 1) (rhs_end_pos 1)}
-    | LB1 expr Comma nonempty_single_expr_list_comma RB1 {
+    | LB1 expr_single Comma nonempty_single_expr_list_comma RB1 {
             let elt = List.map (fun (e:pexpr_loc) -> e.ptyp) ($2::$4) in
             mk_pexpr_loc (PTuple ($2::$4)) ((PTTuple elt)) (rhs_start_pos 1) (rhs_end_pos 5)
         }
@@ -305,7 +311,7 @@ expr_single: Iden {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) (rhs_star
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))*)
         }
     | Minus expr_single %prec NEGI {
-            mk_pexpr_loc (PNegi 2) (PTInt) (rhs_start_pos 1) (rhs_end_pos 2)
+            mk_pexpr_loc (PNegi $2) (PTInt) (rhs_start_pos 1) (rhs_end_pos 2)
             (*match e.ptyp with
             | None | Some PTInt ->
                 e.ptyp <- Some PTInt;
@@ -415,7 +421,7 @@ expr_single: Iden {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) (rhs_star
     /*| e1 = expr Semicolon e2 = expr   {mk_pexpr_loc (PSeq (e1, e2)) (e2.ptyp) $startpos(e1) $endpos(e2)}*/
     | expr_single LArrow expr_single    {mk_pexpr_loc (PAssign ($1, $3)) (PTUnt) (rhs_start_pos 1) (rhs_end_pos 3)}
     | Match expr_single With pattern_expr_list {mk_pexpr_loc (PMatch ($2, $4)) (PTVar (new_type_var ())) (rhs_start_pos 1) (rhs_end_pos 4)}
-    | expr_single With LB3 str_expr_list RB3    {mk_pexpr_loc (PWith ($1, $4)) e1.ptyp (rhs_start_pos 1) (rhs_end_pos 5)}
+    | expr_single With LB3 str_expr_list RB3    {mk_pexpr_loc (PWith ($1, $4)) $1.ptyp (rhs_start_pos 1) (rhs_end_pos 5)}
     | UIden {mk_pexpr_loc (PConstr ((PConstr_basic $1))) (PTVar (new_type_var ())) (rhs_start_pos 1) (rhs_end_pos 1)}
     | UIden expr_single {
             mk_pexpr_loc (PConstr ((PConstr_compound ($1, $2)))) (PTVar (new_type_var ())) (rhs_start_pos 1) (rhs_end_pos 2)
@@ -449,8 +455,7 @@ expr_single_list:   {[]}
     | expr_single Semicolon expr_single_list {$1::$3}
 ;
 
-str_expr_list:  {[]}
-    | Iden Equal expr Semicolon {[($1, $3)]}
+str_expr_list: Iden Equal expr Semicolon {[($1, $3)]}
     | str_expr_list Iden Equal expr Semicolon   {($2, $4) :: $1}
 ;
 /*sel = separated_list(Semicolon, str_expr) {sel}*/
@@ -472,10 +477,9 @@ pattern: Iden   {mk_ppat_loc (PPat_Symbol $1) (PTVar (new_type_var())) (rhs_star
     | Int   {mk_ppat_loc (PPat_Int $1) PTInt (rhs_start_pos 1) (rhs_end_pos 1)}
     | Float {mk_ppat_loc (PPat_Float $1) PTFloat (rhs_start_pos 1) (rhs_end_pos 1)}
     | LB1 RB1   {mk_ppat_loc (PPat_Unt) PTUnt (rhs_start_pos 1) (rhs_end_pos 2)}
+    | LB2 Vertical Vertical RB2 {mk_ppat_loc (PPat_Aray []) (PTAray (PTVar (new_type_var()))) (rhs_start_pos 1) (rhs_end_pos 4)}
     | LB2 Vertical pattern_list  Vertical RB2 {
-            match $3 with
-            | [] -> mk_ppat_loc (PPat_Aray []) (PTAray (PTVar (new_type_var()))) (rhs_start_pos 1) (rhs_end_pos 5)
-            | p::pl' -> mk_ppat_loc (PPat_Aray ($3)) (PTAray p.ptyp) (rhs_start_pos 1) (rhs_end_pos 5)
+            mk_ppat_loc (PPat_Aray ($3)) (PTAray (List.hd $3).ptyp) (rhs_start_pos 1) (rhs_end_pos 5)
         }
     | LB2 RB2 {
         mk_ppat_loc (PPat_Lst []) (PTLst (PTVar (new_type_var()))) (rhs_start_pos 1) (rhs_end_pos 2)
@@ -492,7 +496,7 @@ pattern: Iden   {mk_ppat_loc (PPat_Symbol $1) (PTVar (new_type_var())) (rhs_star
     | LB1 pattern RB1   {$2}
 ;
 
-nonempty_pattern_list_comma: pattern {$1}
+nonempty_pattern_list_comma: pattern {[$1]}
   | pattern Comma nonempty_pattern_list_comma {$1::$3}
 ;
 

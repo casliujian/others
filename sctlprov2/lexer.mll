@@ -3,8 +3,8 @@
 }
 
 let integer = ['0'-'9']+
-let float = ['0'-'9'] '.' ['0'-'9']*
-let iden = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
+let float = ['0'-'9']+ '.' ['0'-'9']*
+let iden = ['a'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
 let uiden = ['A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
 let nl = '\r' | '\n' | "\r\n"
 
@@ -31,8 +31,8 @@ rule token = parse
   | "val"       {Val}
   | "var"       {Var}
   | "if"        {If}
-  | "Then"      {Then}
-  | "Else"      {Else}
+  | "then"      {Then}
+  | "else"      {Else}
   | "for"       {For}
   | "in"        {In}
   | "do"        {Do}
@@ -43,10 +43,14 @@ rule token = parse
   | "TRUE"      {Top}
   | "FALSE"     {Bottom}
   | "not"       {Neg}
+  | "of"        {Of}
+  | "state"      {State}
+  | "transition" {Transition}
   | integer as i  {Int (int_of_string i)}
   | float as f    {Float (float_of_string f)}
   | iden as id  {Iden id}
   | uiden as ui {UIden ui}
+  | "|"         {Vertical}
   | "!"         {Negb}
   | "&&"        {Ando}
   | "||"        {Oro}
@@ -54,7 +58,6 @@ rule token = parse
   | "\\/"       {Or}      
   | "="         {Equal}
   | "!="        {Non_Equal}
-  | "|"         {Vertical}
   | ","         {Comma}
   | ":"         {Colon}
   | "::"        {ColonColon}
@@ -86,12 +89,15 @@ rule token = parse
   | "/*"        {comment_multiline_c lexbuf}
   | "(*"        {comment_ocaml lexbuf}
   | eof         {EOF}
+  | _ as s      {print_endline ("unknown charcter: "^(String.make 1 s)); token lexbuf}
 and comment_oneline_c = parse
-  | '\n'    {token lexbuf}
+  | nl    {Lexing.new_line lexbuf; token lexbuf}
   | _       {comment_oneline_c lexbuf}
 and comment_multiline_c = parse
   | "*/"    {token lexbuf}
+  | nl      {Lexing.new_line lexbuf; comment_multiline_c lexbuf}
   | _       {comment_multiline_c lexbuf}
 and comment_ocaml = parse
   | "*)"    {token lexbuf}
+  | nl      {Lexing.new_line lexbuf; comment_ocaml lexbuf}
   | _       {comment_ocaml lexbuf}

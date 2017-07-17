@@ -35,17 +35,18 @@
 %token <string>Iden UIden
 %token Import Datatype Vertical Val Var Match With Underline Model Transition Property If Then Else For In While Do Done
 %token LB1 RB1 LB2 RB2 LB3 RB3 Equal Non_Equal LT GT LE GE Comma Semicolon Dot DotDot Arrow EOF Add AddDot Minus MinusDot Mult MultDot
-%token Negb Ando Oro And Or Neg LArrow Colon ColonColon Init Top Bottom AX EX AF EG AR EU True False Function
+%token Negb Ando Oro And Or Neg LArrow Colon ColonColon Init Top Bottom AX EX AF EG AR EU True False Function Of State
 %token TLst TFloat TAray TInt TBool TUnt
 
 %start <(string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option)>program
+ %start <unit>debug 
 
 /*%left Semicolon*/
 %left Or
 %left And
 %right Neg
 
-%nonassoc LArrow With
+
 %right ColonColon
 %left Oro
 %left Ando
@@ -53,42 +54,59 @@
 %nonassoc LT LE GT GE
 %nonassoc Equal Non_Equal
 %left Add AddDot 
-%right Minus MinusDot
+%left Minus MinusDot
 %left Mult MultDot
+%nonassoc NEGI NEGF
 %right Arrow
 
 
 %%
+
+debug: declare EOF {}
+    | Import UIden {print_endline ("imported "^$2)}
+;
+
 
 program: imported declars EOF  {!imported, symbol_tbl, None} 
     | imported declars kripke EOF  {!imported, symbol_tbl, !kripke_model}
 ;
 
 imported:   {}
-    | imported Import UIden {imported := $3 :: !imported}
+    | imported Import UIden {print_endline ("imported "^$3); imported := $3 :: !imported}
 ;
  /* %inline declars: list(declare) {}
 ;      */
-declars:    {}
-    /*| Datatype id = Iden Equal cl = constr_locs   {Hashtbl.add symbol_tbl id (UDT, PConstrs cl)}*/
-    | declars Datatype id = Iden args = list(Iden) Equal t = typ  {
+
+declars: {}
+    | declare declars {}
+;
+
+declare: Datatype id = Iden args = list(Iden) Equal t = type_def  {
         Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args)); 
         print_endline ("declared udt "^id)} 
-    | declars Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+    | Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+            print_endline ("declaring variable "^id);
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (pt, e))
         }
-    | declars Val id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+    | Val id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+            print_endline ("declaring value "^id);
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (pt, e))
         }
-    | declars Function id = Iden ags = args otf = option(type_of_expr) Equal e = expr  {
+    | Function id = Iden ags = args otf = option(type_of_expr) Equal e = expr  {
+        print_endline ("declaring function "^id);
         match otf with
         | None -> Hashtbl.add symbol_tbl id (Function, PFunction(PTVar (new_type_var ()), ags, e))
         | Some pt -> Hashtbl.add symbol_tbl id (Function, PFunction(pt, ags, e))}
+    /* | Import idens {print_endline ("declaring idens ");} */
 ;
+
+/* idens: Iden {[$1]}
+    | Iden Vertical idens {$1 :: $3}
+;     */
 
 type_of_expr: Colon typ {$2}
 ;
@@ -97,13 +115,16 @@ args: pattern {[$1]}
     | pattern args  {$1 :: $2}
 ;    
 
-kripke: Model LB3 Init Equal e1 = expr Semicolon Transition p = pattern Equal e2 = expr Semicolon pl = separated_list(Semicolon, property) RB3    {
+kripke: Model LB3 states Transition p = pattern Equal e2 = expr pl = list(property) RB3    {
         kripke_model := Some {
-            init = e1;
             transition = (p, e2);
             properties = pl;
         }
     } 
+;
+
+states: {[]}
+    | State Iden Equal expr_single states {($2, $4)::$5}
 ;
 
 property: Property id = Iden Equal fml = formula  {(id, fml)}
@@ -111,16 +132,16 @@ property: Property id = Iden Equal fml = formula  {(id, fml)}
 
 formula: Top {mk_pformula_loc PTop $startpos($1) $endpos($1)}
     | Bottom {mk_pformula_loc PBottom $startpos($1) $endpos($1)}
-    | id = Iden el = list(expr) {mk_pformula_loc (PAtomic (id, el)) $startpos(id) $endpos(el)}
+    | id = Iden el = list(expr_single) {mk_pformula_loc (PAtomic (id, el)) $startpos(id) $endpos(el)}
     | Neg formula   {mk_pformula_loc (PNeg $2) $startpos($1) $endpos($2)}
     | formula And formula   {mk_pformula_loc (PAnd ($1, $3)) $startpos($1) $endpos($3)}
     | formula Or formula    {mk_pformula_loc (POr ($1, $3)) $startpos($1) $endpos($3)}
-    | AX LB1 id = Iden Comma f = formula Comma e = expr RB1 {mk_pformula_loc (PAX (id, f, e)) $startpos($1) $endpos($8)}
-    | EX LB1 id = Iden Comma f = formula Comma e = expr RB1 {mk_pformula_loc (PEX (id, f, e)) $startpos($1) $endpos($8)}
-    | AF LB1 id = Iden Comma f = formula Comma e = expr RB1 {mk_pformula_loc (PAF (id, f, e)) $startpos($1) $endpos($8)}
-    | EG LB1 id = Iden Comma f = formula Comma e = expr RB1 {mk_pformula_loc (PEG (id, f, e)) $startpos($1) $endpos($8)}
-    | AR LB1 id1 = Iden Comma id2 = Iden Comma f1 = formula Comma f2 = formula Comma e = expr RB1 {mk_pformula_loc (PAR (id1, id2, f1, f2, e)) $startpos($1) $endpos($12)}
-    | EU LB1 id1 = Iden Comma id2 = Iden Comma f1 = formula Comma f2 = formula Comma e = expr RB1 {mk_pformula_loc (PEU (id1, id2, f1, f2, e)) $startpos($1) $endpos($12)}
+    | AX LB1 id = Iden Comma f = formula Comma e = expr_single RB1 {mk_pformula_loc (PAX (id, f, e)) $startpos($1) $endpos($8)}
+    | EX LB1 id = Iden Comma f = formula Comma e = expr_single RB1 {mk_pformula_loc (PEX (id, f, e)) $startpos($1) $endpos($8)}
+    | AF LB1 id = Iden Comma f = formula Comma e = expr_single RB1 {mk_pformula_loc (PAF (id, f, e)) $startpos($1) $endpos($8)}
+    | EG LB1 id = Iden Comma f = formula Comma e = expr_single RB1 {mk_pformula_loc (PEG (id, f, e)) $startpos($1) $endpos($8)}
+    | AR LB1 id1 = Iden Comma id2 = Iden Comma f1 = formula Comma f2 = formula Comma e = expr_single RB1 {mk_pformula_loc (PAR (id1, id2, f1, f2, e)) $startpos($1) $endpos($12)}
+    | EU LB1 id1 = Iden Comma id2 = Iden Comma f1 = formula Comma f2 = formula Comma e = expr_single RB1 {mk_pformula_loc (PEU (id1, id2, f1, f2, e)) $startpos($1) $endpos($12)}
 ;
 /*
 args: pattern   {[$1]}
@@ -132,23 +153,26 @@ args: pattern   {[$1]}
 ;  */
 
 constrs: c = constr {[c]}
-    | constr Vertical constrs {$1 :: $3}
-;
+     | constr Vertical constrs {$1 :: $3} 
+; 
 
-/* constrs: cl = separated_nonempty_list(Vertical, constr) {cl}
-; */
+type_def: typ {$1}
+    | constrs {PTConstrs $1}
+;
+/* 
+constrs: cl = separated_nonempty_list(Vertical, constr) {cl}
+;  */
 constr: uid = UIden {print_endline ("found constr "^uid); (uid, None)}
-    | uid = UIden t = typ {(uid, Some t)}
+     | uid = UIden t = typ {(uid, Some t)} 
 ; 
 
 typ: TInt {PTInt} 
     | TBool {PTBool}
     | TFloat {PTFloat}
     | TUnt  {PTUnt}
-    | typ TAray {PTAray ($1)}
-    | typ TLst {PTLst ($1)}
+    | TAray typ {PTAray ($2)}
+    | TLst typ {PTLst ($2)}
     | Iden tl = list(typ) {PTUdt ($1, tl)}
-    | constrs {PTConstrs $1}
     | LB1 tuple_typ RB1 {PTTuple $2}
     | record_typ {PTRecord $1}
     | typ Arrow typ {PTArrow ($1, $3)}
@@ -159,10 +183,10 @@ tuple_typ: typ Comma typ {[$1; $3]}
     | typ Comma tuple_typ {$1 :: $3}
 ;
 
-record_typ: LB3 str_pts = separated_nonempty_list(Semicolon, str_typ) RB3 {str_pts}
+record_typ: LB3 str_pts = nonempty_list(str_typ) RB3 {str_pts}
 ;
 
-str_typ: Iden Colon typ {($1, $3)}
+str_typ: Iden Colon typ Semicolon {($1, $3)}
 ;
 
 
@@ -250,7 +274,7 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
             | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTBool))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))*)
         }
-    | Minus e = expr_single {
+    | Minus e = expr_single %prec NEGI {
             mk_pexpr_loc (PNegi e) (PTInt) $startpos($1) $endpos(e)
             (*match e.ptyp with
             | None | Some PTInt ->
@@ -258,7 +282,7 @@ expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $sta
                 mk_pexpr_loc (PNegi e) (Some PTInt) $startpos($1) $endpos(e)
             | Some t -> raise (Type_mismatch (e, t, PTInt))*)
         }
-    | MinusDot e = expr_single {
+    | MinusDot e = expr_single %prec NEGF {
             mk_pexpr_loc (PNegf e) PTFloat $startpos($1) $endpos(e)
         }
     | e1 = expr_single Add e2 = expr_single {
