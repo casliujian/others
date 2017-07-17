@@ -721,3 +721,7 @@ let rec apply_env_to_pel env (pel:pexpr_loc) =
   | PConstr (PConstr_compound (str, pel1)) -> apply_env_to_pel env pel1
   | PApply (str, pel_list) -> List.iter (fun pel -> apply_env_to_pel env pel) pel_list
   | _ -> ()
+
+let verify_type_check_pel pel modul moduls =
+  match pel.pexpr with
+  | 
