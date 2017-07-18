@@ -35,8 +35,15 @@ let test () =
             pkripke_model = pkripke_model;
         } in
         Hashtbl.add moduls "Test" modul;
-        print_endline "main.ml"
-    with _ -> 
+        let origin_out = open_out "test.origin" 
+        and typed_out = open_out "test.typed" in
+        output_string origin_out (Print.str_modul modul);
+        Hashtbl.add moduls "Test" modul;
+        Typechecker.check_modul "Test" moduls;
+        output_string typed_out (Print.str_modul (Hashtbl.find moduls "Test"));
+        flush origin_out;
+        flush typed_out
+    with Parser.Error -> 
         let ep = lbuf.lex_curr_p in
         printf "syntax error at line %d, column %d\n" ep.pos_lnum (ep.pos_cnum - ep.pos_bol)
 

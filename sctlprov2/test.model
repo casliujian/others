@@ -24,13 +24,18 @@ function day_of_z z : int -> day =
 function is_sunday d : day -> bool= 
     d = Sunday
 
+function test s = 
+    if s<7 then
+        s+1
+    else
+        1
+
 Model {
-    state s = 1
     transition s = 
         if s < 7 then 
             s+1 
         else 
             1
-    property dummy = is_sunday (day_of_z s)
-    property reach_sunday = AF (x, is_sunday (day_of_z x), s)
+    property dummy = is_sunday (day_of_z 1)
+    property reach_sunday = AF (x, is_sunday (day_of_z x), 1)
 }

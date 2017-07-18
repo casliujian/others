@@ -6,9 +6,10 @@ all:
 	ocamlc -c parser.ml
 	ocamllex lexer.mll
 	ocamlc -c lexer.ml
+	ocamlc -c print.ml
 	ocamlc -I utils -c utils.cma typechecker.ml
 	ocamlc -c main.ml
-	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser.cmo lexer.cmo typechecker.cmo main.cmo
+	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser.cmo lexer.cmo print.cmo typechecker.cmo main.cmo
 
 all_yacc:
 	make -C utils all
@@ -18,9 +19,10 @@ all_yacc:
 	ocamlc -c parser_yacc.ml
 	ocamllex lexer.mll
 	ocamlc -c lexer.ml
+	ocamlc -c print.ml
 	ocamlc -I utils -c utils.cma typechecker.ml
 	ocamlc -c main.ml
-	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser_yacc.cmo lexer.cmo typechecker.cmo main.cmo
+	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser_yacc.cmo lexer.cmo print.cmo typechecker.cmo main.cmo
 
 lib:
 	make -C utils all

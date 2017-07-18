@@ -19,8 +19,26 @@ exception Undefined_idenfier of string
 
 type env = (ptyp * ptyp) list
 
-let rec merge_env env1 env2 =
-  match env1 with
+let rec merge_env env1 env2 = 
+    let rec find_min_ptyp ptyp_list var = 
+      match ptyp_list with
+      | [] -> PTVar var
+      | (PTVar v)::pts -> if v<var then find_min_ptyp pts v else find_min_ptyp pts var
+      | pt::pts -> pt in
+    let rec re_range_env env =
+      match env with
+      | [] -> []
+      | (PTVar i, _)::env' -> 
+        let pt_list = Pairs.find_all env (PTVar i) in
+        let pt1 = find_min_ptyp pt_list i in
+        let tmp_pt_list = ref [] in
+        List.iter (fun pt -> if pt1<>pt then tmp_pt_list:=(pt, pt1)::(!tmp_pt_list)) pt_list;
+        (PTVar i, pt1)::((!tmp_pt_list) @ (re_range_env (Pairs.remove_all env' (PTVar i))))
+      | pt_pair ::env' -> pt_pair::(re_range_env env') in
+    re_range_env (env1@env2)
+        
+
+  (* match env1 with
   | [] -> env2
   | (pt1, pt2) :: env1' -> 
     let pts = Pairs.find_all env2 pt1 in 
@@ -34,7 +52,7 @@ let rec merge_env env1 env2 =
           | PTVar i, _ -> find_ptyp pts' pt3
           | _ ->  find_ptyp pts' pt
         end in
-    (pt1, find_ptyp pts pt2)::(merge_env env1' (Pairs.remove_all env2 pt1))
+    (pt1, find_ptyp pts pt2)::(merge_env env1' (Pairs.remove_all env2 pt1)) *)
 
 
 let rec expand_udt pt modul moduls =
@@ -108,6 +126,14 @@ let rec expand_udt pt modul moduls =
         | [ptname] -> find_ptyp_in_modul ptname modul
         | [mname; ptname] -> find_ptyp_in_modul ptname mname *)
 
+let ptyp_of_env env var = 
+  let rec ptyp_of_var ptyp_list var = 
+    match ptyp_list with
+    | [] -> PTVar var
+    | (PTVar v)::pts -> ptyp_of_var (pts@(Pairs.find_all env (PTVar v))) v
+    | pt :: pts -> pt in
+  ptyp_of_var (Pairs.find_all env (PTVar var)) var
+
 let rec apply_env_to_ptyp env ptyp = 
   let rec find_key_binding bindings key = 
     match bindings with
@@ -128,7 +154,11 @@ let rec apply_env_to_ptyp env ptyp =
         | None -> a, None
         | Some b -> a, Some (apply_env_to_ptyp env b)
       ) str_optyps)
-  | PTVar vi -> find_key_binding env (vi)
+  | PTVar vi -> 
+       if vi = 18 then begin
+        List.iter (fun (pt1, pt2)->print_endline ((Print.str_ptyp pt1)^","^(Print.str_ptyp pt2))) env
+      end; 
+      ptyp_of_env env (vi)
   | PTArrow (pt1, pt2) -> PTArrow (pt1, pt2)
 
 let rec unify ptyp_list modul moduls = 
@@ -455,19 +485,19 @@ let rec check_pel_type pel env tctx modul moduls =
   | PAray pel_aray -> 
     let env1 = unify (List.map (fun (pel:pexpr_loc) -> pel.ptyp) (pel_aray)) modul moduls in
     let new_env = merge_env env1 env in
-    List.iter (fun (pel:pexpr_loc) -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_aray;
+    (* List.iter (fun (pel:pexpr_loc) -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_aray; *)
     let env2 = unify [pel.ptyp; PTAray ((List.hd pel_aray).ptyp)] modul moduls in 
     (merge_env env2 new_env, tctx)
   | PLst pel_list ->
     let env1 = unify (List.map (fun (pel:pexpr_loc) -> pel.ptyp) pel_list) modul moduls in
     let new_env = merge_env env1 env in
-    List.iter (fun (pel:pexpr_loc) -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_list;
+    (* List.iter (fun (pel:pexpr_loc) -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_list; *)
     let env2 = unify [pel.ptyp; PTLst ((List.hd pel_list).ptyp)] modul moduls in 
     (merge_env env2 new_env, tctx)
   | PAray_Field (pel1, pel2) -> 
     let env1, _ = check_pel_type pel1 env tctx modul moduls  in
-    let env2 = merge_env env1 env in
-    let env3, _ = check_pel_type pel2 env2 tctx modul moduls in
+    (* let env2 = merge_env env1 env in *)
+    let env3, _ = check_pel_type pel2 env1 tctx modul moduls in
     let env4 = unify [pel.ptyp; PTAray (pel2.ptyp)] modul moduls in
     (merge_env env4 env3, tctx)
   | PBool b -> let env1 = unify [pel.ptyp; PTBool] modul moduls in (merge_env env1 env, tctx)
@@ -660,6 +690,38 @@ let rec check_pel_type pel env tctx modul moduls =
     let env2 = unify [ptf; construct_apply (List.map (fun (pel:pexpr_loc)->pel.ptyp) pel_list)] modul moduls in
     (merge_env (merge_env env1 env2) !env0, tctx)
 
+let rec check_pformulal_type pfml modul moduls =
+  match pfml.pfml with
+  | PAtomic (str, pel_list) -> 
+    let env0 = ref [] in
+    List.iter (fun pel ->
+      let env, _ = check_pel_type pel !env0 [] modul moduls in
+      env0 := env
+    ) pel_list;
+    !env0
+  | PNeg pfml1 -> check_pformulal_type pfml1 modul moduls
+  | PAnd (pfml1, pfml2) -> merge_env (check_pformulal_type pfml1 modul moduls) (check_pformulal_type pfml2 modul moduls)
+  | POr (pfml1, pfml2) -> merge_env (check_pformulal_type pfml1 modul moduls) (check_pformulal_type pfml2 modul moduls)
+  | PAX (_, pfml1, pel) -> 
+    let env,_ = (check_pel_type pel [] [] modul moduls) in
+    merge_env (check_pformulal_type pfml1 modul moduls) env
+  | PEX (_, pfml1, pel) -> 
+    let env,_ = (check_pel_type pel [] [] modul moduls) in
+    merge_env (check_pformulal_type pfml1 modul moduls) env
+  | PAF (_, pfml1, pel) -> 
+    let env,_ = (check_pel_type pel [] [] modul moduls) in
+    merge_env (check_pformulal_type pfml1 modul moduls) env
+  | PEG (_, pfml1, pel) -> 
+    let env,_ = (check_pel_type pel [] [] modul moduls) in
+    merge_env (check_pformulal_type pfml1 modul moduls) env
+  | PAR (_,_, pfml1, pfml2, pel) -> 
+    let env,_ = check_pel_type pel [] [] modul moduls in
+    merge_env (merge_env (check_pformulal_type pfml1 modul moduls) (check_pformulal_type pfml2 modul moduls)) env
+  | PEU (_,_, pfml1, pfml2, pel) -> 
+    let env,_ = check_pel_type pel [] [] modul moduls in
+    merge_env (merge_env (check_pformulal_type pfml1 modul moduls) (check_pformulal_type pfml2 modul moduls)) env
+  | _ -> []
+
 
 let rec apply_env_to_ppatl env ppatl = 
   ppatl.ptyp <- apply_env_to_ptyp env ppatl.ptyp;
@@ -721,3 +783,67 @@ let rec apply_env_to_pel env (pel:pexpr_loc) =
   | PConstr (PConstr_compound (str, pel1)) -> apply_env_to_pel env pel1
   | PApply (str, pel_list) -> List.iter (fun pel -> apply_env_to_pel env pel) pel_list
   | _ -> ()
+
+let rec apply_env_to_pformulal env pfml =
+  match pfml.pfml with
+  | PAtomic (str, pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
+  | PNeg pfml1 -> apply_env_to_pformulal env pfml1
+  | PAnd (pfml1, pfml2) -> apply_env_to_pformulal env pfml1; apply_env_to_pformulal env pfml2
+  | POr (pfml1, pfml2) -> apply_env_to_pformulal env pfml1; apply_env_to_pformulal env pfml2
+  | PAX (_, pfml1, pel) -> apply_env_to_pformulal env pfml1; apply_env_to_pel env pel
+  | PEX (_, pfml1, pel) -> apply_env_to_pformulal env pfml1; apply_env_to_pel env pel
+  | PAF (_, pfml1, pel) -> apply_env_to_pformulal env pfml1; apply_env_to_pel env pel
+  | PEG (_, pfml1, pel) -> apply_env_to_pformulal env pfml1; apply_env_to_pel env pel
+  | PAR (_,_, pfml1, pfml2, pel) -> apply_env_to_pformulal env pfml1; apply_env_to_pformulal env pfml2; apply_env_to_pel env pel
+  | PEU (_,_, pfml1, pfml2, pel) -> apply_env_to_pformulal env pfml1; apply_env_to_pformulal env pfml2; apply_env_to_pel env pel
+  | _ -> ()
+
+let check_modul modul moduls = 
+  if Hashtbl.mem moduls modul then begin
+    let m = Hashtbl.find moduls modul in
+    Hashtbl.iter (fun str kind_ast -> 
+      match kind_ast with
+      | (Val, PExpr_loc (ptyp, pel)) -> 
+        let env,_ = check_pel_type pel [] [] modul moduls in
+        let env1 = merge_env (unify [ptyp; pel.ptyp] modul moduls) env in
+        let ptyp1 = apply_env_to_ptyp env1 ptyp in
+        apply_env_to_pel env1 pel;
+        Hashtbl.replace m.psymbol_tbl str (Val, PExpr_loc (ptyp1, pel))
+      | (Var, PExpr_loc (ptyp, pel)) -> 
+        let env,_ = check_pel_type pel [] [] modul moduls in
+        let env1 = merge_env (unify [ptyp; pel.ptyp] modul moduls) env in
+        let ptyp1 = apply_env_to_ptyp env1 ptyp in
+        apply_env_to_pel env1 pel;
+        Hashtbl.replace m.psymbol_tbl str (Var, PExpr_loc (ptyp1, pel))
+      | (Function, PFunction (ptyp, ppatl_list, pel)) -> 
+        let rec build_arrow ptyp_list ptyp1 = 
+          match ptyp_list with
+          | [] -> ptyp1
+          | pt::pts -> PTArrow (pt, build_arrow pts ptyp1) in
+        let env0 = ref []
+        and tctx0 = ref [] in
+        List.iter (fun ppatl->
+          let env,tctx = check_ppat_type ppatl modul moduls in
+          env0:=merge_env env !env0;
+          tctx0:=tctx@(!tctx0)
+        ) ppatl_list;
+        let env1, tctx1 = check_pel_type pel !env0 !tctx0 modul moduls in
+        let env2 = merge_env (unify [ptyp; build_arrow (List.map (fun ppatl->ppatl.ptyp) ppatl_list) pel.ptyp] modul moduls) env1 in
+        List.iter (fun ppatl->apply_env_to_ppatl env2 ppatl) ppatl_list;
+        apply_env_to_pel env2 pel;
+        Hashtbl.replace m.psymbol_tbl str (Function, PFunction (apply_env_to_ptyp env2 ptyp, ppatl_list, pel))
+      | _ -> ()
+    ) m.psymbol_tbl;
+    (* match m.pkripke_model with
+    | None -> ()
+    | Some kripke -> 
+        let env1, tctx1 = check_ppat_type (fst kripke.transition) modul moduls in
+        let env2, _ = check_pel_type (snd kripke.transition) env1 tctx1 modul moduls in
+        apply_env_to_ppatl env2 (fst kripke.transition);
+        apply_env_to_pel env2 (snd kripke.transition);
+        List.iter (fun (str, pfml) -> 
+          let env = check_pformulal_type pfml modul moduls in
+          apply_env_to_pformulal env pfml
+        ) kripke.properties *)
+  end else 
+    raise (Undefined_modul modul)
