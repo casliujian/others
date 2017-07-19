@@ -135,13 +135,13 @@ let ptyp_of_env env var =
   ptyp_of_var (Pairs.find_all env (PTVar var)) var
 
 let rec apply_env_to_ptyp env ptyp = 
-  let rec find_key_binding bindings key = 
+  (* let rec find_key_binding bindings key = 
     match bindings with
     | [] -> PTVar key
     | (PTVar ki, PTVar vi) :: bindings' -> if (key=ki)&&(ki>=vi) then PTVar vi else find_key_binding bindings' (key)
     | (PTVar ki, pt) :: bindings' -> if key=ki then pt else find_key_binding bindings' (key) 
     | _ :: bindings' -> find_key_binding bindings' (key)
-  in
+  in *)
   match ptyp with
   | PTInt | PTFloat | PTBool | PTUnt | PTUdt _ -> ptyp
   | PTAray pt -> PTAray (apply_env_to_ptyp env pt)
@@ -155,11 +155,14 @@ let rec apply_env_to_ptyp env ptyp =
         | Some b -> a, Some (apply_env_to_ptyp env b)
       ) str_optyps)
   | PTVar vi -> 
-       if vi = 18 then begin
-        List.iter (fun (pt1, pt2)->print_endline ((Print.str_ptyp pt1)^","^(Print.str_ptyp pt2))) env
+        (* if vi = 18 then print_endline "calculating 18"; *)
+       if vi = 21 then begin
+        List.iter (fun (pt1, pt2)->print_endline ((Print.str_ptyp pt1)^","^(Print.str_ptyp pt2))) env;
+        print_endline ("type of ptvar 21 is: "^(Print.str_ptyp (ptyp_of_env env (vi))))
       end; 
-      (ptyp_of_env env (vi))
-  | PTArrow (pt1, pt2) -> PTArrow (pt1, pt2)
+      let pt = (ptyp_of_env env (vi)) in
+      if pt = ptyp then pt else apply_env_to_ptyp env pt
+  | PTArrow (pt1, pt2) -> PTArrow (apply_env_to_ptyp env pt1, apply_env_to_ptyp env pt2)
 
 let rec unify ptyp_list modul moduls = 
   match ptyp_list with
@@ -240,7 +243,9 @@ let rec unify ptyp_list modul moduls =
         let env1 = unify [pt1; pt3] modul moduls in
         let env2 = unify [pt2; pt4] modul moduls in
         merge_env (merge_env env1 env2) (unify (ptyp2::ptyps) modul moduls)
-      | _ -> raise (Unify_error (ptyp1,ptyp2))
+      | _ ->
+          print_endline ("error unifying types: "^(Print.str_ptyp ptyp1)^", "^(Print.str_ptyp ptyp2));  
+          raise (Unify_error (ptyp1,ptyp2))
     end
 
 
@@ -687,7 +692,7 @@ let rec check_pel_type pel env tctx modul moduls =
       | [pt] -> pt1 := pt; pt
       | pt::pts -> PTArrow (pt, construct_apply pts) in
     let env1 = unify [pel.ptyp; !pt1] modul moduls in
-    let env2 = unify [ptf; construct_apply (List.map (fun (pel:pexpr_loc)->pel.ptyp) pel_list)] modul moduls in
+    let env2 = unify [ptf; construct_apply ((List.map (fun (pel:pexpr_loc)->pel.ptyp) pel_list)@[!pt1])] modul moduls in
     (merge_env (merge_env env1 env2) !env0, tctx)
 
 let rec check_pformulal_type pfml modul moduls =
@@ -834,7 +839,7 @@ let check_modul modul moduls =
         Hashtbl.replace m.psymbol_tbl str (Function, PFunction (apply_env_to_ptyp env2 ptyp, ppatl_list, pel))
       | _ -> ()
     ) m.psymbol_tbl;
-    (* match m.pkripke_model with
+     match m.pkripke_model with
     | None -> ()
     | Some kripke -> 
         let env1, tctx1 = check_ppat_type (fst kripke.transition) modul moduls in
@@ -844,6 +849,6 @@ let check_modul modul moduls =
         List.iter (fun (str, pfml) -> 
           let env = check_pformulal_type pfml modul moduls in
           apply_env_to_pformulal env pfml
-        ) kripke.properties *)
+        ) kripke.properties 
   end else 
     raise (Undefined_modul modul)
