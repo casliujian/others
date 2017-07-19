@@ -156,10 +156,10 @@ let rec apply_env_to_ptyp env ptyp =
       ) str_optyps)
   | PTVar vi -> 
         (* if vi = 18 then print_endline "calculating 18"; *)
-       if vi = 21 then begin
+       (* if vi = 21 then begin
         List.iter (fun (pt1, pt2)->print_endline ((Print.str_ptyp pt1)^","^(Print.str_ptyp pt2))) env;
         print_endline ("type of ptvar 21 is: "^(Print.str_ptyp (ptyp_of_env env (vi))))
-      end; 
+      end;  *)
       let pt = (ptyp_of_env env (vi)) in
       if pt = ptyp then pt else apply_env_to_ptyp env pt
   | PTArrow (pt1, pt2) -> PTArrow (apply_env_to_ptyp env pt1, apply_env_to_ptyp env pt2)
