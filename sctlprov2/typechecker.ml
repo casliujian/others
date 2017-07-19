@@ -158,7 +158,7 @@ let rec apply_env_to_ptyp env ptyp =
        if vi = 18 then begin
         List.iter (fun (pt1, pt2)->print_endline ((Print.str_ptyp pt1)^","^(Print.str_ptyp pt2))) env
       end; 
-      ptyp_of_env env (vi)
+      (ptyp_of_env env (vi))
   | PTArrow (pt1, pt2) -> PTArrow (pt1, pt2)
 
 let rec unify ptyp_list modul moduls = 
