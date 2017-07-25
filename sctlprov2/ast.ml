@@ -59,10 +59,10 @@ type pexpr_loc = {
     (*attri: attribute;*)
 }
 and pexpr = 
-      PSymbol of string
+      PSymbol of string list
     | PLocal_Val of string * pexpr_loc
     | PLocal_Var of string * pexpr_loc
-    | PDot of pexpr_loc * pexpr_loc
+    (* | PDot of pexpr_loc * pexpr_loc *)
     | PInt of int
     | PFloat of float
     | PUnt

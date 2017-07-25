@@ -1,3 +1,14 @@
+exception Key_not_found
+
+let rec key_exists pairs key = 
+    match pairs with
+    | [] -> false
+    | (k,_)::pairs' -> if k = key then true else key_exists pairs' key
+
+let rec get_value pairs key = 
+    match pairs with
+    | [] -> raise Key_not_found
+    | (k,v)::pairs' -> if k = key then v else get_value pairs' key
 
 let rec find pairs key = 
     match pairs with

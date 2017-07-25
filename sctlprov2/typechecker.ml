@@ -415,12 +415,91 @@ let rec check_ppat_type ppatl modul moduls =
     end
 
 
+let rec ptyp_of_pexpr_path ptyp_expected str_list modul moduls =
+  match str_list with
+  | [] -> ptyp_expected
+  | str::strs -> 
+    if str = (String.capitalize_ascii str) then
+      ptyp_of_pexpr_path ptyp_expected strs modul moduls
+    else begin
+      if ptyp_expected = PTVar 0 then
+        ptyp_of_pexpr_path (type_of_str str modul moduls) strs modul moduls 
+      else begin
+        match ptyp_expected with
+        | PTRecord str_ptyp_list -> begin
+            match Pairs.find str_ptyp_list str with
+            | None -> PTVar 0
+            | Some ptyp -> ptyp_of_pexpr_path ptyp strs modul moduls
+          end  
+        | PTUdt _ -> 
+          let pt = expand_udt ptyp_expected modul moduls in begin
+            match pt with
+            | PTRecord str_ptyp_list -> begin
+                match Pairs.find str_ptyp_list str with
+                | None -> PTVar 0
+                | Some ptyp -> ptyp_of_pexpr_path ptyp strs modul moduls
+              end  
+            | _ -> PTVar 0
+          end
+        | _ -> PTVar 0
+      end
+    end
+
 
 
 let rec check_pel_type pel env tctx modul moduls = 
   match pel.pexpr with
-  | PSymbol str -> 
-    (try
+  | PSymbol str_list -> begin
+      match str_list with
+      | [] -> raise (Invalid_pexpr_loc (pel, "not a valid expression."))
+      | [str] -> 
+        if str = (String.capitalize_ascii str) then
+          raise (Invalid_pexpr_loc (pel, str^" is a module name, not an expression identifier."))
+        else begin
+          try
+            let pt = type_of_var str tctx in
+            if pt = PTVar 0 then begin
+              let m = Hashtbl.find moduls modul in
+              try
+                match (Hashtbl.find m.psymbol_tbl str) with
+                | (Val, PExpr_loc (pt, pel1)) -> let env1 = unify [pt;pel.ptyp; pel1.ptyp] modul moduls in (merge_env env1 env, tctx)
+                | (Var, PExpr_loc (pt, pel1)) -> let env1 = unify [pt;pel.ptyp; pel1.ptyp] modul moduls in (merge_env env1 env, tctx)
+                | _ -> raise (Undefined_idenfier (modul^"."^str))
+              with Not_found -> raise (Undefined_idenfier (modul^"."^str))
+            end else begin
+              let env1 = unify [pel.ptyp; pt] modul moduls in
+              (merge_env env1 env, tctx)
+            end
+          with Not_found -> raise (Undefined_modul modul)
+        end
+      | str::strs -> 
+        if str = (String.capitalize_ascii str) then
+          let pt = ptyp_of_pexpr_path (PTVar 0) strs str moduls in
+          if pt = PTVar 0 then 
+            raise (Invalid_pexpr_loc (pel, "can not be typed"))
+          else 
+            let env1 = unify [pt; pel.ptyp] modul moduls in 
+            (merge_env env1 env, tctx)
+        else 
+          let pt = type_of_var str tctx in
+          if pt <> PTVar 0 then
+            let pt1 = ptyp_of_pexpr_path pt strs modul moduls in
+            if pt1 = PTVar 0 then
+              raise (Invalid_pexpr_loc (pel, "can not be typed"))
+            else 
+              let env1 = unify [pt1; pel.ptyp] modul moduls in
+              (merge_env env1 env, tctx)
+          else
+            let pt1 = ptyp_of_pexpr_path (PTVar 0) str_list modul moduls in
+            if pt1 = PTVar 0 then
+              raise (Invalid_pexpr_loc (pel, "can not be typed"))
+            else 
+              let env1 = unify [pt1; pel.ptyp] modul moduls in
+              (merge_env env1 env, tctx)
+          
+    end
+
+    (* (try
        let pt = type_of_var str tctx in
        if pt = PTVar 0 then begin
          let m = Hashtbl.find moduls modul in
@@ -434,17 +513,11 @@ let rec check_pel_type pel env tctx modul moduls =
          let env1 = unify [pel.ptyp; pt] modul moduls in
          (merge_env env1 env, tctx)
        end
-     with Not_found -> raise (Undefined_modul modul))
+     with Not_found -> raise (Undefined_modul modul)) *)
   | PLocal_Val (str, pel1) | PLocal_Var (str, pel1) -> 
     let env1, tctx1 = check_pel_type pel1 env tctx modul moduls in 
     (env1, add_to_tctx str pel1.ptyp tctx)
-  (* begin
-      match tctx1 with
-      | [] -> (env1, [[(str, pel1.ptyp)]])
-      | c :: cs -> (env1, ((str, pel1.ptyp)::c) :: cs)
-     end *)
-  | PDot (pel1, pel2) -> 
-    (*let rec calculate_dot pel3 pel4 = *)
+  (* | PDot (pel1, pel2) -> 
     begin
       match pel1.pexpr, pel2.pexpr with
       | PSymbol str1, PSymbol str2 -> 
@@ -483,7 +556,7 @@ let rec check_pel_type pel env tctx modul moduls =
           | _ -> raise (Invalid_pexpr_loc (pel1, "not a record."))
         end
       | _ -> raise (Invalid_pexpr_loc (pel,""))
-    end
+    end *)
   | PInt i -> let env1 = unify [pel.ptyp; PTInt] modul moduls in (merge_env env1 env, tctx)
   | PFloat f -> let env1 = unify [pel.ptyp; PTFloat] modul moduls in (merge_env env1 env, tctx)
   | PUnt -> let env1 = unify [pel.ptyp; PTUnt] modul moduls in (merge_env env1 env, tctx)
@@ -747,7 +820,7 @@ let rec apply_env_to_pel env (pel:pexpr_loc) =
   match pel.pexpr with
   | PLocal_Val (_, pel1) -> apply_env_to_pel env pel1
   | PLocal_Var (_, pel1) -> apply_env_to_pel env pel1
-  | PDot (pel1, pel2) -> apply_env_to_pel env pel1; apply_env_to_pel env pel2
+  (* | PDot (pel1, pel2) -> apply_env_to_pel env pel1; apply_env_to_pel env pel2 *)
   | PAray (pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
   | PLst (pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
   | PAray_Field (pel1, pel2) -> apply_env_to_pel env pel1; apply_env_to_pel env pel2

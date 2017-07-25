@@ -1,16 +1,16 @@
 type expr = 
-      Symbol of string
+      Symbol of string list
     | Val_binding of string * expr
     | Var_binding of string * expr 
     | Int of int
     | Float of float
     | Unt
     | Aray of (expr array)
-    | Lst of (expr list)
+    | Lst of (expr array)
     | Aray_field of expr * expr
     | Bool of bool
-    | Tuple of (expr list)
-    | Record of ((string * expr) list)
+    | Tuple of (expr array)
+    | Record of ((string * expr) array)
     | Negb of expr
     | Ando of expr * expr
     | Oro of expr * expr
@@ -43,32 +43,20 @@ and pattern =
     | Pat_Float of float
     | Pat_Unt
     | Pat_Aray of (pattern array)
-    | Pat_Lst of (pattern list)
+    | Pat_Lst of (pattern array)
     | Pat_Lst_Cons of pattern * pattern
     | Pat_Underline
-    | Pat_Tuple of (pattern list)
-    | Pat_Record of ((string, pattern) list)
+    | Pat_Tuple of (pattern array)
+    | Pat_Record of ((string, pattern) array)
     | Pat_Constr of string * (pattern option)
+and value = 
+  | VInt of int
+  | VFloat of float
+  | VUnt
+  | VBool of bool
+  | VAray of (value array)
+  | VLst of (value array)
+  | VTuple of (value array)
+  | VRecord of (string * value) array
+  | VConstr of string * (value option)
 
-exception runtime_error of string
-
-type context = (string * expr) list
-
-let modify_ctx ctx str expr = Pairs.replace_first ctx str expr 
-let add_to_ctx ctx str expr = (str, expr)::ctx
-
-let rec evaluate_seq exprs ctx = 
-  match exprs with
-  | [] -> raise (runtime_error "error evaluating seq expr")
-  | [e] -> evaluate e ctx
-  | e :: es -> begin
-      match e with
-      | Val_binding (str, e1) -> evaluate_seq es (add_to_ctx ctx str (evaluate e1 ctx))
-      | Var_binding (str, e1) -> evaluate_seq es (add_to_ctx ctx str (evaluate e1 ctx))
-      | _ -> let _ = evaluate e ctx in evaluate_seq es ctx
-    end  
-
-and evaluate expr ctx = 
-  match expr with
-  | Int _ | Float _ | Unt | Bool _ -> expr
-  | 

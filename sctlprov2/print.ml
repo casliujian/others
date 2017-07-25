@@ -83,10 +83,16 @@ let rec str_ppatl ppatl =
 let rec str_pexprl pel =
     let rec str_pexpr pe =
         match pe with
-        | PSymbol str -> str
+        | PSymbol str_list -> 
+            let rec str_strs strs = 
+                match strs with
+                | [] -> "<empty_str>"
+                | [str] -> str
+                | str::strs' -> str^"."^(str_strs strs') in
+            str_strs str_list
         | PLocal_Val (str, pel1) -> "val "^str^"="^(str_pexprl pel1)
         | PLocal_Var (str, pel1) -> "var "^str^"="^(str_pexprl pel1)
-        | PDot (pel1, pel2) -> (str_pexprl pel1)^"."^(str_pexprl pel2)
+        (* | PDot (pel1, pel2) -> (str_pexprl pel1)^"."^(str_pexprl pel2) *)
         | PInt i -> (string_of_int i)
         | PFloat f -> (string_of_float f)
         | PUnt -> "()"

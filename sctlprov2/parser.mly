@@ -196,14 +196,20 @@ expr: expr_single {$1}
         }
 ;
 
-expr_single: id = Iden {mk_pexpr_loc (PSymbol id) (PTVar (new_type_var ())) $startpos(id) $endpos(id)}
+expr_path: id = Iden {[id]}
+    | id = Iden Dot expr_path {id::$3}
+;
+
+expr_single: expr_path {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) $startpos($1) $endpos($1)}
+    /* | id = Iden {mk_pexpr_loc (PSymbol [id]) (PTVar (new_type_var ())) $startpos(id) $endpos(id)}
     | Iden Dot expr_single     {
             let nt = PTVar (new_type_var ()) in
             mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) nt $startpos($1) $endpos($1), $3)) nt $startpos($1) $endpos($3)
         }
     | UIden Dot e = expr_single {
             mk_pexpr_loc (PDot (mk_pexpr_loc (PSymbol $1) e.ptyp $startpos($1) $endpos($1), e)) e.ptyp $startpos($1) $endpos(e)
-        }
+        } */
+    | UIden Dot expr_path {mk_pexpr_loc (PSymbol ($1::$3)) (PTVar (new_type_var ())) $startpos($1) $endpos($3)}
     | i = Int   {mk_pexpr_loc (PInt i) (PTInt) $startpos(i) $endpos(i)}
     | f = Float {mk_pexpr_loc (PFloat f) (PTFloat) $startpos(f) $endpos(f)}
     | LB1 RB1   {mk_pexpr_loc PUnt (PTUnt) $startpos($1) $endpos($2)}
