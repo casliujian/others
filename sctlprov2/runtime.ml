@@ -80,7 +80,8 @@ let rec get_matched_pattern value pat_expr_list =
     (* | VFloat f, (Pat_Symbol str, expr)::pel -> [(str, VFloat f)], expr *)
     | VUnt, (Pat_Unt, expr)::pel -> [], expr
     | VBool b, (VBool c, expr)::pel -> if b=c then [], expr else get_matched_pattern value pel
-    | VAray va, 
+    | VAray vl, (Pat_Aray pl, expr)::pel ->
+        
 
 let rec evaluate_seq exprs ctx runtime modul = 
   match exprs with

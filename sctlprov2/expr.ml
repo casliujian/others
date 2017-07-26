@@ -42,11 +42,11 @@ and pattern =
     | Pat_Int of int
     | Pat_Float of float
     | Pat_Unt
-    | Pat_Aray of (pattern array)
-    | Pat_Lst of (pattern array)
+    | Pat_Aray of (pattern list)
+    | Pat_Lst of (pattern list)
     | Pat_Lst_Cons of pattern * pattern
     | Pat_Underline
-    | Pat_Tuple of (pattern array)
+    | Pat_Tuple of (pattern list)
     | Pat_Record of ((string, pattern) array)
     | Pat_Constr of string * (pattern option)
 and value = 
@@ -54,9 +54,9 @@ and value =
   | VFloat of float
   | VUnt
   | VBool of bool
-  | VAray of (value array)
-  | VLst of (value array)
-  | VTuple of (value array)
+  | VAray of (value list)
+  | VLst of (value list)
+  | VTuple of (value list)
   | VRecord of (string * value) list
   | VConstr of string * (value option)
 
