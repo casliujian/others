@@ -57,6 +57,18 @@ and value =
   | VAray of (value array)
   | VLst of (value array)
   | VTuple of (value array)
-  | VRecord of (string * value) array
+  | VRecord of (string * value) list
   | VConstr of string * (value option)
 
+let rec str_value v = 
+  match v with
+  | VInt i -> string_of_int i
+  | VFloat f -> string_of_float f
+  | VUnt -> "()"
+  | VBool b -> string_of_bool b
+  | VAray va -> "[|"^ (Array.fold_left (fun str v1 -> str^(str_value v1)^";") "" va) ^"|]"
+  | VLst va -> "["^ (Array.fold_left (fun str v1 -> str^(str_value v1)^";") "" va) ^"]"
+  | VTuple va -> "("^ (Array.fold_left (fun str v1 -> str^(str_value v1)^",") "" va) ^")"
+  | VRecord str_value_array -> "{"^ (Array.fold_left (fun str (s1,v1) -> str^s1^"="^(str_value v1)^";") "" va) ^"}"
+  | VConstr (str, None) -> str
+  | VConstr (str, Some v1) -> str^" "^(str_value v1)
