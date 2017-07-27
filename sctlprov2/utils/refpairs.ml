@@ -31,9 +31,13 @@ let rec remove_all pairs key =
     | (k,v) :: pairs' -> if k=key then remove_all pairs' key else (k,v)::(remove_all pairs' key)
 
 let rec replace_first pairs key value = 
-    match pairs 
+    match pairs with
     | [] -> ()
-    | (k,v)::pairs' -> if key = k then v := value else replace_first pairs' key value
+    | (k,v)::pairs' -> 
+        if key = k then 
+            v := value 
+        else 
+            replace_first pairs' key value
 
 let rec replace_all pairs key value = 
     match pairs with

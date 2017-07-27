@@ -8,8 +8,13 @@ all:
 	ocamlc -c lexer.ml
 	ocamlc -c print.ml
 	ocamlc -I utils -c utils.cma typechecker.ml
+	ocamlc -I utils -c utils.cma expr.ml
+	ocamlc -c formula.ml
+	ocamlc -c dep.ml
+	ocamlc -I utils -c utils.cma interp.ml
+	ocamlc -c prove.ml
 	ocamlc -c main.ml
-	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser.cmo lexer.cmo print.cmo typechecker.cmo main.cmo
+	ocamlc -I utils -o sctlprov2 utils.cma ast.cmo parser.cmo lexer.cmo print.cmo typechecker.cmo expr.cmo formula.cmo dep.cmo interp.cmo prove.cmo main.cmo
 
 all_yacc:
 	make -C utils all
