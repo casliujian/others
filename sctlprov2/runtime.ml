@@ -20,10 +20,10 @@ type runtime = {
 exception Evaluation_error of string
 exception No_matched_pattern of value
 
-type context = (string * value) list
+type context = (string * value ref) list
 
 let modify_ctx ctx str value = Pairs.replace_first ctx str value 
-let add_to_ctx ctx str value = (str, value)::ctx
+(* let add_to_ctx ctx str value = (str, value)::ctx *)
 
 let rec value_of_str str runtime modul = 
     let m = Hashtbl.find runtime.moduls modul in
@@ -80,7 +80,56 @@ let rec get_matched_pattern value pat_expr_list =
     (* | VFloat f, (Pat_Symbol str, expr)::pel -> [(str, VFloat f)], expr *)
     | VUnt, (Pat_Unt, expr)::pel -> [], expr
     | VBool b, (VBool c, expr)::pel -> if b=c then [], expr else get_matched_pattern value pel
-    | VAray vl, (Pat_Aray pl, expr)::pel ->
+    | VAray vl, (Pat_Aray pl, expr)::pel 
+    | VLst vl, (Pat_Aray pl, expr)::pel ->
+        if List.length vl <> List.length pl then
+            get_matched_pattern value pel
+        else begin
+            let ctx = ref [] in
+            try
+                for i = 0 to List.length vl - 1 do
+                    let ctx0, _ = get_matched_pattern (List.nth vl i) [(List.nth pl i, expr)] in
+                    ctx := !ctx @ ctx0    
+                done;
+                !ctx, expr
+            with No_matched_pattern _ -> get_matched_pattern value pel    
+        end
+    | VLst vl, (Pat_Lst_Cons (p1, p2), expr)::pel ->
+        if List.length vl = 0 then
+            get_matched_pattern value pel
+        else
+            try
+                let vh, vt = List.hd vl, List.tl vl in
+                let ctx1, _ = get_matched_pattern vh [(p1, expr)] 
+                and ctx2, _ = get_matched_pattern vt [(p2, expr)] in
+                ctx1 @ ctx2, expr
+            with No_matched_pattern _ -> get_matched_pattern value pel
+    | VTuple vl, (Pat_Tuple pl, expr)::pel ->
+        if List.length vl <> List.length pl then
+            get_matched_pattern value pel
+        else begin
+            let ctx = ref [] in
+            try
+                for i = 0 to List.length vl - 1 do
+                    let ctx0, _ = get_matched_pattern (List.nth vl i) [(List.nth pl i, expr)] in
+                    ctx := !ctx @ ctx0    
+                done;
+                !ctx, expr
+            with No_matched_pattern _ -> get_matched_pattern value pel    
+        end
+    | VConstr (str1, None), (Pat_Constr (str2, None), expr)::pel ->
+        if str1 = str2 then
+            [], expr
+        else
+            get_matched_pattern value pel
+    | VConstr (str1, Some v1), (Pat_Constr (Str2, Some p1), expr)::pel ->
+        if str1 <> str2 then
+            get_matched_pattern value pel
+        else
+            try
+                let ctx, _ = get_matched_pattern v1 [(p1, expr)] in
+                ctx, expr
+            with No_matched_pattern _ -> get_matched_pattern value pel
         
 
 let rec evaluate_seq exprs ctx runtime modul = 
@@ -89,8 +138,8 @@ let rec evaluate_seq exprs ctx runtime modul =
   | [e] -> evaluate e ctx runtime modul 
   | e :: es -> begin
       match e with
-      | Val_binding (str, e1) -> evaluate_seq es (add_to_ctx ctx str (evaluate e1 ctx)) runtime modul
-      | Var_binding (str, e1) -> evaluate_seq es (add_to_ctx ctx str (evaluate e1 ctx)) runtime modul
+      | Val_binding (str, e1) -> evaluate_seq es (Refpairs.add_to_first ctx str (evaluate e1 ctx)) runtime modul
+      | Var_binding (str, e1) -> evaluate_seq es (Refpairs.add_to_first ctx str (evaluate e1 ctx)) runtime modul
       | _ -> let _ = evaluate e ctx runtime modul in evaluate_seq es ctx runtime modul
     end  
 and evaluate expr ctx runtime modul = 
@@ -237,6 +286,8 @@ and evaluate expr ctx runtime modul =
             VUnt
         else
             raise (Evaluation_error ((str_value v1)^" should be a bool value."))
+    | While (e1, e2) ->
+        
     | Seq es -> evaluate_seqs es ctx runtime modul
     | Assign (e1, e2) -> begin
             match e1 with
@@ -248,7 +299,10 @@ and evaluate expr ctx runtime modul =
                 end
             | _ -> raise (Evaluation_error ("error evaluating assign expr."))
         end        
-    | Match (e1, pat_expr_list) -> ***
+    | Match (e1, pat_expr_list) -> 
+        let v1 = evaluate e1 ctx runtime modul in
+        let ctx0, e1 = get_matched_pattern v1 pat_expr_list in
+        evaluate e1 (ctx0 @ ctx) runtime modul
     | With (e1, str_expr_list) -> 
         let v1 = evaluate e1 ctx runtime modul in begin
             match v1 with
