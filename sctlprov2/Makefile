@@ -38,3 +38,4 @@ clean:
 	rm -f parser.mli
 	rm -f parser.ml
 	rm -f *.cm[ioxa]
+	rm -f sctlprov2

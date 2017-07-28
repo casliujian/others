@@ -38,8 +38,8 @@ let fresh_fairs fairs =
 let orig_fairs = ref []
 let has_fairs = ref false
 
-let fresh_fairs_modl modl =
-	let fairs = modl.fairness in
+let fresh_fairs_modl runtime =
+	let fairs = runtime.model.fairness in
 	if fairs = [] then [] else
 	(
 		has_fairs := true;
@@ -76,20 +76,20 @@ let add_to_false_merge s levl modl =
 let true_merge = Hashtbl.create 10
 let false_merge = Hashtbl.create 10
 
-let is_in_true_merge s levl modl = 
+let is_in_true_merge s levl = 
 	try
 		State_set.mem s (Hashtbl.find true_merge levl)
 	with Not_found -> print_endline ("level not found in finding true merge: "^levl); exit 1
 
-let is_in_false_merge s levl modl = 
+let is_in_false_merge s levl = 
 	State_set.mem s (Hashtbl.find false_merge levl)
 
-let add_to_true_merge s levl modl = 
+let add_to_true_merge s levl = 
 	try
 		let bss = Hashtbl.find true_merge levl in
 		Hashtbl.replace true_merge levl (State_set.add s bss)
 	with Not_found -> print_endline ("level not found in finding true merge: "^levl); exit 1
-let add_to_false_merge s levl modl = 
+let add_to_false_merge s levl = 
 	try
 		let bss = Hashtbl.find false_merge levl in
 		Hashtbl.replace false_merge levl (State_set.add s bss)
@@ -122,10 +122,10 @@ let add_to_global_merge ss level modl =
 	let sts = Hashtbl.find merges level in
 	Hashtbl.replace merges level (State_set.fold (fun elem b -> let bs = ia_to_bin elem modl in Bdd.add_int_array bs b) ss sts)
   *)   
-let in_global_merge s level modl = 
+let in_global_merge s level = 
 	State_set.mem s (Hashtbl.find merges level)
 
-let add_to_global_merge ss level modl = 
+let add_to_global_merge ss level = 
 	let sts = Hashtbl.find merges level in
 	Hashtbl.replace merges level (State_set.fold (fun elem b -> State_set.add elem b) ss sts)
     
@@ -137,11 +137,11 @@ let get_global_merge level =
 
 let generate_EX_cont gamma fairs levl x fml next contl contr = 
     State_set.fold (fun elem b ->
-        Cont (State_set.empty, fresh_fairs fairs, levl^"1", And (subst_s fml x (State elem), EG (SVar "y", Top, State elem)), contl, b, [], [])) next contr
+        Cont (State_set.empty, fresh_fairs fairs, levl^"1", And (subst_s fml x (State elem), EG ("y", Top, State elem)), contl, b, [], [])) next contr
 
 let generate_AX_cont gamma fairs levl x fml next contl contr = 
     State_set.fold (fun elem b ->
-        Cont (State_set.empty, fresh_fairs fairs, levl^"1", Or (subst_s fml x (State elem), Neg (EG (SVar "y", Top, State elem))), b, contr, [], [])) next contl
+        Cont (State_set.empty, fresh_fairs fairs, levl^"1", Or (subst_s fml x (State elem), Neg (EG ("y", Top, State elem))), b, contr, [], [])) next contl
 
 let generate_EG_cont gamma fairs level x fml s next contl contr =
 	let level1 = level^"1" in
@@ -167,7 +167,7 @@ let generate_EU_cont gamma fairs levl x y fml1 fml2 s next contl contr =
             Cont (State_set.singleton s, fairs, levl, EU(x, y, fml1, fml2, State elem), contl, b, [], [])) next contr in
 		if !has_fairs then 
 			Cont (State_set.empty, fresh_fairs, levl2, subst_s fml2 y (State s), 
-			Cont (State_set.empty, fresh_fairs, "-1", EG (SVar "e", Top, (State s)), contl, contr, [], []),
+			Cont (State_set.empty, fresh_fairs, "-1", EG ("e", Top, (State s)), contl, contr, [], []),
 			Cont (State_set.empty, fresh_fairs, levl1, subst_s fml1 x (State s),
 				nested,
 				contr, 
@@ -195,7 +195,7 @@ let generate_AR_cont gamma fairs levl x y fml1 fml2 s next contl contr =
 				contl,
 				nested,
 				[], []),
-			Cont (State_set.empty, fresh_fairs, "-1", EG (SVar "e", Top, (State s)), 
+			Cont (State_set.empty, fresh_fairs, "-1", EG ("e", Top, (State s)), 
 				contr, 
 				contl,
 				[], []),
@@ -209,37 +209,54 @@ let generate_AR_cont gamma fairs levl x y fml1 fml2 s next contl contr =
 			contr,
 			[], [])
 
-let rec satisfy_fair fml s modl =
-	prove_fairs (Cont(State_set.empty, [], "0", subst_s fml (SVar "s") (State s), Basic true, Basic false, [], [])) modl
+let prove_atomic s sl runtime modul =
+	let args = List.map (fun st ->
+		match st with
+		| SVar _ -> raise Error_proving_atomic
+		| State value -> value
+	) sl in
+	let pats, e1 = find_function s runtime modul in
+    if List.length args <> List.length pats then 
+        raise (Evaluation_error ("function "^s^" has "^(string_of_int (List.length pats))^" parameters, but is applied to "^(string_of_int (List.length args))^" arguments."))
+    else begin
+        let ctx0 = ref [] in
+        for i = 0 to List.length args - 1 do
+            let v1 = List.nth args i in
+            let ctx1, _ = get_matched_pattern v1 [(List.nth pats i, e1)] in
+            ctx0 := ctx1 @ !ctx0
+        done;
+        let result = evaluate e1 (!ctx0) runtime modul in
+        match result with
+        | VBool b -> b
+        | _ -> raise (Error_proving_atomic)
+    end
 
-    (* match (apply_atomic exp [s] modl.var_index_tbl) with
-    | Top -> true
-    | Bottom -> false
-    | _ -> raise Error_proving_atomic
- *)
-and prove_atomic s sl modl = 
+let rec satisfy_fair fml s runtime modul =
+	prove_fairs (Cont(State_set.empty, [], "0", subst_s fml ("s") (State s), Basic true, Basic false, [], [])) runtime modul
+
+(* and prove_atomic s sl modl = 
 	match s with
-	| "has_next" -> State_set.is_empty (next (get_array_from_state (List.hd sl)) modl.transitions modl.var_index_tbl)
+	(* | "has_next" -> State_set.is_empty (next (get_array_from_state (List.hd sl)) modl.transitions modl.var_index_tbl) *)
 	| _ -> (try (match apply_atomic (Hashtbl.find modl.atomic_tbl s) sl modl.var_index_tbl with
 			| Top -> true
 			| Bottom -> false
 			| _ -> raise Error_proving_atomic) with Not_found -> print_endline ("Did not find atomic formula: "^s); exit 1) 
-
-and prove_fairs cont modl = 
+ *)
+and prove_fairs cont runtime modul = 
     match cont with 
     | Basic b -> b
     | Cont (gamma, fairs, levl, fml, contl, contr, ts, fs) ->
 		(
-			List.iter (fun (a, b) -> if a<>"-1" then add_to_true_merge b a modl) ts;
-			List.iter (fun (a, b) -> if a<>"-1" then add_to_false_merge b a modl) fs
+			List.iter (fun (a, b) -> if a<>"-1" then add_to_true_merge b a) ts;
+			List.iter (fun (a, b) -> if a<>"-1" then add_to_false_merge b a) fs
 		);
         begin
             match fml with
-            | Top -> prove_fairs contl modl
-            | Bottom -> prove_fairs contr modl
-            | Atomic (s, sl) -> if prove_atomic s sl modl then prove_fairs contl modl else prove_fairs contr modl
-			| Neg (Atomic (s, sl)) -> if prove_atomic s sl modl then prove_fairs contr modl else prove_fairs contl modl
-            | Neg fml1 -> prove_fairs (Cont (gamma, fairs, levl^"1", fml1, contr, contl, [], [])) modl
+            | Top -> prove_fairs contl runtime modul
+            | Bottom -> prove_fairs contr runtime modul
+            | Atomic (s, sl) -> if prove_atomic s sl runtime modul then prove_fairs contl runtime modul else prove_fairs contr runtime modul
+			| Neg (Atomic (s, sl)) -> if prove_atomic s sl runtime modul then prove_fairs contr runtime modul else prove_fairs contl runtime modul
+            | Neg fml1 -> prove_fairs (Cont (gamma, fairs, levl^"1", fml1, contr, contl, [], [])) runtime modul
             | And (fml1, fml2) -> 
                 prove_fairs (Cont (State_set.empty, fresh_fairs fairs, levl^"1", fml1, 
                                 Cont (State_set.empty, fresh_fairs fairs, levl^"2", fml2,
@@ -247,49 +264,49 @@ and prove_fairs cont modl =
                                     contr, 
 									[],[]), 
                                 contr,
-								[],[])) modl
+								[],[])) runtime modul
             | Or (fml1, fml2) -> 
                 prove_fairs (Cont (State_set.empty, fresh_fairs fairs, levl^"1", fml1,
                                 contl,
                                 Cont (State_set.empty, fresh_fairs fairs, levl^"2", fml2,
                                     contl,
-                                    contr, [],[]),[],[])) modl
+                                    contr, [],[]),[],[])) runtime modul
             | AX (x, fml1, State s) -> 
-                let next = next s modl.transitions modl.var_index_tbl in
-                prove_fairs (generate_AX_cont gamma fairs levl x fml1 next contl contr) modl
+                let next = next s runtime modul in
+                prove_fairs (generate_AX_cont gamma fairs levl x fml1 next contl contr) runtime modul
             | EX (x, fml1, State s) -> 
-                let next = next s modl.transitions modl.var_index_tbl in
-                prove_fairs (generate_EX_cont gamma fairs levl x fml1 next contl contr) modl
+                let next = next s runtime modul in
+                prove_fairs (generate_EX_cont gamma fairs levl x fml1 next contl contr) runtime modul
             | EG (x, fml1, State s) -> 
-				if (levl <> "-1") && (is_in_true_merge s levl modl) then prove_fairs contl modl else
-				if (levl <> "-1") && (is_in_true_merge s levl modl) then prove_fairs contr modl else 
+				if (levl <> "-1") && (is_in_true_merge s levl) then prove_fairs contl runtime modul else
+				if (levl <> "-1") && (is_in_true_merge s levl) then prove_fairs contr runtime modul else 
                 if State_set.mem s gamma 
                 then  
                     let is_fair = list_conditional fairs true (fun (e, ss) -> State_set.mem s ss) in
-                    if is_fair = true then prove_fairs contl modl else ((*print_endline "EG merge, but not fair";*) prove_fairs contr modl)
+                    if is_fair = true then prove_fairs contl runtime modul else ((*print_endline "EG merge, but not fair";*) prove_fairs contr runtime modul)
                 else
-                    let next = next s modl.transitions modl.var_index_tbl in
+                    let next = next s runtime modul in
                     (*let fairs_new = List.map (fun (e, ss) -> if satisfy_fair e (State s) modl then (e, State_set.add s ss) else (e,ss)) fairs in*)
 					let fairs_new = List.map (fun (e, ss) -> 
-						if satisfy_fair e s modl then (e, State_set.add s gamma) else (e,ss)) fairs in
+						if satisfy_fair e s runtime modul then (e, State_set.add s gamma) else (e,ss)) fairs in
 
 						(* if eval_with_array e s modl.var_index_tbl = (Const 1) then (e, State_set.add s gamma) else (e,ss)) fairs in *)
 					(*List.iter (fun (e, ss) -> print_endline ((str_expr e)^"-->"^(string_of_int (State_set.cardinal ss)))) fairs_new;*)
-                    prove_fairs (generate_EG_cont gamma fairs_new levl x fml1 s next contl contr) modl
+                    prove_fairs (generate_EG_cont gamma fairs_new levl x fml1 s next contl contr) runtime modul
             | AF (x, fml1, State s) -> 
-				if is_in_true_merge s levl modl then prove_fairs contl modl else
-				if is_in_false_merge s levl modl then prove_fairs contr modl else
+				if is_in_true_merge s levl then prove_fairs contl runtime modul else
+				if is_in_false_merge s levl then prove_fairs contr runtime modul else
 				begin
 					if State_set.mem s gamma
 					then 
 						let is_fair = list_conditional fairs true (fun (e, ss) -> State_set.mem s ss) in
-						if is_fair = true then prove_fairs contr modl else (prove_fairs contl modl)
+						if is_fair = true then prove_fairs contr runtime modul else (prove_fairs contl runtime modul)
 					else 
 						begin
-							let next = next s modl.transitions modl.var_index_tbl in
-							let fairs_new = List.map (fun (e, ss) -> if satisfy_fair e s modl then (e, State_set.add s gamma) else (e,ss)) fairs in
+							let next = next s runtime modul in
+							let fairs_new = List.map (fun (e, ss) -> if satisfy_fair e s runtime modul then (e, State_set.add s gamma) else (e,ss)) fairs in
 							(*List.iter (fun (e, ss) -> print_endline ((str_expr e)^"-->"^(string_of_int (State_set.cardinal ss)))) fairs_new;*)
-							prove_fairs (generate_AF_cont gamma fairs_new levl x fml1 s next contl contr) modl
+							prove_fairs (generate_AF_cont gamma fairs_new levl x fml1 s next contl contr) runtime modul
 						end
 				end
             | EU (x, y, fml1, fml2, State s) -> 
@@ -308,13 +325,13 @@ and prove_fairs cont modl =
 				 (
 					if State_set.is_empty gamma 
 					then clear_global_merge levl 
-					else add_to_global_merge gamma levl modl;
-					if in_global_merge s levl modl
+					else add_to_global_merge gamma levl;
+					if in_global_merge s levl
 					then
-						prove_fairs contr modl
+						prove_fairs contr runtime modul
 					else
-						let next = next s modl.transitions modl.var_index_tbl in
-						prove_fairs (generate_EU_cont gamma fairs levl x y fml1 fml2 s next contl contr) modl
+						let next = next s runtime modul in
+						prove_fairs (generate_EU_cont gamma fairs levl x y fml1 fml2 s next contl contr) runtime modul
 				) 
             | AR (x, y, fml1, fml2, State s) ->
             	(*(
@@ -334,29 +351,29 @@ and prove_fairs cont modl =
 				 (
 					(if State_set.is_empty gamma
 					then clear_global_merge levl
-					else add_to_global_merge gamma levl modl;
+					else add_to_global_merge gamma levl;
 					(*print_endline ("AR merge size: "^(string_of_int (State_set.cardinal (Hashtbl.find merges levl))))*)
 					);		
-					if in_global_merge s levl modl
+					if in_global_merge s levl
 					then 
-						prove_fairs contl modl
+						prove_fairs contl runtime modul
 					else
-						let next = next s modl.transitions modl.var_index_tbl in
-						prove_fairs (generate_AR_cont gamma fairs levl x y fml1 fml2 s next contl contr) modl
+						let next = next s runtime modul in
+						prove_fairs (generate_AR_cont gamma fairs levl x y fml1 fml2 s next contl contr) runtime modul
 				) 
-			| _ -> (print_endline ("Unable to prove: "^(fml_to_string fml)); raise Unable_to_prove)
+			| _ -> (print_endline ("Unable to prove: "^(str_fml fml)); raise Unable_to_prove)
         end
 
-	let rec prove_model modl = 
-		orig_fairs := fresh_fairs_modl modl;
-		let spec_lst = modl.spec_list in 
+	let rec prove_model runtime modul = 
+		orig_fairs := fresh_fairs_modl runtime;
+		let spec_lst = runtime.model.properties in 
 		let rec prove_lst lst = 
 		match lst with
 		| [] -> ()
 		| (s, fml) :: lst' -> 
 			((let nnf_fml = nnf fml in 
-			print_endline (fml_to_string (nnf_fml));
+			print_endline (str_fml (nnf_fml));
 			pre_process_merges (select_sub_fmls (sub_fmls nnf_fml "1"));
-			let b = (prove_fairs (Cont (State_set.empty, List.map (fun e -> (e, State_set.empty)) modl.fairness, "1", Formula.subst_s (nnf_fml) (SVar "ini") (State modl.init_assign), Basic true, Basic false, [], [])) modl) in
+			let b = (prove_fairs (Cont (State_set.empty, List.map (fun e -> (e, State_set.empty)) runtime.model.fairness, "1", (nnf_fml), Basic true, Basic false, [], [])) runtime modul) in
 			 print_endline (s ^ ": " ^ (string_of_bool b)));
 			 prove_lst lst') in prove_lst spec_lst

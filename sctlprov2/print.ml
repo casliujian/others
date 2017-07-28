@@ -195,6 +195,10 @@ let str_modul modul =
         | None -> ()
         | Some kripke -> 
             tmp_str:= !tmp_str^"transition "^(str_ppatl (fst(kripke.transition)))^"=\n"^(str_pexprl (snd (kripke.transition)))^"\n";
+            if List.length kripke.fairness <> 0 then begin
+                tmp_str := !tmp_str^"fairness ";
+                List.iter (fun f -> tmp_str := !tmp_str ^ (str_pformulal f)) kripke.fairness
+            end;
             List.iter (fun (str, pfml) ->tmp_str:=!tmp_str^"property "^str^"="^(str_pformulal pfml)^"\n") kripke.properties
     end;
     !tmp_str

@@ -24,6 +24,12 @@ function day_of_z z : int -> day =
 function is_sunday d : day -> bool= 
     d = Sunday
 
+function is_int_sunday i : int -> bool = 
+    is_sunday (day_of_z i)
+
+function fair1 z : int -> bool = 
+    is_sunday (day_of_z z)
+
 function test s = 
     if s<7 then
         s+1
@@ -36,6 +42,7 @@ Model {
             s+1 
         else 
             1
-    property dummy = is_sunday (day_of_z 1)
-    property reach_sunday = AF (x, is_sunday (day_of_z x), 1)
+    fairness fair1 s; AX(x, fair1 x, s)
+    property dummy = is_int_sunday 1
+    property reach_sunday = AF (x, is_int_sunday x, 1)
 }

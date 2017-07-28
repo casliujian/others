@@ -317,7 +317,7 @@ expr_single nonempty_list(expr_single)
                 expr_single . 
 
 ** Conflict (shift/reduce/reduce) in state 132.
-** Tokens involved: With While Vertical Var Val UIden True Transition Then State Semicolon RB3 RB2 RB1 Property Oro Or Non_Equal Negb MultDot Mult Model MinusDot Minus Match LT LE LB3 LB2 LB1 LArrow Int If Iden GT GE Function For Float False Equal Else EOF DotDot Done Do Datatype Comma Ando And AddDot Add
+** Tokens involved: With While Vertical Var Val UIden True Transition Top Then State Semicolon RB3 RB2 RB1 Property Oro Or Non_Equal Negb Neg MultDot Mult Model MinusDot Minus Match LT LE LB3 LB2 LB1 LArrow Int If Iden GT GE Function For Float False Equal Else EX EU EOF EG DotDot Done Do Datatype Comma Bottom Ando And AddDot Add AX AR AF
 ** The following explanations concentrate on token With.
 ** This state is reached from debug after reading:
 
@@ -359,7 +359,7 @@ Iden nonempty_list(expr_single)
                        expr_single . With LB3 str_expr_list RB3 
 
 ** Conflict (shift/reduce/reduce) in state 130.
-** Tokens involved: With While Vertical Var Val UIden True Transition Then State Semicolon RB3 RB2 RB1 Property Oro Or Non_Equal Negb MultDot Mult Model MinusDot Minus Match LT LE LB3 LB2 LB1 LArrow Int If Iden GT GE Function For Float False Equal Else EOF DotDot Done Do Datatype Comma Ando And AddDot Add
+** Tokens involved: With While Vertical Var Val UIden True Transition Top Then State Semicolon RB3 RB2 RB1 Property Oro Or Non_Equal Negb Neg MultDot Mult Model MinusDot Minus Match LT LE LB3 LB2 LB1 LArrow Int If Iden GT GE Function For Float False Equal Else EX EU EOF EG DotDot Done Do Datatype Comma Bottom Ando And AddDot Add AX AR AF
 ** The following explanations concentrate on token With.
 ** This state is reached from debug after reading:
 

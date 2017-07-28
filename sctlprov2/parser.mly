@@ -115,12 +115,13 @@ args: pattern {[$1]}
     | pattern args  {$1 :: $2}
 ;    
 
-kripke: Model LB3 states Transition p = pattern Equal e2 = expr pl = list(property) RB3    {
-        kripke_model := Some {
-            transition = (p, e2);
-            properties = pl;
-        }
-    } 
+kripke: Model LB3 states Transition p = pattern Equal e2 = expr fair = separated_list(Semicolon, formula) pl = list(property) RB3    {
+            kripke_model := Some {
+                transition = (p, e2);
+                fairness = fair;
+                properties = pl;
+            }
+        } 
 ;
 
 states: {[]}
@@ -455,6 +456,9 @@ expr_single: expr_path {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) $sta
         }
     | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) $startpos($1) $endpos(e)}
+    | e1 = expr_single ColonColon e2 = expr_single {
+            
+        }
     | e1 = expr_single LB2 e2 = expr_single RB2 {
         let e:Ast.pexpr_loc = e1 in
         let et1 = e.ptyp in

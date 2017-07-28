@@ -1,0 +1,10 @@
+datatype state = {
+	farmer: bool;
+	wolf: bool;
+	goat: bool;
+	cabbage: bool;
+}
+
+function next_state s : state -> list state = 
+	var tmp_list = [];
+	

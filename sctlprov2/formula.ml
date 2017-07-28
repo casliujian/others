@@ -1,54 +1,54 @@
 open Expr
 open Ast
 
+type state = 
+	  SVar of string
+	| State of value
+
+let str_state s = 
+	match s with
+	| SVar str -> str
+	| State value -> str_value value
+
+let str_state_list sl = 
+	let tmp_str = ref "" in
+	List.iter (fun s -> tmp_str := !tmp_str^(str_state s)^" ") sl;
+	!tmp_str
+
 type formula = 
 	  Top
 	| Bottom
-	| Atomic of string * (expr list)
+	| Atomic of string * (state list)
 	| Neg of formula
 	| And of formula * formula
 	| Or of formula * formula
-	| AX of string * formula * expr
-	| EX of string * formula * expr
-	| AF of string * formula * expr
-	| EG of string * formula * expr
-	| AR of string * string * formula * formula * expr
-	| EU of string * string * formula * formula * expr
+	| AX of string * formula * state
+	| EX of string * formula * state
+	| AF of string * formula * state
+	| EG of string * formula * state
+	| AR of string * string * formula * formula * state
+	| EU of string * string * formula * formula * state
 
-let rec pfmll_to_fml pfmll = 
-  match pfmll.pfml with
-  | PTop -> Top 
-  | PBottom -> Bottom
-  | PAtomic (str, pels) -> Atomic (str, List.map (fun pel -> pexprl_to_expr pel) pels)
-  | PNeg pfml1 -> Neg (pfmll_to_fml pfml1)
-  | PAnd (pfml1, pfml2) -> And (pfmll_to_fml pfml1, pfmll_to_fml pfml2)
-  | POr (pfml1, pfml2) -> Or (pfmll_to_fml pfml1, pfmll_to_fml pfml2)
-  | PAX (str, pfml1, pel1) -> AX (str, pfmll_to_fml pfml1, pexprl_to_expr pel1)
-  | PEX (str, pfml1, pel1) -> EX (str, pfmll_to_fml pfml1, pexprl_to_expr pel1)
-  | PAF (str, pfml1, pel1) -> AF (str, pfmll_to_fml pfml1, pexprl_to_expr pel1)
-  | PEG (str, pfml1, pel1) -> EG (str, pfmll_to_fml pfml1, pexprl_to_expr pel1)
-  | PAR (str1, str2, pfml1, pfml2, pel1) -> AR (str1, str2, pfmll_to_fml pfml1, pfmll_to_fml pfml2, pexprl_to_expr pel1)
-  | PEU (str1, str2, pfml1, pfml2, pel1) -> EU (str1, str2, pfmll_to_fml pfml1, pfmll_to_fml pfml2, pexprl_to_expr pel1)
 
-let rec subst_s fml str expr = 
+let rec subst_s fml str value = 
 	match fml with
 	| Top | Bottom -> fml
 	| Atomic (s, es) -> 
-		let rec replace_symbol es str expr =
+		let rec replace_symbol es str value =
 			match es with
 			| [] -> []
-			| (Symbol [s]) :: es' -> if str = s then expr :: (replace_symbol es' str expr) else (Symbol [s]) :: (replace_symbol es' str expr) 
-			| e :: es' ->  e :: (replace_symbol es' str expr) in
-		Atomic (str, replace_symbol es str expr)
-	| Neg fml1 -> Neg (subst_s fml1 str expr)
-	| And (fml1, fml2) -> And (subst_s fml1 str expr, subst_s fml2 str expr)
-	| Or (fml1, fml2) -> Or (subst_s fml1 str expr, subst_s fml2 str expr)
-	| AX (s1, fml1, e1) -> AX (s1, (if s1 = str then fml1 else subst_s fml1 str expr), (if e1 = Symbol [str] then expr else e1))
-	| EX (s1, fml1, e1) -> EX (s1, (if s1 = str then fml1 else subst_s fml1 str expr), (if e1 = Symbol [str] then expr else e1))
-	| AF (s1, fml1, e1) -> AF (s1, (if s1 = str then fml1 else subst_s fml1 str expr), (if e1 = Symbol [str] then expr else e1))
-	| EG (s1, fml1, e1) -> EG (s1, (if s1 = str then fml1 else subst_s fml1 str expr), (if e1 = Symbol [str] then expr else e1))
-	| AR (s1, s2, fml1, fml2, e1) -> AR (s1, s2, (if s1 = str then fml1 else subst_s fml1 str expr), (if s2 = str then fml2 else subst_s fml2 str expr), (if e1 = Symbol [str] then expr else e1))
-	| EU (s1, s2, fml1, fml2, e1) -> EU (s1, s2, (if s1 = str then fml1 else subst_s fml1 str expr), (if s2 = str then fml2 else subst_s fml2 str expr), (if e1 = Symbol [str] then expr else e1))
+			| (SVar s) :: es' -> if str = s then value :: (replace_symbol es' str value) else (SVar s) :: (replace_symbol es' str value) 
+			| e :: es' ->  e :: (replace_symbol es' str value) in
+		Atomic (str, replace_symbol es str value)
+	| Neg fml1 -> Neg (subst_s fml1 str value)
+	| And (fml1, fml2) -> And (subst_s fml1 str value, subst_s fml2 str value)
+	| Or (fml1, fml2) -> Or (subst_s fml1 str value, subst_s fml2 str value)
+	| AX (s1, fml1, e1) -> AX (s1, (if s1 = str then fml1 else subst_s fml1 str value), (if e1 = SVar str then value else e1))
+	| EX (s1, fml1, e1) -> EX (s1, (if s1 = str then fml1 else subst_s fml1 str value), (if e1 = SVar str then value else e1))
+	| AF (s1, fml1, e1) -> AF (s1, (if s1 = str then fml1 else subst_s fml1 str value), (if e1 = SVar str then value else e1))
+	| EG (s1, fml1, e1) -> EG (s1, (if s1 = str then fml1 else subst_s fml1 str value), (if e1 = SVar str then value else e1))
+	| AR (s1, s2, fml1, fml2, e1) -> AR (s1, s2, (if s1 = str then fml1 else subst_s fml1 str value), (if s2 = str then fml2 else subst_s fml2 str value), (if e1 = SVar str then value else e1))
+	| EU (s1, s2, fml1, fml2, e1) -> EU (s1, s2, (if s1 = str then fml1 else subst_s fml1 str value), (if s2 = str then fml2 else subst_s fml2 str value), (if e1 = SVar str then value else e1))
 
 (* negative normal form *)
 let rec nnf fml = 
@@ -84,16 +84,16 @@ let rec str_fml fml =
 	match fml with
 	| Top -> "TRUE"
 	| Bottom -> "FALSE"
-	| Atomic (e, sl) -> (e) ^ (str_expr_list sl)
+	| Atomic (e, sl) -> (e) ^ (str_state_list sl)
 	| Neg fml1 -> "(not " ^ (str_fml fml1) ^ ")"
 	| And (fml1, fml2) -> (str_fml fml1) ^ "/\\" ^ (str_fml fml2)
 	| Or (fml1, fml2) -> (str_fml fml1) ^ "\\/" ^ (str_fml fml2)
-	| AX (s, fml1, s') -> "AX(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_expr s') ^ ")"
-	| EX (s, fml1, s') -> "EX(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_expr s') ^ ")"
-	| AF (s, fml1, s') -> "AF(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_expr s') ^ ")"
-	| EG (s, fml1, s') -> "EG(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_expr s') ^ ")"
-	| AR (s, s', fml1, fml2, s'') -> "AR(" ^ (s) ^ ", " ^ (s') ^ ", (" ^ (str_fml fml1) ^ "), (" ^ (str_fml fml2) ^ "), " ^ (str_expr s'') ^ ")"
-	| EU (s, s', fml1, fml2, s'') -> "EU(" ^ (s) ^ ", " ^ (s') ^ ", (" ^ (str_fml fml1) ^ "), (" ^ (str_fml fml2) ^ "), " ^ (str_expr s'') ^ ")"
+	| AX (s, fml1, s') -> "AX(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_state s') ^ ")"
+	| EX (s, fml1, s') -> "EX(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_state s') ^ ")"
+	| AF (s, fml1, s') -> "AF(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_state s') ^ ")"
+	| EG (s, fml1, s') -> "EG(" ^ (s) ^ ", (" ^ (str_fml fml1) ^ "), " ^ (str_state s') ^ ")"
+	| AR (s, s', fml1, fml2, s'') -> "AR(" ^ (s) ^ ", " ^ (s') ^ ", (" ^ (str_fml fml1) ^ "), (" ^ (str_fml fml2) ^ "), " ^ (str_state s'') ^ ")"
+	| EU (s, s', fml1, fml2, s'') -> "EU(" ^ (s) ^ ", " ^ (s') ^ ", (" ^ (str_fml fml1) ^ "), (" ^ (str_fml fml2) ^ "), " ^ (str_state s'') ^ ")"
 
 
 let rec sub_fmls fml levl =

@@ -12,12 +12,13 @@ type modul = {
 
 type model = {
     transition: (pattern * expr);
+    fairness: formula list;
     properties: (string * formula) list;
 }
 
 type runtime = {
     moduls: (string, modul) Hashtbl.t;
-    model: model;
+    mutable model: model;
 }
 
 exception Evaluation_error of string
@@ -382,17 +383,40 @@ and evaluate expr ctx runtime modul =
             evaluate e1 (!ctx0 @ ctx) runtime modul
         end
             
-let pkripke_model_to_model (pkm:pkripke_model) = 
+let rec pfmll_to_fml pfmll runtime modul = 
+  match pfmll.pfml with
+  | PTop -> Top 
+  | PBottom -> Bottom
+  | PAtomic (str, pels) -> Atomic (str, List.map (fun pel -> State (evaluate (pexprl_to_expr pel) [] runtime modul)) pels)
+  | PNeg pfml1 -> Neg (pfmll_to_fml pfml1 runtime modul)
+  | PAnd (pfml1, pfml2) -> And (pfmll_to_fml pfml1 runtime modul, pfmll_to_fml pfml2 runtime modul)
+  | POr (pfml1, pfml2) -> Or (pfmll_to_fml pfml1 runtime modul, pfmll_to_fml pfml2 runtime modul)
+  | PAX (str, pfml1, pel1) -> AX (str, pfmll_to_fml pfml1 runtime modul, State (evaluate (pexprl_to_expr pel1) [] runtime modul))
+  | PEX (str, pfml1, pel1) -> EX (str, pfmll_to_fml pfml1 runtime modul, State (evaluate (pexprl_to_expr pel1) [] runtime modul))
+  | PAF (str, pfml1, pel1) -> AF (str, pfmll_to_fml pfml1 runtime modul, State (evaluate (pexprl_to_expr pel1) [] runtime modul))
+  | PEG (str, pfml1, pel1) -> EG (str, pfmll_to_fml pfml1 runtime modul, State (evaluate (pexprl_to_expr pel1) [] runtime modul))
+  | PAR (str1, str2, pfml1, pfml2, pel1) -> AR (str1, str2, pfmll_to_fml pfml1 runtime modul, pfmll_to_fml pfml2 runtime modul, State (evaluate (pexprl_to_expr pel1) [] runtime modul))
+  | PEU (str1, str2, pfml1, pfml2, pel1) -> EU (str1, str2, pfmll_to_fml pfml1 runtime modul, pfmll_to_fml pfml2 runtime modul, State (evaluate (pexprl_to_expr pel1) [] runtime modul))
+
+
+let pkripke_model_to_model (pkm:pkripke_model) runtime modul = 
     {
         transition = (ppatl_to_pattern (fst pkm.transition), pexprl_to_expr (snd pkm.transition));
-        properties = List.map (fun (str, pfmll) -> str, pfmll_to_fml pfmll) pkm.properties;
+        fairness = List.map (fun pfl -> pfmll_to_fml pfl runtime modul) pkm.fairness;
+        properties = List.map (fun (str, pfmll) -> str, pfmll_to_fml pfmll runtime modul) pkm.properties;
     }
 
 let pmoduls_to_runtime pmoduls pkripke_model start_modul =
+    let dummy_kripke_model = {
+        transition = (Pat_Symbol "", Int 0);
+        fairness = [];
+        properties = [];
+    } in
     let runtime = {
         moduls = Hashtbl.create 1;
-        model = pkripke_model_to_model pkripke_model;
+        model = dummy_kripke_model;
     } in
+    (* let moduls = Hashtbl.create 1 in *)
     let dep_graph = Dep.dep_graph_of_pmodul start_modul pmoduls in
     let rec modify_runtime dg =
         match dg with
@@ -446,6 +470,7 @@ let pmoduls_to_runtime pmoduls pkripke_model start_modul =
             } in
             Hashtbl.add runtime.moduls mname modul in
         modify_runtime dep_graph;
+        runtime.model <- pkripke_model_to_model pkripke_model runtime start_modul;
         runtime
 
 
