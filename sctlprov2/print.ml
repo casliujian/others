@@ -99,6 +99,7 @@ let rec str_pexprl pel =
         | PAray pel_list -> "[|" ^ (List.fold_left (fun s pel -> s^";"^(str_pexprl pel)) "" pel_list) ^ "|]"
         | PLst pel_list -> "[" ^ (List.fold_left (fun s pel -> s^";"^(str_pexprl pel)) "" pel_list) ^ "]"
         | PAray_Field (pel1, pel2) -> (str_pexprl pel1)^"["^(str_pexprl pel2)^"]"
+        | PLst_Cons (pel1, pel2) -> (str_pexprl pel1)^" :: "^(str_pexprl pel2)
         | PBool b -> string_of_bool b
         | PTuple pel_list ->
             let tmp_str = ref "(" in

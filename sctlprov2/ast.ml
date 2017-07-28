@@ -69,6 +69,7 @@ and pexpr =
     | PAray of (pexpr_loc list)
     | PLst of (pexpr_loc list)
     | PAray_Field of pexpr_loc * pexpr_loc
+    | PLst_Cons of pexpr_loc * pexpr_loc
     | PBool of bool
     | PTuple of (pexpr_loc list)
     | PRecord of ((string * pexpr_loc) list)

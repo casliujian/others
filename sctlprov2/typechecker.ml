@@ -249,13 +249,13 @@ let rec unify ptyp_list modul moduls =
     end
 
 
-let rec check_dep pmname pmoduls = 
+(* let rec check_dep pmname pmoduls = 
   try
     let pm = Hashtbl.find pmoduls pmname in
     List.iter (fun a -> check_dep a pmoduls) pm.imported
   with Not_found -> 
     eprintf "Error: module %s is not defined.\n" pmname; 
-    exit 1
+    exit 1 *)
 
 (* let expand_udt_path moduls = 
     let rec add_type_prefix mname ptyp =
@@ -578,6 +578,11 @@ let rec check_pel_type pel env tctx modul moduls =
     let env3, _ = check_pel_type pel2 env1 tctx modul moduls in
     let env4 = unify [pel.ptyp; PTAray (pel2.ptyp)] modul moduls in
     (merge_env env4 env3, tctx)
+  | PLst_Cons (pel1, pel2) ->
+    let env1,_ = check_pel_type pel1 env tctx modul moduls in
+    let env2,_ = check_pel_type pel2 env1 tctx modul moduls in
+    let env3 = unify [pel.ptyp; pel2.ptyp; PTLst (pel1.ptyp)] modul moduls in
+    (merge_env env3 env2, tctx)
   | PBool b -> let env1 = unify [pel.ptyp; PTBool] modul moduls in (merge_env env1 env, tctx)
   | PTuple pel_list -> 
     let env0 = ref env in
@@ -824,6 +829,7 @@ let rec apply_env_to_pel env (pel:pexpr_loc) =
   | PAray (pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
   | PLst (pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
   | PAray_Field (pel1, pel2) -> apply_env_to_pel env pel1; apply_env_to_pel env pel2
+  | PLst_Cons (pel1, pel2) -> apply_env_to_pel env pel1; apply_env_to_pel env pel2
   | PTuple pel_list -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
   | PRecord str_pel_list -> List.iter (fun (str,pel) -> apply_env_to_pel env pel) str_pel_list
   | PNegb pel1 -> apply_env_to_pel env pel1

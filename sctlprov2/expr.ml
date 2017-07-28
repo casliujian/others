@@ -10,6 +10,7 @@ type expr =
     | Aray of (expr list)
     | Lst of (expr list)
     | Aray_field of expr * expr
+    | Lst_cons of expr * expr
     | Bool of bool
     | Tuple of (expr list)
     | Record of ((string * expr) list)
@@ -92,6 +93,7 @@ let rec str_expr e =
   | Aray pel_list -> "[|" ^ (List.fold_left (fun s pel -> s^";"^(str_expr pel)) "" pel_list) ^ "|]"
   | Lst pel_list -> "[" ^ (List.fold_left (fun s pel -> s^";"^(str_expr pel)) "" pel_list) ^ "]"
   | Aray_field (pel1, pel2) -> (str_expr pel1)^"["^(str_expr pel2)^"]"
+  | Lst_cons (e1, e2) ->  (str_expr e1)^" :: "^(str_expr e2)
   | Bool b -> string_of_bool b
   | Tuple pel_list ->
       let tmp_str = ref "(" in
@@ -207,6 +209,7 @@ let rec pexprl_to_expr pel =
   | PAray pel -> Aray (List.map (fun pe -> pexprl_to_expr pe) pel)
   | PLst pel -> Lst (List.map (fun pe -> pexprl_to_expr pe) pel)
   | PAray_Field (pel1, pel2) -> Aray_field (pexprl_to_expr pel1, pexprl_to_expr pel2)
+  | PLst_Cons (pel1, pel2) -> Lst_cons (pexprl_to_expr pel1, pexprl_to_expr pel2)
   | PBool b -> Bool b
   | PTuple pels -> Tuple (List.map (fun pel->pexprl_to_expr pel) pels)
   | PRecord str_pel_list -> Record (List.map (fun (str, pel) -> str, pexprl_to_expr pel) str_pel_list)

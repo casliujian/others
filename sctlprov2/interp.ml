@@ -202,6 +202,13 @@ and evaluate expr ctx runtime modul =
             | VAray va, VInt i -> List.nth va i
             | _ -> raise (Evaluation_error ((str_value v1)^" should be an array value, and "^(str_value v2)^" should be an integer value."))
         end
+    | Lst_cons (e1, e2) ->
+        let v1 = evaluate e1 ctx runtime modul
+        and v2 = evaluate e2 ctx runtime modul in begin
+            match v2 with
+            | VLst vl -> VLst (v1::vl)    
+            | _ -> raise (Evaluation_error ((str_value v2)^" should be a list value."))
+        end
     | Tuple ea -> VTuple (List.map (fun e -> evaluate e ctx runtime modul) ea)
     | Record str_expr_array -> VRecord ((List.map (fun (str, expr) -> str, evaluate expr ctx runtime modul) str_expr_array))
     | Negb e1 -> 

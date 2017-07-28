@@ -457,7 +457,7 @@ expr_single: expr_path {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) $sta
     | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) $startpos($1) $endpos(e)}
     | e1 = expr_single ColonColon e2 = expr_single {
-            
+            mk_pexpr_loc (PLst_Cons (e1, e2)) e2.ptyp $startpos(e1) $endpos(e2)
         }
     | e1 = expr_single LB2 e2 = expr_single RB2 {
         let e:Ast.pexpr_loc = e1 in
