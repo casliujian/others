@@ -5,6 +5,25 @@ datatype state = {
 	cabbage: bool;
 }
 
+val init = {
+	farmer = false;
+	wolf = false;
+	goat = false;
+	cabbage = false;
+}
+
 function next_state s : state -> list state = 
 	var tmp_list = [];
+	if farmer = wolf then
+		tmp_list <- (s with {farmer = !s.farmer; wolf = !s.wolf;}) :: tmp_list;
+	if farmer = goat then
+		tmp_list <- (s with {farmer = !s.farmer; goat = !s.goat;}) :: tmp_list;
+	if farmer = cabbage then
+		tmp_list <- (s with {farmer = !s.farmer; cabbage = !s.cabbage;}) :: tmp_list;
+	tmp_list <- (s with {}) :: tmp_list;
+	tmp_list
 	
+Model {
+	transition s = next_state s
+	property find = EU (x, y, safe(x), okay(y), init)
+}
