@@ -1,4 +1,4 @@
-datatype state = {
+datatype st = {
 	farmer: bool;
 	wolf: bool;
 	goat: bool;
@@ -12,7 +12,7 @@ val init = {
 	cabbage = false;
 }
 
-function next_state s : state -> list state = 
+function next_state s : st -> list st = 
 	var tmp_list = [];
 	if farmer = wolf then
 		tmp_list <- (s with {farmer = !s.farmer; wolf = !s.wolf;}) :: tmp_list;
@@ -22,6 +22,12 @@ function next_state s : state -> list state =
 		tmp_list <- (s with {farmer = !s.farmer; cabbage = !s.cabbage;}) :: tmp_list;
 	tmp_list <- (s with {}) :: tmp_list;
 	tmp_list
+
+function safe x : st -> bool = 
+	!(x.farmer != x.wolf && x.wolf = x.goat) && !(x.farmer != x.goat && x.goat = x.cabbage)
+
+function okay y : st -> bool = 
+	y.farmer = true && y.wolf = true && y.goat = true && y.cabbage = true
 	
 Model {
 	transition s = next_state s

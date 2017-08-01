@@ -476,8 +476,8 @@ expr_single_list:   {[]}
 ;
 
 str_expr_list:  {[]}
-    | Iden Equal expr Semicolon {[($1, $3)]}
-    | str_expr_list Iden Equal expr Semicolon   {($2, $4) :: $1}
+    | Iden Equal expr_single Semicolon {[($1, $3)]}
+    | str_expr_list Iden Equal expr_single Semicolon   {($2, $4) :: $1}
 ;
 /*sel = separated_list(Semicolon, str_expr) {sel}*/
 /*;*/

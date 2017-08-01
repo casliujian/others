@@ -1,4 +1,4 @@
-import Dummy
+//import Dummy
 (*datatype t1 = int*)
 datatype t2 = int
 datatype t3 = {
