@@ -1,0 +1,21 @@
+river.model
+Val init:(Type 1)={cabbage=false:bool;goat=false:bool;wolf=false:bool;farmer=false:bool;}:{cabbage:bool;goat:bool;wolf:bool;farmer:bool;}
+Function safe x:(Type 33) :(st )->(bool)=
+((! ((x.farmer:(Type 34)!=x.wolf:(Type 35)):bool&&(x.wolf:(Type 36)=x.goat:(Type 37)):bool):bool):bool&&(! ((x.farmer:(Type 38)!=x.goat:(Type 39)):bool&&(x.goat:(Type 40)=x.cabbage:(Type 41)):bool):bool):bool):bool
+Function next_state s:(Type 2) :(st )->((list st ))=
+var tmp_list=[]:(list (Type 3)):unit;
+if (s.farmer:(Type 4)=s.wolf:(Type 5)):bool then (tmp_list:(Type 6) <- s:(Type 7) with {wolf=(! s.wolf:(Type 9)):bool;farmer=(! s.farmer:(Type 8)):bool;}:(Type 7) :: tmp_list:(Type 10):(Type 10):unit;
+if (s.farmer:(Type 11)=s.goat:(Type 12)):bool then (tmp_list:(Type 13) <- s:(Type 14) with {goat=(! s.goat:(Type 16)):bool;farmer=(! s.farmer:(Type 15)):bool;}:(Type 14) :: tmp_list:(Type 17):(Type 17):unit;
+if (s.farmer:(Type 18)=s.cabbage:(Type 19)):bool then (tmp_list:(Type 20) <- s:(Type 21) with {cabbage=(! s.cabbage:(Type 23)):bool;farmer=(! s.farmer:(Type 22)):bool;}:(Type 21) :: tmp_list:(Type 24):(Type 24):unit;
+tmp_list:(Type 25) <- s:(Type 26) with {}:(Type 26) :: tmp_list:(Type 27):(Type 27):unit;
+tmp_list:(Type 28);
+:(Type 29)):unit;
+:(Type 30)):unit;
+:(Type 31)):unit;
+:(Type 32)
+datatype st={farmer:bool;wolf:bool;goat:bool;cabbage:bool;}
+Function okay y:(Type 42) :(st )->(bool)=
+((((y.farmer:(Type 43)=true:bool):bool&&(y.wolf:(Type 44)=true:bool):bool):bool&&(y.goat:(Type 45)=true:bool):bool):bool&&(y.cabbage:(Type 46)=true:bool):bool):bool
+transition s:(Type 47)=
+next_state s:(Type 48):(Type 49)
+property find=EU (x,y,safe x:(Type 50),okay y:(Type 51),init:(Type 52))

@@ -78,6 +78,9 @@ let parse_and_prove fnames =
                 psymbol_tbl = psymbol_tbl;
                 pkripke_model = pkripke_model;
             } in
+            let origin_out = open_out (mname^".origin") in
+            output_string origin_out (Print.str_modul modul);
+            flush origin_out;
             Hashtbl.add pmoduls mname modul
         with Parser.Error -> 
             let ep = lbuf.lex_curr_p in
@@ -96,7 +99,8 @@ let parse_and_prove fnames =
                     output_string out (Print.str_modul (Hashtbl.find moduls mname))
                 with Invalid_pexpr_loc (pel, msg) ->
                     print_endline ("Error: "^msg);
-                    print_endline (Print.str_pexprl pel))
+                    print_endline (Print.str_pexprl pel);
+                    exit 1)
             | Node (mname, dgs) -> 
                 List.iter (fun dg -> typecheck dg moduls) dgs; 
                 (try
@@ -105,7 +109,8 @@ let parse_and_prove fnames =
                     output_string out (Print.str_modul (Hashtbl.find moduls mname))
                 with Invalid_pexpr_loc (pel, msg) ->
                     print_endline ("Error: "^msg);
-                    print_endline (Print.str_pexprl pel)) in
+                    print_endline (Print.str_pexprl pel);
+                    exit 1) in
         typecheck dg pmoduls;
         let runtime = pmoduls_to_runtime pmoduls pkripke !start_pmodul in
         prove_model runtime !start_pmodul

@@ -433,15 +433,18 @@ let rec ptyp_of_pexpr_path ptyp_expected str_list modul moduls =
           end  
         | PTUdt _ -> 
           let pt = expand_udt ptyp_expected modul moduls in begin
+            print_endline ("expanding udt "^(Print.str_ptyp ptyp_expected)^": "^(Print.str_ptyp pt));
             match pt with
             | PTRecord str_ptyp_list -> begin
                 match Pairs.find str_ptyp_list str with
-                | None -> PTVar 0
+                | None -> print_endline ("can not find binding of "^str^" in record type "^(Print.str_ptyp pt));PTVar 0
                 | Some ptyp -> ptyp_of_pexpr_path ptyp strs modul moduls
               end  
             | _ -> PTVar 0
           end
-        | _ -> PTVar 0
+        | _ -> 
+          print_endline ("ptyp_expected: "^(Print.str_ptyp ptyp_expected)); 
+          PTVar 0
       end
     end
 
@@ -464,7 +467,7 @@ let rec check_pel_type pel env tctx modul moduls =
                 match (Hashtbl.find m.psymbol_tbl str) with
                 | (Val, PExpr_loc (pt, pel1)) -> let env1 = unify [pt;pel.ptyp; pel1.ptyp] modul moduls in (merge_env env1 env, tctx)
                 | (Var, PExpr_loc (pt, pel1)) -> let env1 = unify [pt;pel.ptyp; pel1.ptyp] modul moduls in (merge_env env1 env, tctx)
-                | _ -> raise (Undefined_idenfier (modul^"."^str))
+                | _ -> raise (Undefined_idenfier ("not defined as a value: "^modul^"."^str))
               with Not_found -> raise (Undefined_idenfier (modul^"."^str))
             end else begin
               let env1 = unify [pel.ptyp; pt] modul moduls in
@@ -485,14 +488,16 @@ let rec check_pel_type pel env tctx modul moduls =
           if pt <> PTVar 0 then
             let pt1 = ptyp_of_pexpr_path pt strs modul moduls in
             if pt1 = PTVar 0 then
-              raise (Invalid_pexpr_loc (pel, "can not be typed"))
+              (* raise (Invalid_pexpr_loc (pel, "can not be typed")) *)
+              (env, tctx)
             else 
               let env1 = unify [pt1; pel.ptyp] modul moduls in
               (merge_env env1 env, tctx)
           else
             let pt1 = ptyp_of_pexpr_path (PTVar 0) str_list modul moduls in
             if pt1 = PTVar 0 then
-              raise (Invalid_pexpr_loc (pel, "can not be typed"))
+              (* raise (Invalid_pexpr_loc (pel, "can not be typed")) *)
+              (env, tctx)
             else 
               let env1 = unify [pt1; pel.ptyp] modul moduls in
               (merge_env env1 env, tctx)
@@ -567,11 +572,14 @@ let rec check_pel_type pel env tctx modul moduls =
     let env2 = unify [pel.ptyp; PTAray ((List.hd pel_aray).ptyp)] modul moduls in 
     (merge_env env2 new_env, tctx)
   | PLst pel_list ->
-    let env1 = unify (List.map (fun (pel:pexpr_loc) -> pel.ptyp) pel_list) modul moduls in
-    let new_env = merge_env env1 env in
-    (* List.iter (fun (pel:pexpr_loc) -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_list; *)
-    let env2 = unify [pel.ptyp; PTLst ((List.hd pel_list).ptyp)] modul moduls in 
-    (merge_env env2 new_env, tctx)
+    if List.length pel_list = 0 then
+        (env, tctx)
+    else
+        let env1 = unify (List.map (fun (pel:pexpr_loc) -> pel.ptyp) pel_list) modul moduls in
+        let new_env = merge_env env1 env in
+        (* List.iter (fun (pel:pexpr_loc) -> pel.ptyp <- apply_env_to_ptyp new_env pel.ptyp) pel_list; *)
+        let env2 = unify [pel.ptyp; PTLst ((List.hd pel_list).ptyp)] modul moduls in 
+        (merge_env env2 new_env, tctx)
   | PAray_Field (pel1, pel2) -> 
     let env1, _ = check_pel_type pel1 env tctx modul moduls  in
     (* let env2 = merge_env env1 env in *)
@@ -720,6 +728,10 @@ let rec check_pel_type pel env tctx modul moduls =
     let env5 = unify [pel3.ptyp; pel.ptyp] modul moduls in
     (merge_env (merge_env env5 env4) env3, tctx)
   | PSeq pels ->
+    if List.length pels = 0 then begin
+      print_endline "PSeq expression can not contain 0 single expression";
+      exit 1
+    end;
     let env0 = ref env
     and tctx0 = ref tctx in
     List.iter (fun pel -> 
@@ -756,7 +768,7 @@ let rec check_pel_type pel env tctx modul moduls =
       ) str_pel_list;
     (!env0, tctx)
   | PConstr _ -> (env, tctx)
-  | PApply (str, pel_list) -> 
+  | PApply (str, pel_list) -> ***reimplement this part***
     let ptf = type_of_str str modul moduls in
     let env0 = ref env in
     List.iter (fun pel ->
@@ -892,13 +904,15 @@ let check_modul modul moduls =
         let env1 = merge_env (unify [ptyp; pel.ptyp] modul moduls) env in
         let ptyp1 = apply_env_to_ptyp env1 ptyp in
         apply_env_to_pel env1 pel;
-        Hashtbl.replace m.psymbol_tbl str (Val, PExpr_loc (ptyp1, pel))
+        Hashtbl.replace m.psymbol_tbl str (Val, PExpr_loc (ptyp1, pel));
+        print_endline ("type check value "^str^" complete.")
       | (Var, PExpr_loc (ptyp, pel)) -> 
         let env,_ = check_pel_type pel [] [] modul moduls in
         let env1 = merge_env (unify [ptyp; pel.ptyp] modul moduls) env in
         let ptyp1 = apply_env_to_ptyp env1 ptyp in
         apply_env_to_pel env1 pel;
-        Hashtbl.replace m.psymbol_tbl str (Var, PExpr_loc (ptyp1, pel))
+        Hashtbl.replace m.psymbol_tbl str (Var, PExpr_loc (ptyp1, pel));
+        print_endline ("type check variable "^str^" complete.")
       | (Function, PFunction (ptyp, ppatl_list, pel)) -> 
         let rec build_arrow ptyp_list ptyp1 = 
           match ptyp_list with
@@ -915,12 +929,14 @@ let check_modul modul moduls =
         let env2 = merge_env (unify [ptyp; build_arrow (List.map (fun ppatl->ppatl.ptyp) ppatl_list) pel.ptyp] modul moduls) env1 in
         List.iter (fun ppatl->apply_env_to_ppatl env2 ppatl) ppatl_list;
         apply_env_to_pel env2 pel;
-        Hashtbl.replace m.psymbol_tbl str (Function, PFunction (apply_env_to_ptyp env2 ptyp, ppatl_list, pel))
+        Hashtbl.replace m.psymbol_tbl str (Function, PFunction (apply_env_to_ptyp env2 ptyp, ppatl_list, pel));
+        print_endline ("type check function "^str^" complete.")
       | _ -> ()
     ) m.psymbol_tbl;
      match m.pkripke_model with
     | None -> ()
     | Some kripke -> 
+        print_endline ("type checking kripke model...");
         let env1, tctx1 = check_ppat_type (fst kripke.transition) modul moduls in
         let env2, _ = check_pel_type (snd kripke.transition) env1 tctx1 modul moduls in
         apply_env_to_ppatl env2 (fst kripke.transition);
@@ -928,6 +944,7 @@ let check_modul modul moduls =
         List.iter (fun (str, pfml) -> 
           let env = check_pformulal_type pfml modul moduls in
           apply_env_to_pformulal env pfml
-        ) kripke.properties 
+        ) kripke.properties;
+        print_endline ("type check kripke model complete.")
   end else 
     raise (Undefined_modul modul)
