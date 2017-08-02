@@ -96,7 +96,8 @@ let parse_and_prove fnames =
                 (try
                     Typechecker.check_modul mname moduls;
                     let out = open_out (mname^".typed") in
-                    output_string out (Print.str_modul (Hashtbl.find moduls mname))
+                    output_string out (Print.str_modul (Hashtbl.find moduls mname));
+                    flush out
                 with Invalid_pexpr_loc (pel, msg) ->
                     print_endline ("Error: "^msg);
                     print_endline (Print.str_pexprl pel);
@@ -106,7 +107,8 @@ let parse_and_prove fnames =
                 (try
                     Typechecker.check_modul mname moduls;
                     let out = open_out (mname^".typed") in
-                    output_string out (Print.str_modul (Hashtbl.find moduls mname))
+                    output_string out (Print.str_modul (Hashtbl.find moduls mname));
+                    flush out
                 with Invalid_pexpr_loc (pel, msg) ->
                     print_endline ("Error: "^msg);
                     print_endline (Print.str_pexprl pel);

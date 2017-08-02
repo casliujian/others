@@ -14,13 +14,13 @@ val init = {
 
 function next_state s : st -> list st = 
 	var tmp_list = [];
-	if s.farmer = s.wolf then
-		tmp_list <- (s with {farmer = !s.farmer; wolf = !s.wolf;}) :: tmp_list;
-	if s.farmer = s.goat then
-		tmp_list <- (s with {farmer = !s.farmer; goat = !s.goat;}) :: tmp_list;
-	if s.farmer = s.cabbage then
-		tmp_list <- (s with {farmer = !s.farmer; cabbage = !s.cabbage;}) :: tmp_list;
-	tmp_list <- (s with {}) :: tmp_list;
+	(if s.farmer = s.wolf then
+		tmp_list <- (s with {farmer = !s.farmer; wolf = !s.wolf;}) :: tmp_list);
+	(if s.farmer = s.goat then
+		tmp_list <- (s with {farmer = !s.farmer; goat = !s.goat;}) :: tmp_list);
+	(if s.farmer = s.cabbage then
+		tmp_list <- (s with {farmer = !s.farmer; cabbage = !s.cabbage;}) :: tmp_list);
+	tmp_list <- (s with {farmer = !s.farmer;}) :: tmp_list;
 	tmp_list
 
 function safe x : st -> bool = 

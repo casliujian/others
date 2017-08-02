@@ -1,14 +1,17 @@
 test.model
-import Dummy
-Function test s:(Type 18) :(Type 21)=
-if (s:(Type 19)<7:int):bool then ((s:(Type 20)+1:int):int) else (1:int):int
+Function test s:(Type 26) :(Type 29)=
+if (s:(Type 27)<7:int):bool then ((s:(Type 28)+1:int):int) else (1:int):int
 Var z:(Type 3)=4:int
 datatype t2=int
 Var y:(Type 2)=20:int
 datatype day=Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+Function fair1 z:(Type 22) :(int)->(bool)=
+is_sunday day_of_z z:(Type 23):(Type 24):(Type 25)
 Function is_sunday d:(Type 15) :(day )->(bool)=
 (d:(Type 16)=Sunday:(Type 17)):bool
 Val x:(Type 1)=10:int
+Function is_int_sunday i:(Type 18) :(int)->(bool)=
+is_sunday day_of_z i:(Type 19):(Type 20):(Type 21)
 datatype t3={x:int;y:bool;}
 Function day_of_z z:(Type 4) :(int)->(day )=
 match z:(Type 5) with
@@ -21,7 +24,7 @@ match z:(Type 5) with
 | _:(Type 12) -> Sunday:(Type 13)
 
 :(Type 14)
-transition s:(Type 22)=
-if (s:(Type 23)<7:int):bool then ((s:(Type 24)+1:int):int) else (1:int):int
-property dummy=is_sunday day_of_z 1:int:(Type 25)
-property reach_sunday=AF (x,is_sunday day_of_z x:(Type 26):(Type 27),1:int)
+transition s:(Type 30)=
+if (s:(Type 31)<7:int):bool then ((s:(Type 32)+1:int):int) else (1:int):int
+fairness fairness fair1 s:(Type 33):(Type 34)AX (x,fair1 x:(Type 35),s:(Type 36))property dummy=is_int_sunday 1:int
+property reach_sunday=AF (x,is_int_sunday x:(Type 37),1:int)

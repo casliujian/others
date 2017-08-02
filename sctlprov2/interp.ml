@@ -139,6 +139,7 @@ let rec get_matched_pattern value pat_expr_list =
     | _, _::pel -> get_matched_pattern value pel
 
 let find_function str runtime modul = 
+    print_endline ("finding function "^str^" in modul "^modul);
     let m = Hashtbl.find runtime.moduls modul in
     if Hashtbl.mem m.functions str then
         Hashtbl.find m.functions str
@@ -394,7 +395,11 @@ let rec pfmll_to_fml pfmll runtime modul =
   match pfmll.pfml with
   | PTop -> Top 
   | PBottom -> Bottom
-  | PAtomic (str, pels) -> Atomic (str, List.map (fun pel -> State (evaluate (pexprl_to_expr pel) [] runtime modul)) pels)
+  | PAtomic (str, pels) -> Atomic (str, List.map (fun pel -> 
+        match pel.pexpr with
+        | PSymbol [s] -> SVar s
+        | _ -> State (evaluate (pexprl_to_expr pel) [] runtime modul)
+    ) pels)
   | PNeg pfml1 -> Neg (pfmll_to_fml pfml1 runtime modul)
   | PAnd (pfml1, pfml2) -> And (pfmll_to_fml pfml1 runtime modul, pfmll_to_fml pfml2 runtime modul)
   | POr (pfml1, pfml2) -> Or (pfmll_to_fml pfml1 runtime modul, pfmll_to_fml pfml2 runtime modul)
@@ -477,7 +482,9 @@ let pmoduls_to_runtime pmoduls pkripke_model start_modul =
             } in
             Hashtbl.add runtime.moduls mname modul in
         modify_runtime dep_graph;
+        print_endline "initialized moduls in runtime";
         runtime.model <- pkripke_model_to_model pkripke_model runtime start_modul;
+        print_endline "initialized kripke model in runtime";
         runtime
 
 

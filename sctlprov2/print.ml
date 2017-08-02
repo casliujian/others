@@ -181,21 +181,21 @@ let str_modul modul =
     List.iter (fun mn -> tmp_str:=!tmp_str^"import "^mn^"\n") modul.imported;
     Hashtbl.iter (fun str symbol ->
         match symbol with
-        | (UDT, PTyp ptyp) -> tmp_str:=!tmp_str^"datatype "^str^"="^(str_ptyp ptyp)^"\n"
-        | (Val, PExpr_loc (ptyp, pel)) ->tmp_str:=!tmp_str^"Val "^str^":"^(str_ptyp ptyp)^"="^(str_pexprl pel)^"\n"
-        | (Var, PExpr_loc (ptyp, pel)) ->tmp_str:=!tmp_str^"Var "^str^":"^(str_ptyp ptyp)^"="^(str_pexprl pel)^"\n"
+        | (UDT, PTyp ptyp) -> tmp_str:=!tmp_str^"datatype "^str^"="^(str_ptyp ptyp)^"\n\n"
+        | (Val, PExpr_loc (ptyp, pel)) ->tmp_str:=!tmp_str^"Val "^str^":"^(str_ptyp ptyp)^"="^(str_pexprl pel)^"\n\n"
+        | (Var, PExpr_loc (ptyp, pel)) ->tmp_str:=!tmp_str^"Var "^str^":"^(str_ptyp ptyp)^"="^(str_pexprl pel)^"\n\n"
         | (Function, PFunction (ptyp, ppatl_list, pel)) ->
             tmp_str:=!tmp_str^"Function "^str;
             List.iter (fun ppatl->tmp_str:=!tmp_str^" "^(str_ppatl ppatl)) ppatl_list;
             tmp_str:=!tmp_str^" :"^(str_ptyp ptyp)^"=\n";
-            tmp_str:=!tmp_str^(str_pexprl pel)^"\n"
+            tmp_str:=!tmp_str^(str_pexprl pel)^"\n\n"
         | _ -> tmp_str:=!tmp_str^"****illed formed declaration: "^str^"****\n"
     ) modul.psymbol_tbl;
     begin
         match modul.pkripke_model with
         | None -> ()
         | Some kripke -> 
-            tmp_str:= !tmp_str^"transition "^(str_ppatl (fst(kripke.transition)))^"=\n"^(str_pexprl (snd (kripke.transition)))^"\n";
+            tmp_str:= !tmp_str^"transition "^(str_ppatl (fst(kripke.transition)))^"=\n"^(str_pexprl (snd (kripke.transition)))^"\n\n";
             if List.length kripke.fairness <> 0 then begin
                 tmp_str := !tmp_str^"fairness ";
                 List.iter (fun f -> tmp_str := !tmp_str ^ (str_pformulal f)) kripke.fairness

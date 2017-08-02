@@ -39,7 +39,7 @@ let rec subst_s fml str value =
 			| [] -> []
 			| (SVar s) :: es' -> if str = s then value :: (replace_symbol es' str value) else (SVar s) :: (replace_symbol es' str value) 
 			| e :: es' ->  e :: (replace_symbol es' str value) in
-		Atomic (str, replace_symbol es str value)
+		Atomic (s, replace_symbol es str value)
 	| Neg fml1 -> Neg (subst_s fml1 str value)
 	| And (fml1, fml2) -> And (subst_s fml1 str value, subst_s fml2 str value)
 	| Or (fml1, fml2) -> Or (subst_s fml1 str value, subst_s fml2 str value)
