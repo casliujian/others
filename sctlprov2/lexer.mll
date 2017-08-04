@@ -28,8 +28,8 @@ rule token = parse
   | "EG"        {EG}
   | "AR"        {AR}
   | "EU"        {EU}
-  | "val"       {Val}
-  | "var"       {Var}
+  | "value"     {Value}
+  | "let"       {Let}
   | "if"        {If}
   | "then"      {Then}
   | "else"      {Else}

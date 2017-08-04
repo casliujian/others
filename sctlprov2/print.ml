@@ -90,8 +90,10 @@ let rec str_pexprl pel =
                 | [str] -> str
                 | str::strs' -> str^"."^(str_strs strs') in
             str_strs str_list
-        | PLocal_Val (str, pel1) -> "val "^str^"="^(str_pexprl pel1)
-        | PLocal_Var (str, pel1) -> "var "^str^"="^(str_pexprl pel1)
+        (* | PLocal_Val (str, pel1) -> "val "^str^"="^(str_pexprl pel1)
+        | PLocal_Var (str, pel1) -> "var "^str^"="^(str_pexprl pel1) *)
+        | PLet (ppatl, pel1) ->
+            "let "^(str_ppatl ppatl)^" = "^(str_pexprl pel1)
         (* | PDot (pel1, pel2) -> (str_pexprl pel1)^"."^(str_pexprl pel2) *)
         | PInt i -> (string_of_int i)
         | PFloat f -> (string_of_float f)

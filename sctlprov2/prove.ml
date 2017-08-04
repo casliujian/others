@@ -21,6 +21,8 @@ let next s runtime modul =
 		| VBool false -> ()
 		| _ -> printf "%s should evaluate to a boolean value" (str_expr e1); exit 1
 	) nexts;
+	if State_set.is_empty !next_states then
+		next_states := State_set.singleton s;
 	!next_states
 	(* let sl = evaluate (snd model.transition) ctx runtime modul in
 	match sl with

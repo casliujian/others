@@ -37,14 +37,13 @@ Base types are listed as follows.
 1. `unit`: the unit type. `()` the only one constant of type `unit`. Besides, the type of commands is also `unit`;
 2. `int`: integer type, whose range depends on the implementation platform of the prover SCTLProV. For instance, if SCTLProV is implemented in 32-bit OCaml platform, then the range of the type `int` is [-2^31^, 2^31^-1]; 
 3. `float`: double precision (64 bits) floating-point type, following the IEEE 754 standard;
-4. `int (int, int)`: integer type with range, whose range is specified explicitly. For instance, `int (-1, 9)` specifies the type whose value varies from the range [-1, 9];
-5. `bool`: boolean type, which consists two dinsguishable values: `true` and `false`;
+4. `bool`: boolean type, which consists two dinsguishable values: `true` and `false`;
 
 ### 2.2.2 Compound types
 
 * Tuple
 
-  A tuple type with n fields is of the form `t1 * t2 * ... * tn `, where `t1`, `t2`, …, `tn` are data types. A term of a tuple type with n fields is of the form `(e1, e2, ... ,en)`, where `e1`, `e2`, … , `en` are expressions of type  `t1`, `t2`, …, `tn`, respectively.
+  A tuple type with n fields is of the form `(t1, t2, ... , tn) `, where `t1`, `t2`, …, `tn` are data types. A term of a tuple type with n fields is of the form `(e1, e2, ... ,en)`, where `e1`, `e2`, … , `en` are expressions of type  `t1`, `t2`, …, `tn`, respectively.
 
 * Record
 
@@ -58,13 +57,6 @@ Base types are listed as follows.
 
   List is a polymorphic type of the form `t list`, where `t` is a type identifier. 
 
-* Queue
-
-  Queue is also a polymorphic type, which is of the form `t queue`, where `t` is a type identifier.
-
-* Stack
-
-  Stack is also a polymorphic type, which is of the form `t stack`, where `t` is a type identifier.
 
 ### 2.2.2 User defined types
 
@@ -84,14 +76,12 @@ The syntax of `type` is specified as follows.
 
 ```
 type ::= 
-	     unit | int | int "(" number "," number ")" | bool 		(*base types*)
-	   | type * type * ... * type								(*tuple type*)
+	     unit | int | float | bool 		(*base types*)
+	   | (type, type, ... , type)								(*tuple type*)
 	   | "{" {iden ":" type ";"}* iden ":" type "}"	
 	   															(*record type*)
-	   | type array												(*array type*)
-	   | type list												(*list type*)
-	   | type queue												(*queue type*)
-	   | type stack												(*stack type*)
+	   | array type												(*array type*)
+	   | list type												(*list type*)
 	   | udt													(*user defined type*)
 	   | type "->" type											(*function type*)
 ```

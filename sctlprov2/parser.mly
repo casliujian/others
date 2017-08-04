@@ -33,7 +33,7 @@
 %token <int>Int 
 %token <float>Float
 %token <string>Iden UIden
-%token Import Datatype Vertical Val Var Match With Underline Model Next Property If Then Else For In While Do Done
+%token Import Datatype Vertical Value Let Match With Underline Model Next Property If Then Else For In While Do Done
 %token LB1 RB1 LB2 RB2 LB3 RB3 Equal Non_Equal LT GT LE GE Comma Semicolon Dot DotDot Arrow EOF Add AddDot Minus MinusDot Mult MultDot
 %token Negb Ando Oro And Or Neg LArrow Colon ColonColon Init Top Bottom AX EX AF EG AR EU True False Function Of State
 %token TLst TFloat TAray TInt TBool TUnt
@@ -85,13 +85,13 @@ declare: Datatype id = Iden args = list(Iden) Equal t = type_def  {
         Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args))
         (* print_endline ("declared udt "^id) *)
         } 
-    | Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+    /* | Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
             (*print_endline ("declaring variable "^id);*)
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (pt, e))
-        }
-    | Val id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
+        } */
+    | Value id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
             (*print_endline ("declaring value "^id);*)
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (PTVar (new_type_var ()), e))
@@ -468,8 +468,9 @@ expr_single: expr_path {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) $sta
     | id = Iden el = nonempty_list(expr_single) {
             mk_pexpr_loc (PApply (id, el)) (PTVar (new_type_var ())) $startpos(id) $endpos(el)
         }
-    | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) $startpos($1) $endpos(e)}
-    | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) $startpos($1) $endpos(e)}
+    /* | Val id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) $startpos($1) $endpos(e)}
+    | Var id = Iden Equal e = expr_single   {mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) $startpos($1) $endpos(e)} */
+    | Let p = pattern Equal e = expr_single {mk_pexpr_loc (PLet (p, e)) PTUnt $startpos($1) $endpos(e)}
     | e1 = expr_single ColonColon e2 = expr_single {
             mk_pexpr_loc (PLst_Cons (e1, e2)) e2.ptyp $startpos(e1) $endpos(e2)
         }

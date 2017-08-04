@@ -503,65 +503,14 @@ let rec check_pel_type pel env tctx modul moduls =
               (merge_env env1 env, tctx)
           
     end
-
-    (* (try
-       let pt = type_of_var str tctx in
-       if pt = PTVar 0 then begin
-         let m = Hashtbl.find moduls modul in
-         try
-           match (Hashtbl.find m.psymbol_tbl str) with
-           | (Val, PExpr_loc (pt, pel1)) -> let env1 = unify [pt;pel.ptyp; pel1.ptyp] modul moduls in (merge_env env1 env, tctx)
-           | (Var, PExpr_loc (pt, pel1)) -> let env1 = unify [pt;pel.ptyp; pel1.ptyp] modul moduls in (merge_env env1 env, tctx)
-           | _ -> raise (Undefined_idenfier (modul^"."^str))
-         with Not_found -> raise (Undefined_idenfier (modul^"."^str))
-       end else begin
-         let env1 = unify [pel.ptyp; pt] modul moduls in
-         (merge_env env1 env, tctx)
-       end
-     with Not_found -> raise (Undefined_modul modul)) *)
-  | PLocal_Val (str, pel1) | PLocal_Var (str, pel1) -> 
+  (* | PLocal_Val (str, pel1) | PLocal_Var (str, pel1) -> 
     let env1, tctx1 = check_pel_type pel1 env tctx modul moduls in 
-    (env1, add_to_tctx str pel1.ptyp tctx)
-  (* | PDot (pel1, pel2) -> 
-    begin
-      match pel1.pexpr, pel2.pexpr with
-      | PSymbol str1, PSymbol str2 -> 
-        let fstchar = String.sub str1 0 1 in
-        if fstchar = String.uppercase_ascii fstchar then begin (*str1 is module name*)
-          let env1, tctx1 = check_pel_type pel2 env tctx str1 moduls in
-          let env2 = unify [pel.ptyp; pel2.ptyp] str1 moduls in
-          (merge_env env2 env1, tctx1)
-        end else begin
-          let env1, _ = check_pel_type pel1 env tctx modul moduls in
-          let pt = pel1.ptyp in begin
-            match pt with
-            | PTRecord str_pts -> 
-              let pt1 = find_ptyp str_pts str2 in
-              if pt1 = PTVar 0 then
-                raise (Invalid_pexpr_loc (pel1, "no binding of "^str2^" in the record."))
-              else begin
-                let env2 = unify [pel.ptyp; pt1; pel2.ptyp] modul moduls in
-                (merge_env env2 (merge_env env1 env), tctx)
-              end
-            | _ -> raise (Invalid_pexpr_loc (pel1, "not a record."))
-          end
-        end
-      | _, PSymbol str2 ->
-        let _ = check_pel_type pel1 env tctx modul moduls in
-        let pt = pel1.ptyp in begin
-          match pt with
-          | PTRecord str_pts -> 
-            let pt1 = find_ptyp str_pts str2 in
-            if pt1 = PTVar 0 then
-              raise (Invalid_pexpr_loc (pel1, "no binding of "^str2^" in the record."))
-            else begin
-              let env1 = unify [pel.ptyp; pt1; pel2.ptyp] modul moduls in
-              (merge_env env1 env, tctx)
-            end
-          | _ -> raise (Invalid_pexpr_loc (pel1, "not a record."))
-        end
-      | _ -> raise (Invalid_pexpr_loc (pel,""))
-    end *)
+    (env1, add_to_tctx str pel1.ptyp tctx) *)
+  | PLet (p, pel1) ->
+    let env0, tctx0 = check_pel_type pel1 env tctx modul moduls in
+    let env1, tctx1 = check_ppat_type p modul moduls in
+    let env2 = unify [p.ptyp; pel1.ptyp] modul moduls in
+    (merge_env (merge_env env0 env1) env2, tctx1 @ tctx)
   | PInt i -> let env1 = unify [pel.ptyp; PTInt] modul moduls in (merge_env env1 env, tctx)
   | PFloat f -> let env1 = unify [pel.ptyp; PTFloat] modul moduls in (merge_env env1 env, tctx)
   | PUnt -> let env1 = unify [pel.ptyp; PTUnt] modul moduls in (merge_env env1 env, tctx)
@@ -843,8 +792,11 @@ let rec apply_env_to_ppatl env ppatl =
 let rec apply_env_to_pel env (pel:pexpr_loc) = 
   pel.ptyp <- apply_env_to_ptyp env pel.ptyp;
   match pel.pexpr with
-  | PLocal_Val (_, pel1) -> apply_env_to_pel env pel1
-  | PLocal_Var (_, pel1) -> apply_env_to_pel env pel1
+  (* | PLocal_Val (_, pel1) -> apply_env_to_pel env pel1
+  | PLocal_Var (_, pel1) -> apply_env_to_pel env pel1 *)
+  | PLet (ppatl, pel1) ->
+    apply_env_to_ppatl env ppatl;
+    apply_env_to_pel env pel1
   (* | PDot (pel1, pel2) -> apply_env_to_pel env pel1; apply_env_to_pel env pel2 *)
   | PAray (pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list
   | PLst (pel_list) -> List.iter (fun pel->apply_env_to_pel env pel) pel_list

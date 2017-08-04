@@ -5,7 +5,7 @@ datatype st = {
 	cabbage: bool;
 }
 
-val init = {
+value init = {
 	farmer = false;
 	wolf = false;
 	goat = false;
@@ -15,6 +15,7 @@ val init = {
 /*
 function next_state s : st -> list st = 
 	var tmp_list = [];
+	let tmp_list = [];
 	(if s.farmer = s.wolf then
 		tmp_list <- (s with {farmer = !s.farmer; wolf = !s.wolf;}) :: tmp_list);
 	(if s.farmer = s.goat then

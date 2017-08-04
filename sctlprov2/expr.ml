@@ -2,8 +2,9 @@ open Ast
 
 type expr = 
       Symbol of string list
-    | Val_binding of string * expr
-    | Var_binding of string * expr 
+    (* | Val_binding of string * expr
+    | Var_binding of string * expr  *)
+    | Let of pattern * expr
     | Int of int
     | Float of float
     | Unt
@@ -84,8 +85,9 @@ let rec str_expr e =
           | [str] -> str
           | str::strs' -> str^"."^(str_strs strs') in
       str_strs str_list
-  | Val_binding (str, pel1) -> "val "^str^"="^(str_expr pel1)
-  | Var_binding (str, pel1) -> "var "^str^"="^(str_expr pel1)
+  (* | Val_binding (str, pel1) -> "val "^str^"="^(str_expr pel1)
+  | Var_binding (str, pel1) -> "var "^str^"="^(str_expr pel1) *)
+  | Let (p, e1) -> "let "^(str_pat p)^" = "^(str_expr e1) 
   (* | PDot (pel1, pel2) -> (str_expr pel1)^"."^(str_expr pel2) *)
   | Int i -> (string_of_int i)
   | Float f -> (string_of_float f)
@@ -201,8 +203,9 @@ let rec str_expr_list el =
 let rec pexprl_to_expr pel = 
   match pel.pexpr with
   | PSymbol strs -> Symbol strs
-  | PLocal_Val (str, pel1) -> Val_binding (str, pexprl_to_expr pel1)
-  | PLocal_Var (str, pel1) -> Var_binding (str, pexprl_to_expr pel1)
+  (* | PLocal_Val (str, pel1) -> Val_binding (str, pexprl_to_expr pel1)
+  | PLocal_Var (str, pel1) -> Var_binding (str, pexprl_to_expr pel1) *)
+  | PLet (ppatl, pel1) -> Let (ppatl_to_pattern ppatl, pexprl_to_expr pel1)
   | PInt i -> Int i
   | PFloat f -> Float f
   | PUnt -> Unt

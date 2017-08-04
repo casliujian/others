@@ -51,3 +51,5 @@ let rec add_to_first pairs key value =
 
 let rec add_to_last pairs key value = 
     pairs @ [(key, ref value)]
+
+(* let add_pairs_to_first pairs added_pairs =  *)

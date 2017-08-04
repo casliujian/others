@@ -165,8 +165,12 @@ let rec evaluate_seq exprs ctx runtime modul =
   | [e] -> evaluate e ctx runtime modul 
   | e :: es -> begin
       match e with
-      | Val_binding (str, e1) -> evaluate_seq es (Refpairs.add_to_first ctx str (evaluate e1 ctx runtime modul)) runtime modul
-      | Var_binding (str, e1) -> evaluate_seq es (Refpairs.add_to_first ctx str (evaluate e1 ctx runtime modul)) runtime modul
+      (* | Val_binding (str, e1) -> evaluate_seq es (Refpairs.add_to_first ctx str (evaluate e1 ctx runtime modul)) runtime modul
+      | Var_binding (str, e1) -> evaluate_seq es (Refpairs.add_to_first ctx str (evaluate e1 ctx runtime modul)) runtime modul *)
+      | Let (p, e1) -> 
+        let v = evaluate e1 ctx runtime modul in
+        let ctx1,_ = get_matched_pattern v [(p, e1)] in
+        evaluate_seq es (ctx1 @ ctx) runtime modul
       | _ -> let _ = evaluate e ctx runtime modul in evaluate_seq es ctx runtime modul
     end  
 and evaluate expr ctx runtime modul = 
@@ -194,7 +198,8 @@ and evaluate expr ctx runtime modul =
             else
                 value_of_str_path (value_of_str str runtime modul) strs
         end
-    | Val_binding _ | Var_binding _ -> raise (Evaluation_error "should not bind variables in the last expression")
+    (* | Val_binding _ | Var_binding _ -> raise (Evaluation_error "should not bind variables in the last expression") *)
+    | Let _ -> raise (Evaluation_error "should not bind variables in the last expression") 
     | Aray ea -> VAray (List.map (fun e -> evaluate e ctx runtime modul) ea)
     | Lst ea -> VLst (List.map (fun e -> evaluate e ctx runtime modul) ea)
     | Aray_field (e1, e2) -> 
@@ -363,6 +368,22 @@ and evaluate expr ctx runtime modul =
                     | [] -> raise (Evaluation_error "can not assign to an empty symbol.")
                     | [str] -> modify_ctx ctx str (evaluate e2 ctx runtime modul); VUnt
                     | str::strs -> modify_ctx ctx str (modified_record_value (Refpairs.get_value ctx str) strs (evaluate e2 ctx runtime modul)); VUnt
+                end
+            | Aray_field (Symbol [s], e3) -> begin
+                    if not (Pairs.key_exists ctx s) then
+                        raise (Evaluation_error (s^" is not defined."));
+                    match Refpairs.get_value ctx s with
+                    | VAray vl -> begin
+                            match evaluate e3 ctx runtime modul with
+                            | VInt i -> 
+                                if i > List.length vl then
+                                    raise (Evaluation_error ("index out of bounds: "^(string_of_int i)));
+                                let index = ref (-1) in 
+                                let new_vl = List.map (fun v -> incr index; if !index = i then evaluate e2 ctx runtime modul else v) vl in
+                                modify_ctx ctx s (VAray new_vl); VUnt
+                            | _ -> raise (Evaluation_error ("can not evaluate to an int value: "^(str_expr e3)))
+                        end 
+                    | _ -> raise (Evaluation_error (s^" is not bounded to an array"))
                 end
             | _ -> raise (Evaluation_error ("error evaluating assign expr."))
         end        
