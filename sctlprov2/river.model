@@ -27,6 +27,7 @@ function next_state s : st -> list st =
 */
 
 function safe x : st -> bool = 
+	let (s,t) = (1,2);
 	!(x.farmer != x.wolf && x.wolf = x.goat) && !(x.farmer != x.goat && x.goat = x.cabbage)
 
 function okay y : st -> bool = 

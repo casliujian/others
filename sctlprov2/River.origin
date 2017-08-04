@@ -2,16 +2,18 @@ river.model
 Val init:(Type 1)={cabbage=false:bool;goat=false:bool;wolf=false:bool;farmer=false:bool;}:{cabbage:bool;goat:bool;wolf:bool;farmer:bool;}
 
 Function safe x:(Type 2) :(st )->(bool)=
-((! ((x.farmer:(Type 3)!=x.wolf:(Type 4)):bool&&(x.wolf:(Type 5)=x.goat:(Type 6)):bool):bool):bool&&(! ((x.farmer:(Type 7)!=x.goat:(Type 8)):bool&&(x.goat:(Type 9)=x.cabbage:(Type 10)):bool):bool):bool):bool
+let (s:(Type 3);t:(Type 4)):((Type 3), (Type 4)) = (1:int,2:int):(int, int):unit;
+((! ((x.farmer:(Type 5)!=x.wolf:(Type 6)):bool&&(x.wolf:(Type 7)=x.goat:(Type 8)):bool):bool):bool&&(! ((x.farmer:(Type 9)!=x.goat:(Type 10)):bool&&(x.goat:(Type 11)=x.cabbage:(Type 12)):bool):bool):bool):bool;
+:(Type 13)
 
 datatype st={farmer:bool;wolf:bool;goat:bool;cabbage:bool;}
 
-Function okay y:(Type 11) :(st )->(bool)=
-((((y.farmer:(Type 12)=true:bool):bool&&(y.wolf:(Type 13)=true:bool):bool):bool&&(y.goat:(Type 14)=true:bool):bool):bool&&(y.cabbage:(Type 15)=true:bool):bool):bool
+Function okay y:(Type 14) :(st )->(bool)=
+((((y.farmer:(Type 15)=true:bool):bool&&(y.wolf:(Type 16)=true:bool):bool):bool&&(y.goat:(Type 17)=true:bool):bool):bool&&(y.cabbage:(Type 18)=true:bool):bool):bool
 
-transition s:(Type 16) = 
-(s.farmer:(Type 17)=s.wolf:(Type 18)):bool : s:(Type 19) with {wolf=(! s.wolf:(Type 21)):bool;farmer=(! s.farmer:(Type 20)):bool;}:(Type 19);
-(s.farmer:(Type 22)=s.goat:(Type 23)):bool : s:(Type 24) with {goat=(! s.goat:(Type 26)):bool;farmer=(! s.farmer:(Type 25)):bool;}:(Type 24);
-(s.farmer:(Type 27)=s.cabbage:(Type 28)):bool : s:(Type 29) with {cabbage=(! s.cabbage:(Type 31)):bool;farmer=(! s.farmer:(Type 30)):bool;}:(Type 29);
-true:bool : s:(Type 32) with {farmer=(! s.farmer:(Type 33)):bool;}:(Type 32);
-property find=EU (x,y,safe x:(Type 34),okay y:(Type 35),init:(Type 36))
+transition s:(Type 19) = 
+(s.farmer:(Type 20)=s.wolf:(Type 21)):bool : s:(Type 22) with {wolf=(! s.wolf:(Type 24)):bool;farmer=(! s.farmer:(Type 23)):bool;}:(Type 22);
+(s.farmer:(Type 25)=s.goat:(Type 26)):bool : s:(Type 27) with {goat=(! s.goat:(Type 29)):bool;farmer=(! s.farmer:(Type 28)):bool;}:(Type 27);
+(s.farmer:(Type 30)=s.cabbage:(Type 31)):bool : s:(Type 32) with {cabbage=(! s.cabbage:(Type 34)):bool;farmer=(! s.farmer:(Type 33)):bool;}:(Type 32);
+true:bool : s:(Type 35) with {farmer=(! s.farmer:(Type 36)):bool;}:(Type 35);
+property find=EU (x,y,safe x:(Type 37),okay y:(Type 38),init:(Type 39))

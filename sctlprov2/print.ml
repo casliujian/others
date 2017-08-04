@@ -12,7 +12,7 @@ let rec str_ptyp pt =
         let tmp_str = ref "(" in
         tmp_str := !tmp_str ^ (str_ptyp (List.hd pt_list));
         for i = 1 to List.length pt_list - 1 do
-            tmp_str := !tmp_str ^ (str_ptyp (List.nth pt_list i))
+            tmp_str := !tmp_str ^ ", "^(str_ptyp (List.nth pt_list i))
         done;
         tmp_str := !tmp_str ^ ")";
         !tmp_str

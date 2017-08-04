@@ -255,7 +255,7 @@ expr_single: expr_path {mk_pexpr_loc (PSymbol $1) (PTVar (new_type_var ())) $sta
     | False {mk_pexpr_loc (PBool false) (PTBool) $startpos($1) $endpos($1)}
     | LB1 e = expr Comma el = separated_nonempty_list(Comma, expr) RB1 {
             let elt = List.map (fun (e:pexpr_loc) -> e.ptyp) (e::el) in
-            mk_pexpr_loc (PTuple el) ((PTTuple elt)) $startpos($1) $endpos($5)
+            mk_pexpr_loc (PTuple (e::el)) ((PTTuple elt)) $startpos($1) $endpos($5)
         }
     | LB3 str_el = str_expr_list RB3 {
             let str_elt = List.map (fun (str, (pel:pexpr_loc)) -> (str, pel.ptyp)) str_el in

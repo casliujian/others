@@ -187,9 +187,10 @@ let rec unify ptyp_list modul moduls =
         let env = unify [pt1;pt2] modul moduls in
         merge_env env (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
       | PTTuple pts1, PTTuple pts2 -> 
-        if List.length pts1 <> List.length pts2 then
+        if List.length pts1 <> List.length pts2 then begin
+          print_endline ("length of "^(Print.str_ptyp ptyp1)^" is not equal to "^(Print.str_ptyp ptyp2));
           raise (Unify_error (ptyp1, ptyp2))
-        else
+        end else
           let env = List.fold_left (fun e (a1,a2) -> merge_env (unify [a1;a2] modul moduls) e) [] (List.combine pts1 pts2) in
           merge_env env (unify (List.map (fun a -> apply_env_to_ptyp env a) (ptyp2::ptyps)) modul moduls)
       | PTRecord str_pt_list1, PTRecord str_pt_list2 ->
