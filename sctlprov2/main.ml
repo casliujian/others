@@ -6,9 +6,9 @@ open Prove
 open Printf
 open Lexing
 
-let moduls = Hashtbl.create 0
+(* let moduls = Hashtbl.create 0 *)
 
-let debug () = 
+(* let debug () = 
     let exiting = ref true in
     let rec loop () = 
         while !exiting do
@@ -24,9 +24,9 @@ let debug () =
             else 
                 exiting := false
         done in
-    loop ()
+    loop () *)
 
-let test () = 
+(* let test () = 
     let cha = open_in "test.model" in
     let lbuf = Lexing.from_channel cha in
     try 
@@ -48,7 +48,7 @@ let test () =
         flush typed_out
     with Parser.Error -> 
         let ep = lbuf.lex_curr_p in
-        printf "syntax error at line %d, column %d\n" ep.pos_lnum (ep.pos_cnum - ep.pos_bol)
+        printf "syntax error at line %d, column %d\n" ep.pos_lnum (ep.pos_cnum - ep.pos_bol) *)
 
 
 let parse_and_prove fnames = 
@@ -124,8 +124,8 @@ let _ =
     let flag = ref 2 in
     let files = ref [] in
     Arg.parse [
-        "-test", Arg.Unit (fun () -> flag := 0), "\tparse test.model";
-        "-debug", Arg.Unit (fun () -> flag := 1), "\tdebug the parser interactively";
+        (* "-test", Arg.Unit (fun () -> flag := 0), "\tparse test.model";
+        "-debug", Arg.Unit (fun () -> flag := 1), "\tdebug the parser interactively"; *)
         "-prove", Arg.Rest (fun str -> 
             (* print_endline ("rest: "^str); *)
             (* files := String.split_on_char ' ' (String.trim str); *)
@@ -134,8 +134,8 @@ let _ =
         ), "\tinput files";
     ] (fun s -> files := !files @ [s]) "";
     match !flag with
-    | 0 -> test ()
-    | 1 -> debug ()
+    (* | 0 -> test ()
+    | 1 -> debug () *)
     | 2 -> parse_and_prove !files
     | _ -> print_endline "don't know what to do."
 
