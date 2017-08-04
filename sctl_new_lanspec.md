@@ -101,7 +101,6 @@ expr ::=
         iden                (*variable or constructor name*)
       | expr "." iden		(*select one field of a record*)
       | expr "[" expr "]"	(*select one field of a array*)
-      | expr "." "(" expr ")"	(*select one field of a tuple or a list*)
       | "!" expr            (*logical negation*)
       | expr "&&" expr      (*logical and*)
       | expr "||" expr      (*logical or*)
@@ -116,6 +115,7 @@ expr ::=
       | expr ">" expr       (*larger than*)
       | expr ">=" expr      (*larger than or equal*)
       | "(" expr ")"		(*expression group*)
+      | "let" pattern "=" expr	(*declare local variables*)
       | "if" expr "then" expr [ "else" expr ]
       						(*if expression*)
       | while expr do expr	(*while expression*)
@@ -145,11 +145,10 @@ pattern ::= iden
 
 Expressions can be used to define constants, variables, and functions in a program.
 
-### 2.3.1 Constants and Variables
+### 2.3.1 Global values
 
 ```
-var_def ::= "var" iden "=" expr		(*variables*)
-const_def ::= "val" iden "=" expr	(*constants*)
+global_def ::= "value" iden "=" expr		(*global values*)
 ```
 
 ### 2.3.2 Functions
@@ -157,7 +156,7 @@ const_def ::= "val" iden "=" expr	(*constants*)
 ```
 fun_def ::= iden "(" args ")" "=" expr
 
-args ::= iden [":" type] {"," iden [":" type]}*
+args ::= pattern [":" type] {"," pattern [":" type]}*
 ```
 
 ## 2.4 Kripke model
@@ -166,8 +165,11 @@ The Kripke model is specified by the declaration as follows.
 
 ```
 kripke_def ::= "Model" "{"
-				"init" "=" expr
-				"transition" iden "=" expr
+				"next" iden "=" 
+					expr ":" expr ";"
+					expr ":" expr ";"
+					...
+					expr ":" expr ";"
                 {"property" iden "=" formula}+
 			"}"
 			
@@ -175,12 +177,12 @@ formula ::= iden "(" iden {"," iden}* ")"
 		  | "not" formula
 		  | formula "/\" formula
 		  | formula "\/" formula
-		  | "EX" "(" iden "," formula "," iden ")"
-		  | "AX" "(" iden "," formula "," iden ")"
-		  | "EG" "(" iden "," formula "," iden ")"
-		  | "AF" "(" iden "," formula "," iden ")"
-		  | "EU" "(" iden "," iden "," formula "," formula "," iden ")"
-		  | "AR" "(" iden "," iden "," formula "," formula "," iden ")"
+		  | "EX" "(" iden "," formula "," expr ")"
+		  | "AX" "(" iden "," formula "," expr ")"
+		  | "EG" "(" iden "," formula "," expr ")"
+		  | "AF" "(" iden "," formula "," expr ")"
+		  | "EU" "(" iden "," iden "," formula "," formula "," expr ")"
+		  | "AR" "(" iden "," iden "," formula "," formula "," expr ")"
 ```
 
 ## 2.5 Program Structure
@@ -189,8 +191,8 @@ Programs are organized as modules. Each modules contains a set of declarations.
 
 ```
 module ::= 
-		["import" iden]
-		{udt_def | var_def | const_def | fun_def}+
+		{"import" iden}*
+		{udt_def | global_def | fun_def}*
 		[kripke_def]
 ```
 
