@@ -82,22 +82,23 @@ declars: {}
 ;
 
 declare: Datatype id = Iden args = list(Iden) Equal t = type_def  {
-        Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args)); 
-        print_endline ("declared udt "^id)} 
+        Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args))
+        (* print_endline ("declared udt "^id) *)
+        } 
     | Var id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
-            print_endline ("declaring variable "^id);
+            (*print_endline ("declaring variable "^id);*)
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (pt, e))
         }
     | Val id = Iden ote = option(type_of_expr)  Equal e = expr_single  {
-            print_endline ("declaring value "^id);
+            (*print_endline ("declaring value "^id);*)
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (pt, e))
         }
     | Function id = Iden ags = args otf = option(type_of_expr) Equal e = expr  {
-        print_endline ("declaring function "^id);
+        (*print_endline ("declaring function "^id);*)
         match otf with
         | None -> Hashtbl.add symbol_tbl id (Function, PFunction(PTVar (new_type_var ()), ags, e))
         | Some pt -> Hashtbl.add symbol_tbl id (Function, PFunction(pt, ags, e))}

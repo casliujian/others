@@ -443,7 +443,7 @@ let rec ptyp_of_pexpr_path ptyp_expected str_list modul moduls =
             | _ -> PTVar 0
           end
         | _ -> 
-          print_endline ("ptyp_expected: "^(Print.str_ptyp ptyp_expected)); 
+          (* print_endline ("ptyp_expected: "^(Print.str_ptyp ptyp_expected));  *)
           PTVar 0
       end
     end
@@ -912,15 +912,15 @@ let check_modul modul moduls =
         let env1 = merge_env (unify [ptyp; pel.ptyp] modul moduls) env in
         let ptyp1 = apply_env_to_ptyp env1 ptyp in
         apply_env_to_pel env1 pel;
-        Hashtbl.replace m.psymbol_tbl str (Val, PExpr_loc (ptyp1, pel));
-        print_endline ("type check value "^str^" complete.")
+        Hashtbl.replace m.psymbol_tbl str (Val, PExpr_loc (ptyp1, pel))
+        (* print_endline ("type check value "^str^" complete.") *)
       | (Var, PExpr_loc (ptyp, pel)) -> 
         let env,_ = check_pel_type pel [] [] modul moduls in
         let env1 = merge_env (unify [ptyp; pel.ptyp] modul moduls) env in
         let ptyp1 = apply_env_to_ptyp env1 ptyp in
         apply_env_to_pel env1 pel;
-        Hashtbl.replace m.psymbol_tbl str (Var, PExpr_loc (ptyp1, pel));
-        print_endline ("type check variable "^str^" complete.")
+        Hashtbl.replace m.psymbol_tbl str (Var, PExpr_loc (ptyp1, pel))
+        (* print_endline ("type check variable "^str^" complete.") *)
       | (Function, PFunction (ptyp, ppatl_list, pel)) -> 
         let rec build_arrow ptyp_list ptyp1 = 
           match ptyp_list with
@@ -937,14 +937,14 @@ let check_modul modul moduls =
         let env2 = merge_env (unify [ptyp; build_arrow (List.map (fun ppatl->ppatl.ptyp) ppatl_list) pel.ptyp] modul moduls) env1 in
         List.iter (fun ppatl->apply_env_to_ppatl env2 ppatl) ppatl_list;
         apply_env_to_pel env2 pel;
-        Hashtbl.replace m.psymbol_tbl str (Function, PFunction (apply_env_to_ptyp env2 ptyp, ppatl_list, pel));
-        print_endline ("type check function "^str^" complete.")
+        Hashtbl.replace m.psymbol_tbl str (Function, PFunction (apply_env_to_ptyp env2 ptyp, ppatl_list, pel))
+        (* print_endline ("type check function "^str^" complete.") *)
       | _ -> ()
     ) m.psymbol_tbl;
      match m.pkripke_model with
     | None -> ()
     | Some kripke -> 
-        print_endline ("type checking kripke model...");
+        (* print_endline ("type checking kripke model..."); *)
         let env1, tctx1 = check_ppat_type (fst kripke.transition) modul moduls in
         let nexts = snd kripke.transition in
         let tmp_env = ref env1 in
@@ -961,11 +961,11 @@ let check_modul modul moduls =
         (* let env2, _ = check_pel_type (snd kripke.transition) env1 tctx1 modul moduls in
         apply_env_to_ppatl env2 (fst kripke.transition);
         apply_env_to_pel env2 (snd kripke.transition); *)
-        print_endline ("type check transtion complete.");
+        (* print_endline ("type check transtion complete."); *)
         List.iter (fun (str, pfml) -> 
           let env = check_pformulal_type pfml [] modul moduls in
           apply_env_to_pformulal env pfml
-        ) kripke.properties;
-        print_endline ("type check kripke model complete.")
+        ) kripke.properties
+        (* print_endline ("type check kripke model complete.") *)
   end else 
     raise (Undefined_modul modul)

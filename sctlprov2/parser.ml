@@ -372,7 +372,7 @@ let rec _menhir_goto_list_property_ : _menhir_env -> 'ttv_tail -> _menhir_state 
               
             in
             
-# 127 "parser.mly"
+# 128 "parser.mly"
                                                                                                                                               (
             kripke_model := Some {
                 transition = (p, nexts);
@@ -455,7 +455,7 @@ and _menhir_goto_pattern_expr_list : _menhir_env -> 'ttv_tail -> Lexing.position
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_pel_ in
         let _v : (Ast.pexpr_loc) = 
-# 458 "parser.mly"
+# 459 "parser.mly"
                                                           (mk_pexpr_loc (PMatch (e1, pel)) (PTVar (new_type_var ())) _startpos__1_ _endpos_pel_)
 # 461 "parser.ml"
          in
@@ -489,7 +489,7 @@ and _menhir_goto_separated_nonempty_list_Comma_expr_ : _menhir_env -> 'ttv_tail 
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__5_ in
             let _v : (Ast.pexpr_loc) = 
-# 255 "parser.mly"
+# 256 "parser.mly"
                                                                        (
             let elt = List.map (fun (e:pexpr_loc) -> e.ptyp) (e::el) in
             mk_pexpr_loc (PTuple el) ((PTTuple elt)) _startpos__1_ _endpos__5_
@@ -529,7 +529,7 @@ and _menhir_goto_option_else_expr_ : _menhir_env -> 'ttv_tail -> Lexing.position
     let _startpos = _startpos__1_ in
     let _endpos = _endpos_oe_ in
     let _v : (Ast.pexpr_loc) = 
-# 392 "parser.mly"
+# 393 "parser.mly"
                                                                   (
             match oe with
             | None -> begin
@@ -677,7 +677,7 @@ and _menhir_run268 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
     let _startpos = _startpos__1_ in
     let _endpos = _endpos__1_ in
     let _v : (Ast.pformula_loc) = 
-# 147 "parser.mly"
+# 148 "parser.mly"
              (mk_pformula_loc PTop _startpos__1_ _endpos__1_)
 # 683 "parser.ml"
      in
@@ -1009,7 +1009,7 @@ and _menhir_run288 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
     let _startpos = _startpos__1_ in
     let _endpos = _endpos__1_ in
     let _v : (Ast.pformula_loc) = 
-# 148 "parser.mly"
+# 149 "parser.mly"
              (mk_pformula_loc PBottom _startpos__1_ _endpos__1_)
 # 1015 "parser.ml"
      in
@@ -1323,7 +1323,7 @@ and _menhir_goto_list_expr_single_ : _menhir_env -> 'ttv_tail -> Lexing.position
         let _startpos = _startpos_id_ in
         let _endpos = _endpos_el_ in
         let _v : (Ast.pformula_loc) = 
-# 149 "parser.mly"
+# 150 "parser.mly"
                                        (mk_pformula_loc (PAtomic (id, el)) _startpos_id_ _endpos_el_)
 # 1329 "parser.ml"
          in
@@ -1374,7 +1374,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__11_ in
             let _v : (Ast.pexpr_loc) = 
-# 429 "parser.mly"
+# 430 "parser.mly"
                                                                                            (
             mk_pexpr_loc (PFor (str, e2, e3, e4)) (PTUnt) _startpos__1_ _endpos__11_
             (*begin
@@ -1482,7 +1482,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
         let _1 = () in
         let _endpos = _endpos__2_ in
         let _v : (Ast.pexpr_loc) = 
-# 501 "parser.mly"
+# 502 "parser.mly"
                         (_2)
 # 1488 "parser.ml"
          in
@@ -1625,7 +1625,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
         let _2 = () in
         let _endpos = _endpos__3_ in
         let _v : (Ast.ppattern_loc * Ast.pexpr_loc) = 
-# 507 "parser.mly"
+# 508 "parser.mly"
                                     ((_1, _3))
 # 1631 "parser.ml"
          in
@@ -1639,7 +1639,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
             let _2 = () in
             let _endpos = _endpos__3_ in
             let _v : ((Ast.ppattern_loc * Ast.pexpr_loc) list) = 
-# 505 "parser.mly"
+# 506 "parser.mly"
                                                 (_1 @ [_3])
 # 1645 "parser.ml"
              in
@@ -1652,7 +1652,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
             let (_menhir_stack, (_1 : (unit option))) = _menhir_stack in
             let _endpos = _endpos_pe_ in
             let _v : ((Ast.ppattern_loc * Ast.pexpr_loc) list) = 
-# 504 "parser.mly"
+# 505 "parser.mly"
                                                       ([pe])
 # 1658 "parser.ml"
              in
@@ -1677,7 +1677,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__5_ in
             let _v : (Ast.pexpr_loc) = 
-# 416 "parser.mly"
+# 417 "parser.mly"
                                                (
             mk_pexpr_loc (PWhile (e1, e2)) (PTUnt) _startpos__1_ _endpos__5_
              (*match e1.ptyp, e2.ptyp with
@@ -1711,9 +1711,9 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_s
         let _5 = () in
         let _1 = () in
         let _v : (unit) = 
-# 99 "parser.mly"
+# 100 "parser.mly"
                                                                                (
-        print_endline ("declaring function "^id);
+        (*print_endline ("declaring function "^id);*)
         match otf with
         | None -> Hashtbl.add symbol_tbl id (Function, PFunction(PTVar (new_type_var ()), ags, e))
         | Some pt -> Hashtbl.add symbol_tbl id (Function, PFunction(pt, ags, e)))
@@ -1797,7 +1797,7 @@ and _menhir_goto_expr_path : _menhir_env -> 'ttv_tail -> Lexing.position -> _men
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
         let _v : (Ast.pexpr_loc) = 
-# 217 "parser.mly"
+# 218 "parser.mly"
                        (mk_pexpr_loc (PSymbol _1) (PTVar (new_type_var ())) _startpos__1_ _endpos__1_)
 # 1803 "parser.ml"
          in
@@ -1817,7 +1817,7 @@ and _menhir_goto_expr_path : _menhir_env -> 'ttv_tail -> Lexing.position -> _men
         let _startpos = _startpos_id_ in
         let _endpos = _endpos__3_ in
         let _v : (string list) = 
-# 214 "parser.mly"
+# 215 "parser.mly"
                               (id::_3)
 # 1823 "parser.ml"
          in
@@ -1837,7 +1837,7 @@ and _menhir_goto_expr_path : _menhir_env -> 'ttv_tail -> Lexing.position -> _men
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
         let _v : (Ast.pexpr_loc) = 
-# 226 "parser.mly"
+# 227 "parser.mly"
                           (mk_pexpr_loc (PSymbol (_1::_3)) (PTVar (new_type_var ())) _startpos__1_ _endpos__3_)
 # 1843 "parser.ml"
          in
@@ -1894,7 +1894,7 @@ and _menhir_goto_transition_items : _menhir_env -> 'ttv_tail -> _menhir_state ->
         let _4 = () in
         let _2 = () in
         let _v : ((Ast.pexpr_loc * Ast.pexpr_loc) list) = 
-# 137 "parser.mly"
+# 138 "parser.mly"
                                                                          ((e1, e2)::_5)
 # 1900 "parser.ml"
          in
@@ -1980,7 +1980,7 @@ and _menhir_goto_formula : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__3_ in
             let _v : (Ast.pformula_loc) = 
-# 152 "parser.mly"
+# 153 "parser.mly"
                             (mk_pformula_loc (POr (_1, _3)) _startpos__1_ _endpos__3_)
 # 1986 "parser.ml"
              in
@@ -1999,7 +1999,7 @@ and _menhir_goto_formula : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
         let _v : (Ast.pformula_loc) = 
-# 151 "parser.mly"
+# 152 "parser.mly"
                             (mk_pformula_loc (PAnd (_1, _3)) _startpos__1_ _endpos__3_)
 # 2005 "parser.ml"
          in
@@ -2400,7 +2400,7 @@ and _menhir_goto_formula : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
         let _v : (Ast.pformula_loc) = 
-# 150 "parser.mly"
+# 151 "parser.mly"
                     (mk_pformula_loc (PNeg _2) _startpos__1_ _endpos__2_)
 # 2406 "parser.ml"
          in
@@ -2424,7 +2424,7 @@ and _menhir_goto_formula : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _3 = () in
             let _1 = () in
             let _v : (string * Ast.pformula_loc) = 
-# 144 "parser.mly"
+# 145 "parser.mly"
                                                   ((id, fml))
 # 2430 "parser.ml"
              in
@@ -2627,7 +2627,7 @@ and _menhir_goto_expr_single_list : _menhir_env -> 'ttv_tail -> _menhir_state ->
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__3_ in
             let _v : (Ast.pexpr_loc) = 
-# 242 "parser.mly"
+# 243 "parser.mly"
                                        (
             if List.length el = 0 then
                 mk_pexpr_loc (PLst el) (PTLst (PTVar (new_type_var ()))) _startpos__1_ _endpos__3_
@@ -2654,7 +2654,7 @@ and _menhir_goto_expr_single_list : _menhir_env -> 'ttv_tail -> _menhir_state ->
         let (((_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.pexpr_loc)), _startpos__1_), _), _, (_3 : (Ast.pexpr_loc list))) = _menhir_stack in
         let _2 = () in
         let _v : (Ast.pexpr_loc list) = 
-# 488 "parser.mly"
+# 489 "parser.mly"
                                              (_1::_3)
 # 2660 "parser.ml"
          in
@@ -2683,7 +2683,7 @@ and _menhir_goto_expr_single_list : _menhir_env -> 'ttv_tail -> _menhir_state ->
                 let _startpos = _startpos__1_ in
                 let _endpos = _endpos__5_ in
                 let _v : (Ast.pexpr_loc) = 
-# 230 "parser.mly"
+# 231 "parser.mly"
                                                         (
             let ea = el in
             if List.length ea = 0 then
@@ -2770,7 +2770,7 @@ and _menhir_reduce35 : _menhir_env -> ('ttv_tail * _menhir_state * Lexing.positi
     let _startpos = _startpos__1_ in
     let _endpos = _endpos_e_ in
     let _v : (Ast.pexpr_loc) = 
-# 297 "parser.mly"
+# 298 "parser.mly"
                                        (
             mk_pexpr_loc (PNegi e) (PTInt) _startpos__1_ _endpos_e_
             (*match e.ptyp with
@@ -2790,7 +2790,7 @@ and _menhir_reduce36 : _menhir_env -> ('ttv_tail * _menhir_state * Lexing.positi
     let _startpos = _startpos__1_ in
     let _endpos = _endpos_e_ in
     let _v : (Ast.pexpr_loc) = 
-# 305 "parser.mly"
+# 306 "parser.mly"
                                           (
             mk_pexpr_loc (PNegf e) PTFloat _startpos__1_ _endpos_e_
         )
@@ -2814,7 +2814,7 @@ and _menhir_goto_nonempty_list_expr_single_ : _menhir_env -> 'ttv_tail -> Lexing
         let _startpos = _startpos_id_ in
         let _endpos = _endpos_el_ in
         let _v : (Ast.pexpr_loc) = 
-# 467 "parser.mly"
+# 468 "parser.mly"
                                                 (
             mk_pexpr_loc (PApply (id, el)) (PTVar (new_type_var ())) _startpos_id_ _endpos_el_
         )
@@ -2994,7 +2994,7 @@ and _menhir_goto_separated_nonempty_list_Semicolon_expr_single_ : _menhir_env ->
         let _2 = () in
         let _endpos = _endpos_el_ in
         let _v : (Ast.pexpr_loc) = 
-# 208 "parser.mly"
+# 209 "parser.mly"
                                                                                         (
             mk_pexpr_loc (PSeq (e::el)) (PTVar (new_type_var())) _startpos_e_ _endpos_el_
         )
@@ -3023,7 +3023,7 @@ and _menhir_reduce17 : _menhir_env -> 'ttv_tail * Lexing.position * _menhir_stat
     let (_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.pexpr_loc)), _startpos__1_) = _menhir_stack in
     let _endpos = _endpos__1_ in
     let _v : (Ast.pexpr_loc) = 
-# 207 "parser.mly"
+# 208 "parser.mly"
                   (_1)
 # 3029 "parser.ml"
      in
@@ -3087,7 +3087,7 @@ and _menhir_run86 : _menhir_env -> (('ttv_tail * Lexing.position * _menhir_state
     let _startpos = _startpos_e1_ in
     let _endpos = _endpos__4_ in
     let _v : (Ast.pexpr_loc) = 
-# 475 "parser.mly"
+# 476 "parser.mly"
                                                 (
         let e:Ast.pexpr_loc = e1 in
         let et1 = e.ptyp in
@@ -3124,7 +3124,7 @@ and _menhir_goto_str_expr_list : _menhir_env -> 'ttv_tail -> _menhir_state -> ((
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos__5_ in
             let _v : (Ast.pexpr_loc) = 
-# 459 "parser.mly"
+# 460 "parser.mly"
                                                               (mk_pexpr_loc (PWith (e1, str_el)) e1.ptyp _startpos_e1_ _endpos__5_)
 # 3130 "parser.ml"
              in
@@ -3154,7 +3154,7 @@ and _menhir_goto_str_expr_list : _menhir_env -> 'ttv_tail -> _menhir_state -> ((
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__3_ in
             let _v : (Ast.pexpr_loc) = 
-# 259 "parser.mly"
+# 260 "parser.mly"
                                      (
             let str_elt = List.map (fun (str, (pel:pexpr_loc)) -> (str, pel.ptyp)) str_el in
             mk_pexpr_loc (PRecord str_el) (PTRecord str_elt) _startpos__1_ _endpos__3_
@@ -3993,7 +3993,7 @@ and _menhir_goto_constrs : _menhir_env -> 'ttv_tail -> _menhir_state -> ((string
         let _menhir_stack = Obj.magic _menhir_stack in
         let (_1 : ((string * Ast.ptyp option) list)) = _v in
         let _v : (Ast.ptyp) = 
-# 174 "parser.mly"
+# 175 "parser.mly"
               (PTConstrs _1)
 # 3999 "parser.ml"
          in
@@ -4005,7 +4005,7 @@ and _menhir_goto_constrs : _menhir_env -> 'ttv_tail -> _menhir_state -> ((string
         let (_menhir_stack, _menhir_s, (_1 : (string * Ast.ptyp option))) = _menhir_stack in
         let _2 = () in
         let _v : ((string * Ast.ptyp option) list) = 
-# 170 "parser.mly"
+# 171 "parser.mly"
                                (_1 :: _3)
 # 4011 "parser.ml"
          in
@@ -4028,9 +4028,10 @@ and _menhir_goto_type_def : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.pt
     let _v : (unit) = 
 # 84 "parser.mly"
                                                                   (
-        Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args)); 
-        print_endline ("declared udt "^id))
-# 4034 "parser.ml"
+        Hashtbl.add symbol_tbl id (UDT, PTyp (erase_type_args t args))
+        (* print_endline ("declared udt "^id) *)
+        )
+# 4035 "parser.ml"
      in
     _menhir_goto_declare _menhir_env _menhir_stack _menhir_s _v
 
@@ -4045,7 +4046,7 @@ and _menhir_goto_nonempty_list_str_typ_ : _menhir_env -> 'ttv_tail -> _menhir_st
         let _v : ((string * Ast.ptyp) list) = 
 # 197 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( x :: xs )
-# 4049 "parser.ml"
+# 4050 "parser.ml"
          in
         _menhir_goto_nonempty_list_str_typ_ _menhir_env _menhir_stack _menhir_s _v
     | MenhirState10 ->
@@ -4063,17 +4064,17 @@ and _menhir_goto_nonempty_list_str_typ_ : _menhir_env -> 'ttv_tail -> _menhir_st
             let _3 = () in
             let _1 = () in
             let _v : ((string * Ast.ptyp) list) = 
-# 200 "parser.mly"
+# 201 "parser.mly"
                                                      (str_pts)
-# 4069 "parser.ml"
+# 4070 "parser.ml"
              in
             let _menhir_stack = Obj.magic _menhir_stack in
             let _menhir_stack = Obj.magic _menhir_stack in
             let (_1 : ((string * Ast.ptyp) list)) = _v in
             let _v : (Ast.ptyp) = 
-# 191 "parser.mly"
+# 192 "parser.mly"
                  (PTRecord _1)
-# 4077 "parser.ml"
+# 4078 "parser.ml"
              in
             _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -4095,9 +4096,9 @@ and _menhir_goto_tuple_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.p
         let (((_menhir_stack, _menhir_s, (_1 : (Ast.ptyp))), _), _, (_3 : (Ast.ptyp list))) = _menhir_stack in
         let _2 = () in
         let _v : (Ast.ptyp list) = 
-# 197 "parser.mly"
+# 198 "parser.mly"
                           (_1 :: _3)
-# 4101 "parser.ml"
+# 4102 "parser.ml"
          in
         _menhir_goto_tuple_typ _menhir_env _menhir_stack _menhir_s _v
     | MenhirState13 ->
@@ -4115,9 +4116,9 @@ and _menhir_goto_tuple_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.p
             let _3 = () in
             let _1 = () in
             let _v : (Ast.ptyp) = 
-# 190 "parser.mly"
+# 191 "parser.mly"
                         (PTTuple _2)
-# 4121 "parser.ml"
+# 4122 "parser.ml"
              in
             _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -4198,7 +4199,7 @@ and _menhir_goto_list_typ_ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.p
         let _v : (Ast.ptyp list) = 
 # 187 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( x :: xs )
-# 4202 "parser.ml"
+# 4203 "parser.ml"
          in
         _menhir_goto_list_typ_ _menhir_env _menhir_stack _menhir_s _v
     | MenhirState14 ->
@@ -4208,12 +4209,12 @@ and _menhir_goto_list_typ_ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.p
         let (_menhir_stack, _endpos__1_, _menhir_s, (_1 : (
 # 35 "parser.mly"
        (string)
-# 4212 "parser.ml"
+# 4213 "parser.ml"
         )), _startpos__1_) = _menhir_stack in
         let _v : (Ast.ptyp) = 
-# 189 "parser.mly"
+# 190 "parser.mly"
                           (PTUdt (_1, tl))
-# 4217 "parser.ml"
+# 4218 "parser.ml"
          in
         _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
     | _ ->
@@ -4222,7 +4223,7 @@ and _menhir_goto_list_typ_ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.p
 and _menhir_run127 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 4226 "parser.ml"
+# 4227 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -4241,16 +4242,16 @@ and _menhir_run127 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
 and _menhir_reduce133 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
   fun _menhir_env _menhir_stack _menhir_s ->
     let _v : ((string * Ast.pexpr_loc) list) = 
-# 491 "parser.mly"
+# 492 "parser.mly"
                 ([])
-# 4247 "parser.ml"
+# 4248 "parser.ml"
      in
     _menhir_goto_str_expr_list _menhir_env _menhir_stack _menhir_s _v
 
 and _menhir_run54 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 4254 "parser.ml"
+# 4255 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -4312,9 +4313,9 @@ and _menhir_run54 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
 and _menhir_reduce63 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
   fun _menhir_env _menhir_stack _menhir_s ->
     let _v : (Ast.pexpr_loc list) = 
-# 486 "parser.mly"
+# 487 "parser.mly"
                     ([])
-# 4318 "parser.ml"
+# 4319 "parser.ml"
      in
     _menhir_goto_expr_single_list _menhir_env _menhir_stack _menhir_s _v
 
@@ -4370,27 +4371,27 @@ and _menhir_run57 : _menhir_env -> 'ttv_tail * _menhir_state * Lexing.position -
 and _menhir_reduce19 : _menhir_env -> 'ttv_tail * Lexing.position * _menhir_state * (
 # 35 "parser.mly"
        (string)
-# 4374 "parser.ml"
+# 4375 "parser.ml"
 ) * Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack ->
     let (_menhir_stack, _endpos_id_, _menhir_s, (id : (
 # 35 "parser.mly"
        (string)
-# 4380 "parser.ml"
+# 4381 "parser.ml"
     )), _startpos_id_) = _menhir_stack in
     let _startpos = _startpos_id_ in
     let _endpos = _endpos_id_ in
     let _v : (string list) = 
-# 213 "parser.mly"
+# 214 "parser.mly"
                      ([id])
-# 4387 "parser.ml"
+# 4388 "parser.ml"
      in
     _menhir_goto_expr_path _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
 and _menhir_run126 : _menhir_env -> 'ttv_tail * Lexing.position * _menhir_state * (
 # 35 "parser.mly"
        (string)
-# 4394 "parser.ml"
+# 4395 "parser.ml"
 ) * Lexing.position -> _menhir_state -> 'ttv_return =
   fun _menhir_env _menhir_stack _menhir_s ->
     let _menhir_stack = (_menhir_stack, _menhir_s) in
@@ -4547,14 +4548,14 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((_menhir_stack, _menhir_s, (_1 : ((string * Ast.pexpr_loc) list))), _endpos__2_, (_2 : (
 # 35 "parser.mly"
        (string)
-# 4551 "parser.ml"
+# 4552 "parser.ml"
             )), _startpos__2_), _endpos__4_, _, (_4 : (Ast.pexpr_loc)), _startpos__4_) = _menhir_stack in
             let _5 = () in
             let _3 = () in
             let _v : ((string * Ast.pexpr_loc) list) = 
-# 493 "parser.mly"
+# 494 "parser.mly"
                                                        ((_2, _4) :: _1)
-# 4558 "parser.ml"
+# 4559 "parser.ml"
              in
             _menhir_goto_str_expr_list _menhir_env _menhir_stack _menhir_s _v
         | With ->
@@ -4607,7 +4608,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 284 "parser.mly"
+# 285 "parser.mly"
                                              (
             mk_pexpr_loc (POro (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -4621,7 +4622,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTBool))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))*)
         )
-# 4625 "parser.ml"
+# 4626 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4658,9 +4659,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 387 "parser.mly"
+# 388 "parser.mly"
                                                   (mk_pexpr_loc (PNon_Equal (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_)
-# 4664 "parser.ml"
+# 4665 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4685,7 +4686,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 373 "parser.mly"
+# 374 "parser.mly"
                                                 (
             mk_pexpr_loc (PMultDot (e1, e2)) (PTFloat) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -4699,7 +4700,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTFloat, Some t -> raise (Type_mismatch (e2, t, PTFloat))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTFloat))*)
         )
-# 4703 "parser.ml"
+# 4704 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4771,7 +4772,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 334 "parser.mly"
+# 335 "parser.mly"
                                              (
             mk_pexpr_loc (PMult (e1, e2)) (PTInt) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -4785,7 +4786,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTInt, Some t -> raise (Type_mismatch (e2, t, PTInt))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTInt))*)
         )
-# 4789 "parser.ml"
+# 4790 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4840,9 +4841,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 457 "parser.mly"
+# 458 "parser.mly"
                                                   (mk_pexpr_loc (PAssign (e1, e2)) (PTUnt) _startpos_e1_ _endpos_e2_)
-# 4846 "parser.ml"
+# 4847 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4871,7 +4872,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 360 "parser.mly"
+# 361 "parser.mly"
                                                  (
             mk_pexpr_loc (PMinusDot (e1, e2)) (PTFloat) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -4885,7 +4886,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTFloat, Some t -> raise (Type_mismatch (e2, t, PTFloat))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTFloat))*)
         )
-# 4889 "parser.ml"
+# 4890 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4914,7 +4915,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 321 "parser.mly"
+# 322 "parser.mly"
                                               (
             mk_pexpr_loc (PMinus (e1, e2)) (PTInt) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -4928,7 +4929,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTInt, Some t -> raise (Type_mismatch (e2, t, PTInt))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTInt))*)
         )
-# 4932 "parser.ml"
+# 4933 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -4969,9 +4970,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 388 "parser.mly"
+# 389 "parser.mly"
                                               (mk_pexpr_loc (PLT (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_)
-# 4975 "parser.ml"
+# 4976 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5008,9 +5009,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 386 "parser.mly"
+# 387 "parser.mly"
                                               (mk_pexpr_loc (PEqual (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_)
-# 5014 "parser.ml"
+# 5015 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5043,7 +5044,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 347 "parser.mly"
+# 348 "parser.mly"
                                                (
             mk_pexpr_loc (PAddDot (e1, e2)) (PTFloat) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -5057,7 +5058,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTFloat, Some t -> raise (Type_mismatch (e2, t, PTFloat))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTFloat))*)
         )
-# 5061 "parser.ml"
+# 5062 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5090,7 +5091,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 308 "parser.mly"
+# 309 "parser.mly"
                                             (
             mk_pexpr_loc (PAdd (e1, e2)) (PTInt) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -5104,7 +5105,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTInt, Some t -> raise (Type_mismatch (e2, t, PTInt))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTInt))*)
         )
-# 5108 "parser.ml"
+# 5109 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5145,9 +5146,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 390 "parser.mly"
+# 391 "parser.mly"
                                               (mk_pexpr_loc (PLE (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_)
-# 5151 "parser.ml"
+# 5152 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5188,9 +5189,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 389 "parser.mly"
+# 390 "parser.mly"
                                               (mk_pexpr_loc (PGT (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_)
-# 5194 "parser.ml"
+# 5195 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5231,9 +5232,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 391 "parser.mly"
+# 392 "parser.mly"
                                               (mk_pexpr_loc (PGE (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_)
-# 5237 "parser.ml"
+# 5238 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5288,11 +5289,11 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 472 "parser.mly"
+# 473 "parser.mly"
                                                    (
             mk_pexpr_loc (PLst_Cons (e1, e2)) e2.ptyp _startpos_e1_ _endpos_e2_
         )
-# 5296 "parser.ml"
+# 5297 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5341,7 +5342,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos_e1_ in
             let _endpos = _endpos_e2_ in
             let _v : (Ast.pexpr_loc) = 
-# 271 "parser.mly"
+# 272 "parser.mly"
                                               (
             mk_pexpr_loc (PAndo (e1, e2)) (PTBool) _startpos_e1_ _endpos_e2_
             (*match e1.ptyp, e2.ptyp with
@@ -5355,7 +5356,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             | Some PTBool, Some t -> raise (Type_mismatch (e2, t, PTBool))
             | Some t1, Some t2 -> raise (Type_mismatch (e1, t1, PTBool))*)
         )
-# 5359 "parser.ml"
+# 5360 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -5610,7 +5611,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _v : (Ast.pexpr_loc list) = 
 # 215 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( [ x ] )
-# 5614 "parser.ml"
+# 5615 "parser.ml"
              in
             _menhir_goto_separated_nonempty_list_Semicolon_expr_single_ _menhir_env _menhir_stack _endpos _menhir_s _v
         | _ ->
@@ -5695,7 +5696,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _v : (Ast.pexpr_loc list) = 
 # 195 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( [ x ] )
-# 5699 "parser.ml"
+# 5700 "parser.ml"
              in
             _menhir_goto_nonempty_list_expr_single_ _menhir_env _menhir_stack _endpos _menhir_s _v
         | _ ->
@@ -5892,9 +5893,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _menhir_stack = Obj.magic _menhir_stack in
             let (_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.pexpr_loc)), _startpos__1_) = _menhir_stack in
             let _v : (Ast.pexpr_loc list) = 
-# 487 "parser.mly"
+# 488 "parser.mly"
                     ([_1])
-# 5898 "parser.ml"
+# 5899 "parser.ml"
              in
             _menhir_goto_expr_single_list _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -6045,9 +6046,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__3_ in
             let _v : (Ast.pexpr_loc) = 
-# 483 "parser.mly"
+# 484 "parser.mly"
                            (_2)
-# 6051 "parser.ml"
+# 6052 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | Semicolon ->
@@ -6107,14 +6108,14 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let ((_menhir_stack, _endpos__1_, _menhir_s, (_1 : (
 # 35 "parser.mly"
        (string)
-# 6111 "parser.ml"
+# 6112 "parser.ml"
             )), _startpos__1_), _endpos__3_, _, (_3 : (Ast.pexpr_loc)), _startpos__3_) = _menhir_stack in
             let _4 = () in
             let _2 = () in
             let _v : ((string * Ast.pexpr_loc) list) = 
-# 492 "parser.mly"
+# 493 "parser.mly"
                                        ([(_1, _3)])
-# 6118 "parser.ml"
+# 6119 "parser.ml"
              in
             _menhir_goto_str_expr_list _menhir_env _menhir_stack _menhir_s _v
         | With ->
@@ -6179,7 +6180,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
                 let _v : (unit option) = 
 # 102 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( Some x )
-# 6183 "parser.ml"
+# 6184 "parser.ml"
                  in
                 _menhir_goto_option_Vertical_ _menhir_env _menhir_stack _v
             | Float _ | Iden _ | Int _ | LB1 | LB2 | UIden _ | Underline ->
@@ -6187,7 +6188,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
                 let _v : (unit option) = 
 # 100 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( None )
-# 6191 "parser.ml"
+# 6192 "parser.ml"
                  in
                 _menhir_goto_option_Vertical_ _menhir_env _menhir_stack _v
             | _ ->
@@ -6276,7 +6277,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos_e_ in
             let _v : (Ast.pexpr_loc) = 
-# 263 "parser.mly"
+# 264 "parser.mly"
                                (
             mk_pexpr_loc (PNegb e) (PTBool) _startpos__1_ _endpos_e_
             (*match e.ptyp with
@@ -6285,7 +6286,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
                 mk_pexpr_loc (PNegb e) (Some PTBool) $startpos($1) $endpos(e)
             | Some t -> raise (Type_mismatch (e, t, PTBool))*)
         )
-# 6289 "parser.ml"
+# 6290 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -6338,19 +6339,19 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let ((_menhir_stack, _endpos_uid_, _menhir_s, (uid : (
 # 35 "parser.mly"
        (string)
-# 6342 "parser.ml"
+# 6343 "parser.ml"
             )), _startpos_uid_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _startpos = _startpos_uid_ in
             let _endpos = _endpos_e_ in
             let _v : (Ast.pexpr_loc) = 
-# 461 "parser.mly"
+# 462 "parser.mly"
                                   (
             mk_pexpr_loc (PConstr ((PConstr_compound (uid, e)))) (PTVar (new_type_var ())) _startpos_uid_ _endpos_e_
             (*match eo with
             | None -> mk_pexpr_loc (PConstr (mk_pconstr_loc (PConstr_basic uid) $startpos(uid) $endpos(eo))) None $startpos(uid) $endpos(eo)
             | Some e -> *)
         )
-# 6354 "parser.ml"
+# 6355 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -6385,16 +6386,16 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((_menhir_stack, _menhir_s, _startpos__1_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 6389 "parser.ml"
+# 6390 "parser.ml"
             )), _startpos_id_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _3 = () in
             let _1 = () in
             let _startpos = _startpos__1_ in
             let _endpos = _endpos_e_ in
             let _v : (Ast.pexpr_loc) = 
-# 470 "parser.mly"
+# 471 "parser.mly"
                                             (mk_pexpr_loc (PLocal_Val (id, e)) (PTUnt) _startpos__1_ _endpos_e_)
-# 6398 "parser.ml"
+# 6399 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -6429,16 +6430,16 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((_menhir_stack, _menhir_s, _startpos__1_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 6433 "parser.ml"
+# 6434 "parser.ml"
             )), _startpos_id_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _3 = () in
             let _1 = () in
             let _startpos = _startpos__1_ in
             let _endpos = _endpos_e_ in
             let _v : (Ast.pexpr_loc) = 
-# 471 "parser.mly"
+# 472 "parser.mly"
                                             (mk_pexpr_loc (PLocal_Var (id, e)) (PTUnt) _startpos__1_ _endpos_e_)
-# 6442 "parser.ml"
+# 6443 "parser.ml"
              in
             _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -6583,19 +6584,19 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let ((((_menhir_stack, _menhir_s, _startpos__1_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 6587 "parser.ml"
+# 6588 "parser.ml"
             )), _startpos_id_), _, (ote : (Ast.ptyp option))), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _4 = () in
             let _1 = () in
             let _v : (unit) = 
-# 87 "parser.mly"
+# 88 "parser.mly"
                                                                        (
-            print_endline ("declaring variable "^id);
+            (*print_endline ("declaring variable "^id);*)
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Var, PExpr_loc (pt, e))
         )
-# 6599 "parser.ml"
+# 6600 "parser.ml"
              in
             _menhir_goto_declare _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -6648,19 +6649,19 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let ((((_menhir_stack, _menhir_s, _startpos__1_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 6652 "parser.ml"
+# 6653 "parser.ml"
             )), _startpos_id_), _, (ote : (Ast.ptyp option))), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _4 = () in
             let _1 = () in
             let _v : (unit) = 
-# 93 "parser.mly"
+# 94 "parser.mly"
                                                                        (
-            print_endline ("declaring value "^id);
+            (*print_endline ("declaring value "^id);*)
             match ote with
             | None -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (PTVar (new_type_var ()), e))
             | Some pt -> Hashtbl.add symbol_tbl id (Val, PExpr_loc (pt, e))
         )
-# 6664 "parser.ml"
+# 6665 "parser.ml"
              in
             _menhir_goto_declare _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -6842,7 +6843,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((((_menhir_stack, _menhir_s, _startpos__1_), _startpos__2_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 6846 "parser.ml"
+# 6847 "parser.ml"
             )), _startpos_id_), _endpos_f_, _, (f : (Ast.pformula_loc)), _startpos_f_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _8 = () in
             let _6 = () in
@@ -6852,9 +6853,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__8_ in
             let _v : (Ast.pformula_loc) = 
-# 155 "parser.mly"
+# 156 "parser.mly"
                                                                    (mk_pformula_loc (PAF (id, f, e)) _startpos__1_ _endpos__8_)
-# 6858 "parser.ml"
+# 6859 "parser.ml"
              in
             _menhir_goto_formula _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | With ->
@@ -6912,11 +6913,11 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((((((_menhir_stack, _menhir_s, _startpos__1_), _startpos__2_), _endpos_id1_, (id1 : (
 # 35 "parser.mly"
        (string)
-# 6916 "parser.ml"
+# 6917 "parser.ml"
             )), _startpos_id1_), _endpos_id2_, (id2 : (
 # 35 "parser.mly"
        (string)
-# 6920 "parser.ml"
+# 6921 "parser.ml"
             )), _startpos_id2_), _endpos_f1_, _, (f1 : (Ast.pformula_loc)), _startpos_f1_), _endpos_f2_, _, (f2 : (Ast.pformula_loc)), _startpos_f2_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _12 = () in
             let _10 = () in
@@ -6928,9 +6929,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__12_ in
             let _v : (Ast.pformula_loc) = 
-# 157 "parser.mly"
+# 158 "parser.mly"
                                                                                                          (mk_pformula_loc (PAR (id1, id2, f1, f2, e)) _startpos__1_ _endpos__12_)
-# 6934 "parser.ml"
+# 6935 "parser.ml"
              in
             _menhir_goto_formula _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | With ->
@@ -6988,7 +6989,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((((_menhir_stack, _menhir_s, _startpos__1_), _startpos__2_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 6992 "parser.ml"
+# 6993 "parser.ml"
             )), _startpos_id_), _endpos_f_, _, (f : (Ast.pformula_loc)), _startpos_f_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _8 = () in
             let _6 = () in
@@ -6998,9 +6999,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__8_ in
             let _v : (Ast.pformula_loc) = 
-# 153 "parser.mly"
+# 154 "parser.mly"
                                                                    (mk_pformula_loc (PAX (id, f, e)) _startpos__1_ _endpos__8_)
-# 7004 "parser.ml"
+# 7005 "parser.ml"
              in
             _menhir_goto_formula _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | With ->
@@ -7058,7 +7059,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((((_menhir_stack, _menhir_s, _startpos__1_), _startpos__2_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 7062 "parser.ml"
+# 7063 "parser.ml"
             )), _startpos_id_), _endpos_f_, _, (f : (Ast.pformula_loc)), _startpos_f_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _8 = () in
             let _6 = () in
@@ -7068,9 +7069,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__8_ in
             let _v : (Ast.pformula_loc) = 
-# 156 "parser.mly"
+# 157 "parser.mly"
                                                                    (mk_pformula_loc (PEG (id, f, e)) _startpos__1_ _endpos__8_)
-# 7074 "parser.ml"
+# 7075 "parser.ml"
              in
             _menhir_goto_formula _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | With ->
@@ -7128,11 +7129,11 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((((((_menhir_stack, _menhir_s, _startpos__1_), _startpos__2_), _endpos_id1_, (id1 : (
 # 35 "parser.mly"
        (string)
-# 7132 "parser.ml"
+# 7133 "parser.ml"
             )), _startpos_id1_), _endpos_id2_, (id2 : (
 # 35 "parser.mly"
        (string)
-# 7136 "parser.ml"
+# 7137 "parser.ml"
             )), _startpos_id2_), _endpos_f1_, _, (f1 : (Ast.pformula_loc)), _startpos_f1_), _endpos_f2_, _, (f2 : (Ast.pformula_loc)), _startpos_f2_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _12 = () in
             let _10 = () in
@@ -7144,9 +7145,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__12_ in
             let _v : (Ast.pformula_loc) = 
-# 158 "parser.mly"
+# 159 "parser.mly"
                                                                                                          (mk_pformula_loc (PEU (id1, id2, f1, f2, e)) _startpos__1_ _endpos__12_)
-# 7150 "parser.ml"
+# 7151 "parser.ml"
              in
             _menhir_goto_formula _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | With ->
@@ -7204,7 +7205,7 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let (((((_menhir_stack, _menhir_s, _startpos__1_), _startpos__2_), _endpos_id_, (id : (
 # 35 "parser.mly"
        (string)
-# 7208 "parser.ml"
+# 7209 "parser.ml"
             )), _startpos_id_), _endpos_f_, _, (f : (Ast.pformula_loc)), _startpos_f_), _endpos_e_, _, (e : (Ast.pexpr_loc)), _startpos_e_) = _menhir_stack in
             let _8 = () in
             let _6 = () in
@@ -7214,9 +7215,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__8_ in
             let _v : (Ast.pformula_loc) = 
-# 154 "parser.mly"
+# 155 "parser.mly"
                                                                    (mk_pformula_loc (PEX (id, f, e)) _startpos__1_ _endpos__8_)
-# 7220 "parser.ml"
+# 7221 "parser.ml"
              in
             _menhir_goto_formula _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | With ->
@@ -7405,9 +7406,9 @@ and _menhir_goto_expr_single : _menhir_env -> 'ttv_tail -> Lexing.position -> _m
                 let _4 = () in
                 let _2 = () in
                 let _v : ((Ast.pexpr_loc * Ast.pexpr_loc) list) = 
-# 136 "parser.mly"
+# 137 "parser.mly"
                                                                     ([(e1, e2)])
-# 7411 "parser.ml"
+# 7412 "parser.ml"
                  in
                 _menhir_goto_transition_items _menhir_env _menhir_stack _menhir_s _v
             | _ ->
@@ -7445,9 +7446,9 @@ and _menhir_goto_constr : _menhir_env -> 'ttv_tail -> _menhir_state -> (string *
         let _menhir_stack = Obj.magic _menhir_stack in
         let (_menhir_stack, _menhir_s, (c : (string * Ast.ptyp option))) = _menhir_stack in
         let _v : ((string * Ast.ptyp option) list) = 
-# 169 "parser.mly"
+# 170 "parser.mly"
                     ([c])
-# 7451 "parser.ml"
+# 7452 "parser.ml"
          in
         _menhir_goto_constrs _menhir_env _menhir_stack _menhir_s _v
     | _ ->
@@ -7467,14 +7468,14 @@ and _menhir_goto_states : _menhir_env -> 'ttv_tail -> _menhir_state -> ((string 
         let ((((_menhir_stack, _menhir_s), _endpos__2_, (_2 : (
 # 35 "parser.mly"
        (string)
-# 7471 "parser.ml"
+# 7472 "parser.ml"
         )), _startpos__2_), _endpos__4_, _, (_4 : (Ast.pexpr_loc)), _startpos__4_), _, (_5 : ((string * Ast.pexpr_loc) list))) = _menhir_stack in
         let _3 = () in
         let _1 = () in
         let _v : ((string * Ast.pexpr_loc) list) = 
-# 141 "parser.mly"
+# 142 "parser.mly"
                                           ((_2, _4)::_5)
-# 7478 "parser.ml"
+# 7479 "parser.ml"
          in
         _menhir_goto_states _menhir_env _menhir_stack _menhir_s _v
     | MenhirState257 ->
@@ -7561,9 +7562,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let (((_menhir_stack, _menhir_s, (_1 : (Ast.ptyp))), _), _, (_3 : (Ast.ptyp))) = _menhir_stack in
             let _2 = () in
             let _v : (Ast.ptyp) = 
-# 192 "parser.mly"
+# 193 "parser.mly"
                     (PTArrow (_1, _3))
-# 7567 "parser.ml"
+# 7568 "parser.ml"
              in
             _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7590,9 +7591,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let _3 = () in
             let _1 = () in
             let _v : (Ast.ptyp) = 
-# 193 "parser.mly"
+# 194 "parser.mly"
                         (t)
-# 7596 "parser.ml"
+# 7597 "parser.ml"
              in
             _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7613,9 +7614,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let (((_menhir_stack, _menhir_s, (_1 : (Ast.ptyp))), _), _, (_3 : (Ast.ptyp))) = _menhir_stack in
             let _2 = () in
             let _v : (Ast.ptyp list) = 
-# 196 "parser.mly"
+# 197 "parser.mly"
                          ([_1; _3])
-# 7619 "parser.ml"
+# 7620 "parser.ml"
              in
             _menhir_goto_tuple_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7637,14 +7638,14 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let ((_menhir_stack, _endpos__1_, _menhir_s, (_1 : (
 # 35 "parser.mly"
        (string)
-# 7641 "parser.ml"
+# 7642 "parser.ml"
             )), _startpos__1_), _, (_3 : (Ast.ptyp))) = _menhir_stack in
             let _4 = () in
             let _2 = () in
             let _v : (string * Ast.ptyp) = 
-# 203 "parser.mly"
+# 204 "parser.mly"
                                   ((_1, _3))
-# 7648 "parser.ml"
+# 7649 "parser.ml"
              in
             let _menhir_stack = (_menhir_stack, _menhir_s, _v) in
             let _menhir_stack = Obj.magic _menhir_stack in
@@ -7659,7 +7660,7 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
                 let _v : ((string * Ast.ptyp) list) = 
 # 195 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( [ x ] )
-# 7663 "parser.ml"
+# 7664 "parser.ml"
                  in
                 _menhir_goto_nonempty_list_str_typ_ _menhir_env _menhir_stack _menhir_s _v
             | _ ->
@@ -7682,9 +7683,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let ((_menhir_stack, _menhir_s), _, (_2 : (Ast.ptyp))) = _menhir_stack in
             let _1 = () in
             let _v : (Ast.ptyp) = 
-# 187 "parser.mly"
+# 188 "parser.mly"
                 (PTAray (_2))
-# 7688 "parser.ml"
+# 7689 "parser.ml"
              in
             _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7703,9 +7704,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let ((_menhir_stack, _menhir_s), _, (_2 : (Ast.ptyp))) = _menhir_stack in
             let _1 = () in
             let _v : (Ast.ptyp) = 
-# 188 "parser.mly"
+# 189 "parser.mly"
                (PTLst (_2))
-# 7709 "parser.ml"
+# 7710 "parser.ml"
              in
             _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7724,9 +7725,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let ((_menhir_stack, _menhir_s), _, (_2 : (Ast.ptyp))) = _menhir_stack in
             let _1 = () in
             let _v : (Ast.ptyp) = 
-# 111 "parser.mly"
+# 112 "parser.mly"
                         (_2)
-# 7730 "parser.ml"
+# 7731 "parser.ml"
              in
             let _menhir_stack = Obj.magic _menhir_stack in
             let _menhir_stack = Obj.magic _menhir_stack in
@@ -7734,7 +7735,7 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let _v : (Ast.ptyp option) = 
 # 102 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( Some x )
-# 7738 "parser.ml"
+# 7739 "parser.ml"
              in
             _menhir_goto_option_type_of_expr_ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7753,12 +7754,12 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let ((_menhir_stack, _endpos_uid_, _menhir_s, (uid : (
 # 35 "parser.mly"
        (string)
-# 7757 "parser.ml"
+# 7758 "parser.ml"
             )), _startpos_uid_), _, (t : (Ast.ptyp))) = _menhir_stack in
             let _v : (string * Ast.ptyp option) = 
-# 180 "parser.mly"
+# 181 "parser.mly"
                            ((uid, Some t))
-# 7762 "parser.ml"
+# 7763 "parser.ml"
              in
             _menhir_goto_constr _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7776,9 +7777,9 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
             let _menhir_stack = Obj.magic _menhir_stack in
             let (_menhir_stack, _menhir_s, (_1 : (Ast.ptyp))) = _menhir_stack in
             let _v : (Ast.ptyp) = 
-# 173 "parser.mly"
+# 174 "parser.mly"
               (_1)
-# 7782 "parser.ml"
+# 7783 "parser.ml"
              in
             _menhir_goto_type_def _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -7791,7 +7792,7 @@ and _menhir_goto_typ : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ptyp) -
 and _menhir_run11 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 7795 "parser.ml"
+# 7796 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -7837,7 +7838,7 @@ and _menhir_reduce87 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return 
     let _v : (Ast.ptyp list) = 
 # 185 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( [] )
-# 7841 "parser.ml"
+# 7842 "parser.ml"
      in
     _menhir_goto_list_typ_ _menhir_env _menhir_stack _menhir_s _v
 
@@ -7850,9 +7851,9 @@ and _menhir_goto_args : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.ppatte
         let _menhir_stack = Obj.magic _menhir_stack in
         let ((_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.ppattern_loc)), _startpos__1_), _, (_2 : (Ast.ppattern_loc list))) = _menhir_stack in
         let _v : (Ast.ppattern_loc list) = 
-# 115 "parser.mly"
+# 116 "parser.mly"
                     (_1 :: _2)
-# 7856 "parser.ml"
+# 7857 "parser.ml"
          in
         _menhir_goto_args _menhir_env _menhir_stack _menhir_s _v
     | MenhirState226 ->
@@ -8065,7 +8066,7 @@ and _menhir_run44 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.position
 and _menhir_run47 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 8069 "parser.ml"
+# 8070 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -8126,14 +8127,14 @@ and _menhir_run47 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
         let (_menhir_stack, _endpos_uid_, _menhir_s, (uid : (
 # 35 "parser.mly"
        (string)
-# 8130 "parser.ml"
+# 8131 "parser.ml"
         )), _startpos_uid_) = _menhir_stack in
         let _startpos = _startpos_uid_ in
         let _endpos = _endpos_uid_ in
         let _v : (Ast.pexpr_loc) = 
-# 460 "parser.mly"
+# 461 "parser.mly"
                   (mk_pexpr_loc (PConstr ((PConstr_basic uid))) (PTVar (new_type_var ())) _startpos_uid_ _endpos_uid_)
-# 8137 "parser.ml"
+# 8138 "parser.ml"
          in
         _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
     | _ ->
@@ -8151,9 +8152,9 @@ and _menhir_run48 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
     let _startpos = _startpos__1_ in
     let _endpos = _endpos__1_ in
     let _v : (Ast.pexpr_loc) = 
-# 253 "parser.mly"
+# 254 "parser.mly"
             (mk_pexpr_loc (PBool true) (PTBool) _startpos__1_ _endpos__1_)
-# 8157 "parser.ml"
+# 8158 "parser.ml"
      in
     _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
@@ -8456,9 +8457,9 @@ and _menhir_run58 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.position
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
         let _v : (Ast.pexpr_loc) = 
-# 229 "parser.mly"
+# 230 "parser.mly"
                 (mk_pexpr_loc PUnt (PTUnt) _startpos__1_ _endpos__2_)
-# 8462 "parser.ml"
+# 8463 "parser.ml"
          in
         _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
     | True ->
@@ -8479,7 +8480,7 @@ and _menhir_run58 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.position
 and _menhir_run60 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 33 "parser.mly"
        (int)
-# 8483 "parser.ml"
+# 8484 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_env = _menhir_discard _menhir_env in
@@ -8488,15 +8489,15 @@ and _menhir_run60 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
     let (i : (
 # 33 "parser.mly"
        (int)
-# 8492 "parser.ml"
+# 8493 "parser.ml"
     )) = _v in
     let _startpos_i_ = _startpos in
     let _startpos = _startpos_i_ in
     let _endpos = _endpos_i_ in
     let _v : (Ast.pexpr_loc) = 
-# 227 "parser.mly"
+# 228 "parser.mly"
                 (mk_pexpr_loc (PInt i) (PTInt) _startpos_i_ _endpos_i_)
-# 8500 "parser.ml"
+# 8501 "parser.ml"
      in
     _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
@@ -8550,7 +8551,7 @@ and _menhir_run61 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.position
 and _menhir_run62 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 8554 "parser.ml"
+# 8555 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -8690,7 +8691,7 @@ and _menhir_run63 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.position
 and _menhir_run67 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 34 "parser.mly"
        (float)
-# 8694 "parser.ml"
+# 8695 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_env = _menhir_discard _menhir_env in
@@ -8699,15 +8700,15 @@ and _menhir_run67 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
     let (f : (
 # 34 "parser.mly"
        (float)
-# 8703 "parser.ml"
+# 8704 "parser.ml"
     )) = _v in
     let _startpos_f_ = _startpos in
     let _startpos = _startpos_f_ in
     let _endpos = _endpos_f_ in
     let _v : (Ast.pexpr_loc) = 
-# 228 "parser.mly"
+# 229 "parser.mly"
                 (mk_pexpr_loc (PFloat f) (PTFloat) _startpos_f_ _endpos_f_)
-# 8711 "parser.ml"
+# 8712 "parser.ml"
      in
     _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
@@ -8721,9 +8722,9 @@ and _menhir_run68 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
     let _startpos = _startpos__1_ in
     let _endpos = _endpos__1_ in
     let _v : (Ast.pexpr_loc) = 
-# 254 "parser.mly"
+# 255 "parser.mly"
             (mk_pexpr_loc (PBool false) (PTBool) _startpos__1_ _endpos__1_)
-# 8727 "parser.ml"
+# 8728 "parser.ml"
      in
     _menhir_goto_expr_single _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
@@ -8755,13 +8756,13 @@ and _menhir_goto_pattern_list : _menhir_env -> 'ttv_tail -> _menhir_state -> (As
                 let _startpos = _startpos__1_ in
                 let _endpos = _endpos__5_ in
                 let _v : (Ast.ppattern_loc) = 
-# 514 "parser.mly"
+# 515 "parser.mly"
                                                    (
             match pl with
             | [] -> mk_ppat_loc (PPat_Aray []) (PTAray (PTVar (new_type_var()))) _startpos__1_ _endpos__5_
             | p::pl' -> mk_ppat_loc (PPat_Aray (pl)) (PTAray p.ptyp) _startpos__1_ _endpos__5_
         )
-# 8765 "parser.ml"
+# 8766 "parser.ml"
                  in
                 _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
             | _ ->
@@ -8782,9 +8783,9 @@ and _menhir_goto_pattern_list : _menhir_env -> 'ttv_tail -> _menhir_state -> (As
         let (((_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.ppattern_loc)), _startpos__1_), _), _, (_3 : (Ast.ppattern_loc list))) = _menhir_stack in
         let _2 = () in
         let _v : (Ast.ppattern_loc list) = 
-# 535 "parser.mly"
+# 536 "parser.mly"
                                      (_1 :: _3)
-# 8788 "parser.ml"
+# 8789 "parser.ml"
          in
         _menhir_goto_pattern_list _menhir_env _menhir_stack _menhir_s _v
     | MenhirState173 ->
@@ -8804,13 +8805,13 @@ and _menhir_goto_pattern_list : _menhir_env -> 'ttv_tail -> _menhir_state -> (As
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__3_ in
             let _v : (Ast.ppattern_loc) = 
-# 519 "parser.mly"
+# 520 "parser.mly"
                                   (
             match pl with
             | [] -> mk_ppat_loc (PPat_Lst []) (PTLst (PTVar (new_type_var()))) _startpos__1_ _endpos__3_
             | p::pl' -> mk_ppat_loc (PPat_Lst pl) (PTLst p.ptyp) _startpos__1_ _endpos__3_
         )
-# 8814 "parser.ml"
+# 8815 "parser.ml"
              in
             _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -8844,9 +8845,9 @@ and _menhir_goto_separated_nonempty_list_Comma_pattern_ : _menhir_env -> 'ttv_ta
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__5_ in
             let _v : (Ast.ppattern_loc) = 
-# 526 "parser.mly"
+# 527 "parser.mly"
                                                                                (mk_ppat_loc (PPat_Tuple (p::pl)) (PTTuple (List.map (fun pat -> pat.ptyp) (p::pl))) _startpos__1_ _endpos__5_)
-# 8850 "parser.ml"
+# 8851 "parser.ml"
              in
             _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -8863,7 +8864,7 @@ and _menhir_goto_separated_nonempty_list_Comma_pattern_ : _menhir_env -> 'ttv_ta
         let _v : (Ast.ppattern_loc list) = 
 # 217 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( x :: xs )
-# 8867 "parser.ml"
+# 8868 "parser.ml"
          in
         _menhir_goto_separated_nonempty_list_Comma_pattern_ _menhir_env _menhir_stack _menhir_s _v
     | _ ->
@@ -8897,7 +8898,7 @@ and _menhir_run188 : _menhir_env -> 'ttv_tail * Lexing.position * _menhir_state 
 and _menhir_run239 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 8901 "parser.ml"
+# 8902 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -8927,12 +8928,12 @@ and _menhir_run239 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
         let (_menhir_stack, _endpos_uid_, _menhir_s, (uid : (
 # 35 "parser.mly"
        (string)
-# 8931 "parser.ml"
+# 8932 "parser.ml"
         )), _startpos_uid_) = _menhir_stack in
         let _v : (string * Ast.ptyp option) = 
-# 179 "parser.mly"
+# 180 "parser.mly"
                     (print_endline ("found constr "^uid); (uid, None))
-# 8936 "parser.ml"
+# 8937 "parser.ml"
          in
         _menhir_goto_constr _menhir_env _menhir_stack _menhir_s _v
     | _ ->
@@ -8948,9 +8949,9 @@ and _menhir_fail : unit -> 'a =
 and _menhir_reduce131 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
   fun _menhir_env _menhir_stack _menhir_s ->
     let _v : ((string * Ast.pexpr_loc) list) = 
-# 140 "parser.mly"
+# 141 "parser.mly"
         ([])
-# 8954 "parser.ml"
+# 8955 "parser.ml"
      in
     _menhir_goto_states _menhir_env _menhir_stack _menhir_s _v
 
@@ -9029,7 +9030,7 @@ and _menhir_run258 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
 and _menhir_goto_program : _menhir_env -> 'ttv_tail -> (
 # 41 "parser.mly"
        ((string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option))
-# 9033 "parser.ml"
+# 9034 "parser.ml"
 ) -> 'ttv_return =
   fun _menhir_env _menhir_stack _v ->
     let _menhir_stack = Obj.magic _menhir_stack in
@@ -9037,7 +9038,7 @@ and _menhir_goto_program : _menhir_env -> 'ttv_tail -> (
     let (_1 : (
 # 41 "parser.mly"
        ((string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option))
-# 9041 "parser.ml"
+# 9042 "parser.ml"
     )) = _v in
     Obj.magic _1
 
@@ -9222,9 +9223,9 @@ and _menhir_run4 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
     let _menhir_stack = Obj.magic _menhir_stack in
     let _1 = () in
     let _v : (Ast.ptyp) = 
-# 186 "parser.mly"
+# 187 "parser.mly"
             (PTUnt)
-# 9228 "parser.ml"
+# 9229 "parser.ml"
      in
     _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
 
@@ -9263,9 +9264,9 @@ and _menhir_run6 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
     let _menhir_stack = Obj.magic _menhir_stack in
     let _1 = () in
     let _v : (Ast.ptyp) = 
-# 183 "parser.mly"
+# 184 "parser.mly"
           (PTInt)
-# 9269 "parser.ml"
+# 9270 "parser.ml"
      in
     _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
 
@@ -9275,9 +9276,9 @@ and _menhir_run7 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
     let _menhir_stack = Obj.magic _menhir_stack in
     let _1 = () in
     let _v : (Ast.ptyp) = 
-# 185 "parser.mly"
+# 186 "parser.mly"
              (PTFloat)
-# 9281 "parser.ml"
+# 9282 "parser.ml"
      in
     _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
 
@@ -9287,9 +9288,9 @@ and _menhir_run8 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
     let _menhir_stack = Obj.magic _menhir_stack in
     let _1 = () in
     let _v : (Ast.ptyp) = 
-# 184 "parser.mly"
+# 185 "parser.mly"
             (PTBool)
-# 9293 "parser.ml"
+# 9294 "parser.ml"
      in
     _menhir_goto_typ _menhir_env _menhir_stack _menhir_s _v
 
@@ -9367,7 +9368,7 @@ and _menhir_run13 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.position
 and _menhir_run14 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 9371 "parser.ml"
+# 9372 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -9402,9 +9403,9 @@ and _menhir_run14 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state
 and _menhir_reduce116 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return =
   fun _menhir_env _menhir_stack _menhir_s ->
     let _v : (Ast.ppattern_loc list) = 
-# 533 "parser.mly"
+# 534 "parser.mly"
                 ([])
-# 9408 "parser.ml"
+# 9409 "parser.ml"
      in
     _menhir_goto_pattern_list _menhir_env _menhir_stack _menhir_s _v
 
@@ -9457,9 +9458,9 @@ and _menhir_goto_pattern : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _startpos = _startpos__1_ in
             let _endpos = _endpos__3_ in
             let _v : (Ast.ppattern_loc) = 
-# 530 "parser.mly"
+# 531 "parser.mly"
                         (_2)
-# 9463 "parser.ml"
+# 9464 "parser.ml"
              in
             _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -9504,7 +9505,7 @@ and _menhir_goto_pattern : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _v : (Ast.ppattern_loc list) = 
 # 215 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( [ x ] )
-# 9508 "parser.ml"
+# 9509 "parser.ml"
              in
             _menhir_goto_separated_nonempty_list_Comma_pattern_ _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -9525,9 +9526,9 @@ and _menhir_goto_pattern : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _startpos = _startpos_p1_ in
             let _endpos = _endpos_p2_ in
             let _v : (Ast.ppattern_loc) = 
-# 524 "parser.mly"
+# 525 "parser.mly"
                                               (mk_ppat_loc (PPat_Lst_Cons (p1, p2)) (p2.ptyp) _startpos_p1_ _endpos_p2_)
-# 9531 "parser.ml"
+# 9532 "parser.ml"
              in
             _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -9572,9 +9573,9 @@ and _menhir_goto_pattern : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _menhir_stack = Obj.magic _menhir_stack in
             let (_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.ppattern_loc)), _startpos__1_) = _menhir_stack in
             let _v : (Ast.ppattern_loc list) = 
-# 534 "parser.mly"
+# 535 "parser.mly"
                 ([_1])
-# 9578 "parser.ml"
+# 9579 "parser.ml"
              in
             _menhir_goto_pattern_list _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -9593,14 +9594,14 @@ and _menhir_goto_pattern : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let ((_menhir_stack, _endpos_uid_, _menhir_s, (uid : (
 # 35 "parser.mly"
        (string)
-# 9597 "parser.ml"
+# 9598 "parser.ml"
             )), _startpos_uid_), _endpos_p_, _, (p : (Ast.ppattern_loc)), _startpos_p_) = _menhir_stack in
             let _startpos = _startpos_uid_ in
             let _endpos = _endpos_p_ in
             let _v : (Ast.ppattern_loc) = 
-# 529 "parser.mly"
+# 530 "parser.mly"
                                (mk_ppat_loc (PPat_Constr (uid, Some p)) (PTVar (new_type_var())) _startpos_uid_ _endpos_p_)
-# 9604 "parser.ml"
+# 9605 "parser.ml"
              in
             _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
         | _ ->
@@ -9690,9 +9691,9 @@ and _menhir_goto_pattern : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhi
             let _menhir_stack = Obj.magic _menhir_stack in
             let (_menhir_stack, _endpos__1_, _menhir_s, (_1 : (Ast.ppattern_loc)), _startpos__1_) = _menhir_stack in
             let _v : (Ast.ppattern_loc list) = 
-# 114 "parser.mly"
+# 115 "parser.mly"
               ([_1])
-# 9696 "parser.ml"
+# 9697 "parser.ml"
              in
             _menhir_goto_args _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -9770,12 +9771,12 @@ and _menhir_goto_list_Iden_ : _menhir_env -> 'ttv_tail -> _menhir_state -> (stri
         let ((_menhir_stack, _endpos_x_, _menhir_s, (x : (
 # 35 "parser.mly"
        (string)
-# 9774 "parser.ml"
+# 9775 "parser.ml"
         )), _startpos_x_), _, (xs : (string list))) = _menhir_stack in
         let _v : (string list) = 
 # 187 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( x :: xs )
-# 9779 "parser.ml"
+# 9780 "parser.ml"
          in
         _menhir_goto_list_Iden_ _menhir_env _menhir_stack _menhir_s _v
     | MenhirState234 ->
@@ -9838,11 +9839,11 @@ and _menhir_goto_declars : _menhir_env -> 'ttv_tail -> _menhir_state -> (unit) -
             let _v : (
 # 41 "parser.mly"
        ((string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option))
-# 9842 "parser.ml"
+# 9843 "parser.ml"
             ) = 
 # 70 "parser.mly"
                                (!imported, symbol_tbl, None)
-# 9846 "parser.ml"
+# 9847 "parser.ml"
              in
             _menhir_goto_program _menhir_env _menhir_stack _v
         | Model ->
@@ -9883,7 +9884,7 @@ and _menhir_goto_declars : _menhir_env -> 'ttv_tail -> _menhir_state -> (unit) -
         let _v : (unit) = 
 # 81 "parser.mly"
                       ()
-# 9887 "parser.ml"
+# 9888 "parser.ml"
          in
         _menhir_goto_declars _menhir_env _menhir_stack _menhir_s _v
     | _ ->
@@ -9894,7 +9895,7 @@ and _menhir_reduce99 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return 
     let _v : (Ast.ptyp option) = 
 # 100 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( None )
-# 9898 "parser.ml"
+# 9899 "parser.ml"
      in
     _menhir_goto_option_type_of_expr_ _menhir_env _menhir_stack _menhir_s _v
 
@@ -9937,16 +9938,16 @@ and _menhir_run171 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
     let _startpos = _startpos__1_ in
     let _endpos = _endpos__1_ in
     let _v : (Ast.ppattern_loc) = 
-# 525 "parser.mly"
+# 526 "parser.mly"
                     (mk_ppat_loc PPat_Underline (PTVar (new_type_var())) _startpos__1_ _endpos__1_)
-# 9943 "parser.ml"
+# 9944 "parser.ml"
      in
     _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
 and _menhir_run172 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 9950 "parser.ml"
+# 9951 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -9972,14 +9973,14 @@ and _menhir_run172 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
         let (_menhir_stack, _endpos_uid_, _menhir_s, (uid : (
 # 35 "parser.mly"
        (string)
-# 9976 "parser.ml"
+# 9977 "parser.ml"
         )), _startpos_uid_) = _menhir_stack in
         let _startpos = _startpos_uid_ in
         let _endpos = _endpos_uid_ in
         let _v : (Ast.ppattern_loc) = 
-# 528 "parser.mly"
+# 529 "parser.mly"
                   (mk_ppat_loc (PPat_Constr (uid, None)) (PTVar (new_type_var())) _startpos_uid_ _endpos_uid_)
-# 9983 "parser.ml"
+# 9984 "parser.ml"
          in
         _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
     | _ ->
@@ -10070,9 +10071,9 @@ and _menhir_run175 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.positio
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
         let _v : (Ast.ppattern_loc) = 
-# 513 "parser.mly"
+# 514 "parser.mly"
                 (mk_ppat_loc (PPat_Unt) PTUnt _startpos__1_ _endpos__2_)
-# 10076 "parser.ml"
+# 10077 "parser.ml"
          in
         _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
     | UIden _v ->
@@ -10087,7 +10088,7 @@ and _menhir_run175 : _menhir_env -> 'ttv_tail -> _menhir_state -> Lexing.positio
 and _menhir_run177 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 33 "parser.mly"
        (int)
-# 10091 "parser.ml"
+# 10092 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_env = _menhir_discard _menhir_env in
@@ -10096,22 +10097,22 @@ and _menhir_run177 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
     let (i : (
 # 33 "parser.mly"
        (int)
-# 10100 "parser.ml"
+# 10101 "parser.ml"
     )) = _v in
     let _startpos_i_ = _startpos in
     let _startpos = _startpos_i_ in
     let _endpos = _endpos_i_ in
     let _v : (Ast.ppattern_loc) = 
-# 511 "parser.mly"
+# 512 "parser.mly"
                 (mk_ppat_loc (PPat_Int i) PTInt _startpos_i_ _endpos_i_)
-# 10108 "parser.ml"
+# 10109 "parser.ml"
      in
     _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
 and _menhir_run178 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 10115 "parser.ml"
+# 10116 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_env = _menhir_discard _menhir_env in
@@ -10120,22 +10121,22 @@ and _menhir_run178 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
     let (id : (
 # 35 "parser.mly"
        (string)
-# 10124 "parser.ml"
+# 10125 "parser.ml"
     )) = _v in
     let _startpos_id_ = _startpos in
     let _startpos = _startpos_id_ in
     let _endpos = _endpos_id_ in
     let _v : (Ast.ppattern_loc) = 
-# 510 "parser.mly"
+# 511 "parser.mly"
                      (mk_ppat_loc (PPat_Symbol id) (PTVar (new_type_var())) _startpos_id_ _endpos_id_)
-# 10132 "parser.ml"
+# 10133 "parser.ml"
      in
     _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
 and _menhir_run179 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 34 "parser.mly"
        (float)
-# 10139 "parser.ml"
+# 10140 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_env = _menhir_discard _menhir_env in
@@ -10144,15 +10145,15 @@ and _menhir_run179 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_stat
     let (f : (
 # 34 "parser.mly"
        (float)
-# 10148 "parser.ml"
+# 10149 "parser.ml"
     )) = _v in
     let _startpos_f_ = _startpos in
     let _startpos = _startpos_f_ in
     let _endpos = _endpos_f_ in
     let _v : (Ast.ppattern_loc) = 
-# 512 "parser.mly"
+# 513 "parser.mly"
                 (mk_ppat_loc (PPat_Float f) PTFloat _startpos_f_ _endpos_f_)
-# 10156 "parser.ml"
+# 10157 "parser.ml"
      in
     _menhir_goto_pattern _menhir_env _menhir_stack _endpos _menhir_s _v _startpos
 
@@ -10161,14 +10162,14 @@ and _menhir_reduce81 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return 
     let _v : (string list) = 
 # 185 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
     ( [] )
-# 10165 "parser.ml"
+# 10166 "parser.ml"
      in
     _menhir_goto_list_Iden_ _menhir_env _menhir_stack _menhir_s _v
 
 and _menhir_run235 : _menhir_env -> 'ttv_tail -> Lexing.position -> _menhir_state -> (
 # 35 "parser.mly"
        (string)
-# 10172 "parser.ml"
+# 10173 "parser.ml"
 ) -> Lexing.position -> 'ttv_return =
   fun _menhir_env _menhir_stack _endpos _menhir_s _v _startpos ->
     let _menhir_stack = (_menhir_stack, _endpos, _menhir_s, _v, _startpos) in
@@ -10189,7 +10190,7 @@ and _menhir_reduce14 : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return 
     let _v : (unit) = 
 # 80 "parser.mly"
          ()
-# 10193 "parser.ml"
+# 10194 "parser.ml"
      in
     _menhir_goto_declars _menhir_env _menhir_stack _menhir_s _v
 
@@ -10988,7 +10989,7 @@ and _menhir_errorcase : _menhir_env -> 'ttv_tail -> _menhir_state -> 'ttv_return
 and _menhir_goto_debug : _menhir_env -> 'ttv_tail -> _menhir_state -> (
 # 42 "parser.mly"
         (unit)
-# 10992 "parser.ml"
+# 10993 "parser.ml"
 ) -> 'ttv_return =
   fun _menhir_env _menhir_stack _menhir_s _v ->
     let _menhir_stack = Obj.magic _menhir_stack in
@@ -10996,7 +10997,7 @@ and _menhir_goto_debug : _menhir_env -> 'ttv_tail -> _menhir_state -> (
     let (_1 : (
 # 42 "parser.mly"
         (unit)
-# 11000 "parser.ml"
+# 11001 "parser.ml"
     )) = _v in
     Obj.magic _1
 
@@ -11096,7 +11097,7 @@ and _menhir_goto_imported : _menhir_env -> 'ttv_tail -> (unit) -> 'ttv_return =
             let (_3 : (
 # 35 "parser.mly"
        (string)
-# 11100 "parser.ml"
+# 11101 "parser.ml"
             )) = _v in
             let _startpos__3_ = _startpos in
             let ((_menhir_stack, (_1 : (unit))), _) = _menhir_stack in
@@ -11104,7 +11105,7 @@ and _menhir_goto_imported : _menhir_env -> 'ttv_tail -> (unit) -> 'ttv_return =
             let _v : (unit) = 
 # 75 "parser.mly"
                             (print_endline ("imported "^_3); imported := _3 :: !imported)
-# 11108 "parser.ml"
+# 11109 "parser.ml"
              in
             _menhir_goto_imported _menhir_env _menhir_stack _v
         | _ ->
@@ -11149,7 +11150,7 @@ and _menhir_init : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> _menhir_env =
 and debug : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
 # 42 "parser.mly"
         (unit)
-# 11153 "parser.ml"
+# 11154 "parser.ml"
 ) =
   fun lexer lexbuf ->
     let _menhir_env = _menhir_init lexer lexbuf in
@@ -11177,7 +11178,7 @@ and debug : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
             let (_2 : (
 # 35 "parser.mly"
        (string)
-# 11181 "parser.ml"
+# 11182 "parser.ml"
             )) = _v in
             let _startpos__2_ = _startpos in
             let (_menhir_stack, _menhir_s) = _menhir_stack in
@@ -11185,11 +11186,11 @@ and debug : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
             let _v : (
 # 42 "parser.mly"
         (unit)
-# 11189 "parser.ml"
+# 11190 "parser.ml"
             ) = 
 # 66 "parser.mly"
                    (print_endline ("imported "^_2))
-# 11193 "parser.ml"
+# 11194 "parser.ml"
              in
             _menhir_goto_debug _menhir_env _menhir_stack _menhir_s _v
         | _ ->
@@ -11210,7 +11211,7 @@ and debug : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
 and program : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
 # 41 "parser.mly"
        ((string list) * (Ast.psymbol_tbl) * ((Ast.pkripke_model) option))
-# 11214 "parser.ml"
+# 11215 "parser.ml"
 ) =
   fun lexer lexbuf ->
     let _menhir_env = _menhir_init lexer lexbuf in
@@ -11220,16 +11221,16 @@ and program : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
     let _v : (unit) = 
 # 74 "parser.mly"
             ()
-# 11224 "parser.ml"
+# 11225 "parser.ml"
      in
     _menhir_goto_imported _menhir_env _menhir_stack _v)
 
-# 555 "parser.mly"
+# 556 "parser.mly"
   
-# 11230 "parser.ml"
+# 11231 "parser.ml"
 
 # 219 "/Users/liujian/.opam/system/lib/menhir/standard.mly"
   
 
 
-# 11236 "parser.ml"
+# 11237 "parser.ml"

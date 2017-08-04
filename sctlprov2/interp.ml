@@ -140,7 +140,7 @@ let rec get_matched_pattern value pat_expr_list =
     | _, _::pel -> get_matched_pattern value pel
 
 let find_function str runtime modul = 
-    print_endline ("finding function "^str^" in modul "^modul);
+    (* print_endline ("finding function "^str^" in modul "^modul); *)
     let m = Hashtbl.find runtime.moduls modul in
     if Hashtbl.mem m.functions str then
         Hashtbl.find m.functions str
@@ -483,9 +483,9 @@ let pmoduls_to_runtime pmoduls pkripke_model start_modul =
             } in
             Hashtbl.add runtime.moduls mname modul in
         modify_runtime dep_graph;
-        print_endline "initialized moduls in runtime";
+        (* print_endline "initialized moduls in runtime"; *)
         runtime.model <- pkripke_model_to_model pkripke_model runtime start_modul;
-        print_endline "initialized kripke model in runtime";
+        (* print_endline "initialized kripke model in runtime"; *)
         runtime
 
 
