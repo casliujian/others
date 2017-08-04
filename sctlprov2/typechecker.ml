@@ -946,9 +946,21 @@ let check_modul modul moduls =
     | Some kripke -> 
         print_endline ("type checking kripke model...");
         let env1, tctx1 = check_ppat_type (fst kripke.transition) modul moduls in
-        let env2, _ = check_pel_type (snd kripke.transition) env1 tctx1 modul moduls in
+        let nexts = snd kripke.transition in
+        let tmp_env = ref env1 in
+        List.iter (fun (e1, e2) -> 
+          let env1, _ = check_pel_type e1 !tmp_env tctx1 modul moduls in
+          let env2, _ = check_pel_type e2 env1 tctx1 modul moduls in
+          tmp_env := env2
+        ) nexts;
+        apply_env_to_ppatl !tmp_env (fst kripke.transition);
+        List.iter (fun (e1, e2) ->
+          apply_env_to_pel !tmp_env e1;
+          apply_env_to_pel !tmp_env e2
+        ) nexts;
+        (* let env2, _ = check_pel_type (snd kripke.transition) env1 tctx1 modul moduls in
         apply_env_to_ppatl env2 (fst kripke.transition);
-        apply_env_to_pel env2 (snd kripke.transition);
+        apply_env_to_pel env2 (snd kripke.transition); *)
         print_endline ("type check transtion complete.");
         List.iter (fun (str, pfml) -> 
           let env = check_pformulal_type pfml [] modul moduls in

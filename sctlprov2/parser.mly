@@ -33,7 +33,7 @@
 %token <int>Int 
 %token <float>Float
 %token <string>Iden UIden
-%token Import Datatype Vertical Val Var Match With Underline Model Transition Property If Then Else For In While Do Done
+%token Import Datatype Vertical Val Var Match With Underline Model Next Property If Then Else For In While Do Done
 %token LB1 RB1 LB2 RB2 LB3 RB3 Equal Non_Equal LT GT LE GE Comma Semicolon Dot DotDot Arrow EOF Add AddDot Minus MinusDot Mult MultDot
 %token Negb Ando Oro And Or Neg LArrow Colon ColonColon Init Top Bottom AX EX AF EG AR EU True False Function Of State
 %token TLst TFloat TAray TInt TBool TUnt
@@ -115,13 +115,26 @@ args: pattern {[$1]}
     | pattern args  {$1 :: $2}
 ;    
 
-kripke: Model LB3 states Transition p = pattern Equal e2 = expr fair = separated_list(Semicolon, formula) pl = list(property) RB3    {
+/* kripke: Model LB3 states Transition p = pattern Equal e2 = expr fair = separated_list(Semicolon, formula) pl = list(property) RB3    {
             kripke_model := Some {
                 transition = (p, e2);
                 fairness = fair;
                 properties = pl;
             }
         } 
+; */
+
+kripke: Model LB3 states Next p = pattern Equal nexts = transition_items fair = separated_list(Semicolon, formula) pl = list(property) RB3    {
+            kripke_model := Some {
+                transition = (p, nexts);
+                fairness = fair;
+                properties = pl;
+            }
+        } 
+;
+
+transition_items: e1 = expr_single Colon e2 = expr_single Semicolon {[(e1, e2)]}
+    | e1 = expr_single Colon e2 = expr_single Semicolon transition_items {(e1, e2)::$5}
 ;
 
 states: {[]}

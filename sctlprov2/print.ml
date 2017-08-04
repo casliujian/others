@@ -195,7 +195,12 @@ let str_modul modul =
         match modul.pkripke_model with
         | None -> ()
         | Some kripke -> 
-            tmp_str:= !tmp_str^"transition "^(str_ppatl (fst(kripke.transition)))^"=\n"^(str_pexprl (snd (kripke.transition)))^"\n\n";
+            (* tmp_str:= !tmp_str^"transition "^(str_ppatl (fst(kripke.transition)))^"=\n"^(str_pexprl (snd (kripke.transition)))^"\n\n"; *)
+            let (p, nexts) = kripke.transition in
+            tmp_str := !tmp_str ^ "transition "^(str_ppatl p)^" = \n";
+            List.iter (fun (e1, e2) -> 
+                tmp_str := !tmp_str ^ (str_pexprl e1)^" : "^(str_pexprl e2)^";\n"
+            ) nexts;
             if List.length kripke.fairness <> 0 then begin
                 tmp_str := !tmp_str^"fairness ";
                 List.iter (fun f -> tmp_str := !tmp_str ^ (str_pformulal f)) kripke.fairness

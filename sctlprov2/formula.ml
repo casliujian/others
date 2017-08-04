@@ -84,7 +84,7 @@ let rec str_fml fml =
 	match fml with
 	| Top -> "TRUE"
 	| Bottom -> "FALSE"
-	| Atomic (e, sl) -> (e) ^ (str_state_list sl)
+	| Atomic (e, sl) -> (e) ^" "^ (str_state_list sl)
 	| Neg fml1 -> "(not " ^ (str_fml fml1) ^ ")"
 	| And (fml1, fml2) -> (str_fml fml1) ^ "/\\" ^ (str_fml fml2)
 	| Or (fml1, fml2) -> (str_fml fml1) ^ "\\/" ^ (str_fml fml2)

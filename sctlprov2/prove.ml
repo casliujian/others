@@ -12,11 +12,20 @@ module State_set = Set.Make(State_key)
 
 let next s runtime modul = 
 	let model = runtime.model in 
-	let ctx, _ = get_matched_pattern s [(fst model.transition, snd model.transition)] in
-	let sl = evaluate (snd model.transition) ctx runtime modul in
+	let ctx, _ = get_matched_pattern s [(fst model.transition, Int 0)] in
+	let nexts = snd model.transition in
+	let next_states = ref State_set.empty in
+	List.iter (fun (e1, e2) -> 
+		match evaluate e1 ctx runtime modul with
+		| VBool true -> next_states := State_set.add (evaluate e2 ctx runtime modul) !next_states 
+		| VBool false -> ()
+		| _ -> printf "%s should evaluate to a boolean value" (str_expr e1); exit 1
+	) nexts;
+	!next_states
+	(* let sl = evaluate (snd model.transition) ctx runtime modul in
 	match sl with
 	| VLst vs -> State_set.of_list vs
-	| _ -> printf "%s is not a list of values." (str_value sl); exit 1
+	| _ -> printf "%s is not a list of values." (str_value sl); exit 1 *)
 
 type fairs = (formula * State_set.t) list
 

@@ -44,8 +44,8 @@ rule token = parse
   | "FALSE"     {Bottom}
   | "not"       {Neg}
   | "of"        {Of}
-  | "state"      {State}
-  | "transition" {Transition}
+  | "state"     {State}
+  | "next"      {Next}
   | integer as i  {Int (int_of_string i)}
   | float as f    {Float (float_of_string f)}
   | iden as id  {Iden id}

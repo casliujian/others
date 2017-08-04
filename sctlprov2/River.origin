@@ -1,0 +1,17 @@
+river.model
+Val init:(Type 1)={cabbage=false:bool;goat=false:bool;wolf=false:bool;farmer=false:bool;}:{cabbage:bool;goat:bool;wolf:bool;farmer:bool;}
+
+Function safe x:(Type 2) :(st )->(bool)=
+((! ((x.farmer:(Type 3)!=x.wolf:(Type 4)):bool&&(x.wolf:(Type 5)=x.goat:(Type 6)):bool):bool):bool&&(! ((x.farmer:(Type 7)!=x.goat:(Type 8)):bool&&(x.goat:(Type 9)=x.cabbage:(Type 10)):bool):bool):bool):bool
+
+datatype st={farmer:bool;wolf:bool;goat:bool;cabbage:bool;}
+
+Function okay y:(Type 11) :(st )->(bool)=
+((((y.farmer:(Type 12)=true:bool):bool&&(y.wolf:(Type 13)=true:bool):bool):bool&&(y.goat:(Type 14)=true:bool):bool):bool&&(y.cabbage:(Type 15)=true:bool):bool):bool
+
+transition s:(Type 16) = 
+(s.farmer:(Type 17)=s.wolf:(Type 18)):bool : s:(Type 19) with {wolf=(! s.wolf:(Type 21)):bool;farmer=(! s.farmer:(Type 20)):bool;}:(Type 19);
+(s.farmer:(Type 22)=s.goat:(Type 23)):bool : s:(Type 24) with {goat=(! s.goat:(Type 26)):bool;farmer=(! s.farmer:(Type 25)):bool;}:(Type 24);
+(s.farmer:(Type 27)=s.cabbage:(Type 28)):bool : s:(Type 29) with {cabbage=(! s.cabbage:(Type 31)):bool;farmer=(! s.farmer:(Type 30)):bool;}:(Type 29);
+true:bool : s:(Type 32) with {farmer=(! s.farmer:(Type 33)):bool;}:(Type 32);
+property find=EU (x,y,safe x:(Type 34),okay y:(Type 35),init:(Type 36))

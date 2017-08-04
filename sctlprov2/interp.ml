@@ -11,7 +11,8 @@ type modul = {
 }
 
 type model = {
-    transition: (pattern * expr);
+    (* transition: (pattern * expr); *)
+    transition : pattern * ((expr * expr) list);
     fairness: formula list;
     properties: (string * formula) list;
 }
@@ -413,14 +414,14 @@ let rec pfmll_to_fml pfmll runtime modul =
 
 let pkripke_model_to_model (pkm:pkripke_model) runtime modul = 
     {
-        transition = (ppatl_to_pattern (fst pkm.transition), pexprl_to_expr (snd pkm.transition));
+        transition = (ppatl_to_pattern (fst pkm.transition), List.map (fun (e1, e2) -> pexprl_to_expr e1, pexprl_to_expr e2) (snd pkm.transition));
         fairness = List.map (fun pfl -> pfmll_to_fml pfl runtime modul) pkm.fairness;
         properties = List.map (fun (str, pfmll) -> str, pfmll_to_fml pfmll runtime modul) pkm.properties;
     }
 
 let pmoduls_to_runtime pmoduls pkripke_model start_modul =
     let dummy_kripke_model = {
-        transition = (Pat_Symbol "", Int 0);
+        transition = (Pat_Symbol "", []);
         fairness = [];
         properties = [];
     } in
